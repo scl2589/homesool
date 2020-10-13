@@ -16,3 +16,6 @@
 
 **Ji Eun Chae**
 - 🐶Github : [@jieunchae](https://github.com/jieunchae)
+
+**Yoon Seok Cha**
+- 🌰Github: [@C9Boom7](https://github.com/c9boom7)
