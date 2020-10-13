@@ -13,3 +13,6 @@
 **Sun Hwan Park**
 
 - 🧙‍♂️Github: [@SunHwan-Park](https://github.com/SunHwan-Park)
+
+**Ji Eun Chae**
+- 🐶Github : [@jieunchae](https://github.com/jieunchae)
