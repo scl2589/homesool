@@ -8,7 +8,7 @@
 
 **Myeong Ji Son**
 
-- 🍒Github: [@ji-exitosa](https://github.com/ji-exitosa)
+- 🚀Github: [@ji-exitosa](https://github.com/ji-exitosa)
 
 **Sun Hwan Park**
 
