@@ -35,4 +35,20 @@
 - 온라인 화상으로도 술자리의 즐거운 분위기를 충분히 느낄 수 있도록 UX/UI를 설계해 사용자의 만족도를 높이고, 지속적으로 방문 사용할 수 있도록 유도한다
 - 사용자의 건전하고 건강한 음주 문화를 장려하기 위한 기능을 지원한다.
 
+## ✍ Ground Rule
+
+* 1일 1 commit
+
+* merge 후 브랜치 지우기
+
+
+## 🤝 Branch Rule
+
+* Git Branch 전략
+   * 추후 의논 예정 
+   
+* Commit Rule : [JIRA이슈 ID] 커밋 내용 
+    ex) [S03P31A503-8] Update Readme.md
+
+
 
