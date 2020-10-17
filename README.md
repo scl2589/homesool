@@ -68,7 +68,7 @@
 * Git Branch 전략
    * 추후 의논 예정 
    
-* Commit Rule : [JIRA이슈 ID] 커밋 내용 
+* Commit Rule : [JIRA이슈 ID] 커밋 내용  
     ex) [S03P31A503-8] Update Readme.md
 
 ## 서비스 아키텍쳐
