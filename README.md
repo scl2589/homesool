@@ -40,19 +40,19 @@
 
 ### 술자리 미팅
 
-![meeting]()
+![meeting](/uploads/15865ffc794bfce08c82665d7cc2f736/image.png)
 
 - 미팅에 참여한 유저들이 화면, 음성을 공유하며 실시간으로 소통할 수 있는 서비스
 
 ### 술게임
 
-![game1]()
+![game1](/uploads/15865ffc794bfce08c82665d7cc2f736/image.png)
 
 - 미팅 내에서 다양한 술게임을 온라인으로 즐길 수 있는 기능
 
 ### 추가기능
 
-![snapshot]()
+![snapshot](/uploads/15865ffc794bfce08c82665d7cc2f736/image.png)
 
 - 스냅샷, 데시벨 체크, 미팅 기록보기 등 재밌는 술자리를 위한 추가 기능들
 
@@ -68,10 +68,10 @@
 * Git Branch 전략
    * 추후 의논 예정 
    
-* Commit Rule : [JIRA이슈 ID] 커밋 내용 
+* Commit Rule : [JIRA이슈 ID] 커밋 내용  
     ex) [S03P31A503-8] Update Readme.md
 
 ## 서비스 아키텍쳐
 
-![architecture]()
+![architecture](/uploads/74b68d2035d034fab00cd018dd433d88/image.png)
 
