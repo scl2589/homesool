@@ -67,8 +67,8 @@
 
 * Git Branch 전략
    
-* Commit Rule : [JIRA이슈 ID] 커밋 내용  
-    ex) [S03P31A503-8] Update Readme.md
+* Commit Rule : [JIRA 이슈번호] 타입/브랜치명 : 행위단위 내용  
+    ex) [S03P31A503-8] docs/master : Add erd diagram
 
 ## 서비스 아키텍쳐
 
