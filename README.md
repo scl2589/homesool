@@ -74,3 +74,6 @@
 
 ![architecture](/uploads/74b68d2035d034fab00cd018dd433d88/image.png)
 
+## 와이어프레임
+https://xd.adobe.com/view/5ecdbee6-1af5-4b28-a508-9a7e595531c0-0b9e/
+
