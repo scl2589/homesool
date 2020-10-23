@@ -96,7 +96,7 @@
 <br>
 
 ## 🖼와이어프레임
-[Wireframe](./Documentation/Wireframe/술이술이홈술이_wireframe.pdf)
+[Wireframe](Documentation/WireFrame/술이술이홈술이_wireframe.pdf)
 
 <br>
 
