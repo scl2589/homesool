@@ -96,7 +96,7 @@
 <br>
 
 ## 🖼와이어프레임
-[Wireframe](Documentation/WireFrame/술이술이홈술이_wireframe.pdf)
+<a href="https://lab.ssafy.com/s03-final/s03p31a503/tree/master/Documentation/WireFrame">와이어프레임 확인하기</a>
 
 <br>
 
