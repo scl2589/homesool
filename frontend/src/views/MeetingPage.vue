@@ -5,7 +5,7 @@
         class="left-panel" 
         :class="{'col-8' : (isMultiPanel || isChatPanel), 'col-12' : !isMultiPanel && !isChatPanel }"
       >
-
+        <LeftPanel></LeftPanel>
       </div>
 
       <div 
@@ -86,6 +86,8 @@
 import { mapState, mapActions } from 'vuex' 
 import MultiPanel from '@/components/meetingpage/multipanel/MultiPanel'
 import ChatPanel from '@/components/meetingpage/ChatPanel'
+import LeftPanel from '@/components/meetingpage/LeftPanel.vue'
+
 export default {
   name: 'MeetingPage',
   data() {
@@ -95,6 +97,7 @@ export default {
   components: {
     MultiPanel,
     ChatPanel
+    LeftPanel
   },
   computed: {
     ...mapState('meetingStore', ['isGameMode', 'isMusicMode', 'isAnonymousMode', 'isSnapshotMode', 'isChatPanel']),
