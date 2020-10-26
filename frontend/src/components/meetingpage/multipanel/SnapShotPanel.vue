@@ -16,11 +16,17 @@
         class="expired-timer timer"
       >
         <div class="d-flex justify-content-between">
-          <button class="btn btn-yellow">
+          <button 
+            class="btn btn-yellow"
+            @click="retakePhoto"
+          >
             재촬영
           </button>
           <h3>Snapshot</h3>
-          <button class="btn btn-yellow">  
+          <button
+            class="btn btn-yellow"
+            @click="savePhoto"
+          >  
             저장
           </button>
         </div>
@@ -38,6 +44,7 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
 export default {
   name: 'SnapShotPanel',
   data() {
@@ -46,6 +53,9 @@ export default {
       remain: 5,
       expired: false,
     }
+  },
+  computed: {
+    ...mapState('meetingStore', ['isSnapshotMode']),
   },
   watch: {
     remain: {
@@ -59,7 +69,17 @@ export default {
         }
       },
       immediate: true
+    }
+  },
+  methods: {
+    ...mapActions('meetingStore', ['closeMultiPanel', 'startSnapshotMode']),
+    retakePhoto() {
+      this.closeMultiPanel()
+      setInterval(() => {
+        this.startSnapshotMode()
+      }, 500);
     },
+    savePhoto() {}
   }
 }
 </script>
