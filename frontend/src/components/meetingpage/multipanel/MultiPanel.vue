@@ -15,6 +15,8 @@
     </AnonymousPanel>
     <SnapShotPanel v-if="isSnapshotMode">
     </SnapShotPanel>
+    <GameSelectionPanel v-if="isGameMode">
+    </GameSelectionPanel>
   </div>
 </template>
 
@@ -23,12 +25,14 @@ import { mapState, mapActions } from 'vuex'
 
 import AnonymousPanel from '@/components/meetingpage/multipanel/AnonymousPanel'
 import SnapShotPanel from '@/components/meetingpage/multipanel/SnapShotPanel'
+import GameSelectionPanel from '@/components/meetingpage/multipanel/GameSelectionPanel'
 
 export default {
   name: 'MultiPanel',
   components: {
     AnonymousPanel,
     SnapShotPanel,
+    GameSelectionPanel
   },
   computed: {
     ...mapState('meetingStore', ['isGameMode', 'isMusicMode', 'isAnonymousMode', 'isSnapshotMode']),
