@@ -5,7 +5,7 @@
         class="left-panel" 
         :class="{'col-8' : (isMultiPanel || isChatPanel), 'col-12' : !isMultiPanel && !isChatPanel }"
       >
-
+        <LeftPanel></LeftPanel>
       </div>
 
       <div 
@@ -86,13 +86,18 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex' 
+import { mapState, mapActions } from 'vuex'
+import LeftPanel from '@/components/meetingpage/LeftPanel.vue'
+
 export default {
   name: 'MeetingPage',
   data() {
     return {
       isChatPanel: false
     }
+  },
+  components: {
+    LeftPanel
   },
   computed: {
     ...mapState('meetingStore', ['isGameMode', 'isMusicMode', 'isAnonymousMode', 'isSnapshotMode']),
@@ -114,14 +119,6 @@ export default {
 </script>
 
 <style scoped>
-.left-panel {
-  background-image: 
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-    url('../assets/images/basic_back.png');
-  background-size: contain;
-  background-repeat: repeat;
-}
-
 .right-panel {
   background-color: yellow;
 }
