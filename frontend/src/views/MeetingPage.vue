@@ -86,7 +86,7 @@
 import { mapState, mapActions } from 'vuex' 
 import MultiPanel from '@/components/meetingpage/multipanel/MultiPanel'
 import ChatPanel from '@/components/meetingpage/ChatPanel'
-import LeftPanel from '@/components/meetingpage/LeftPanel.vue'
+import LeftPanel from '@/components/meetingpage/LeftPanel'
 
 export default {
   name: 'MeetingPage',

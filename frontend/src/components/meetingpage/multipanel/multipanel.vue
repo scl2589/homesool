@@ -19,7 +19,7 @@ import { mapState, mapActions } from 'vuex'
 import AnonymousPanel from '@/components/meetingpage/multipanel/AnonymousPanel'
 
 export default {
-  name: 'multipanel',
+  name: 'MultiPanel',
   components: {
     AnonymousPanel
   },
