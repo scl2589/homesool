@@ -1,7 +1,7 @@
 <template>
   <div class="text-right">
     <button
-      class="btn"
+      class="btn close-btn"
       @click="closeMultiPanel"
     >
       <i class="fas fa-times"></i>
@@ -23,5 +23,10 @@ export default {
 </script>
 
 <style scoped>
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
 
 </style>

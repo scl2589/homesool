@@ -20,13 +20,13 @@
           >
             
           </MultiPanel>
-          <div
+          <ChatPanel
             class="chat-panel"
             :class="{ 'half-height' : isMultiPanel, 'full-height' : !isMultiPanel }"
             v-if="isChatPanel"
           >
 
-          </div>
+          </ChatPanel>
 
       </div>
     </div>
@@ -86,19 +86,20 @@
 
 <script>
 import { mapState, mapActions } from 'vuex' 
-import MultiPanel from '@/components/meetingpage/multipanel/multipanel'
+import MultiPanel from '@/components/meetingpage/multipanel/MultiPanel'
+import ChatPanel from '@/components/meetingpage/ChatPanel'
 export default {
   name: 'MeetingPage',
   data() {
     return {
-      isChatPanel: false
     }
   },
   components: {
-    MultiPanel
+    MultiPanel,
+    ChatPanel
   },
   computed: {
-    ...mapState('meetingStore', ['isGameMode', 'isMusicMode', 'isAnonymousMode', 'isSnapshotMode']),
+    ...mapState('meetingStore', ['isGameMode', 'isMusicMode', 'isAnonymousMode', 'isSnapshotMode', 'isChatPanel']),
     isMultiPanel() {
       if (this.isGameMode || this.isMusicMode || this.isAnonymousMode || this.isSnapshotMode) {
         return true
@@ -108,9 +109,13 @@ export default {
     }
   },
   methods: {
-    ...mapActions('meetingStore', ['startGameMode', 'startMusicMode', 'startAnonymousMode', 'startSnapshotMode']),
+    ...mapActions('meetingStore', ['startGameMode', 'startMusicMode', 'startAnonymousMode', 'startSnapshotMode', 'clickChatPanel']),
     clickChatMode() {
-      this.isChatPanel = !this.isChatPanel
+      if (this.isChatPanel === true) {
+        this.clickChatPanel(false)
+      } else {
+        this.clickChatPanel(true)
+      }
     }
   }
 }

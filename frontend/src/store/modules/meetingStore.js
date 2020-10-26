@@ -4,7 +4,8 @@ const meetingStore = {
     isGameMode: false,
     isMusicMode: false,
     isAnonymousMode: false,
-    isSnapshotMode: false
+    isSnapshotMode: false,
+    isChatPanel: false,
   },
   getters: {
   },
@@ -20,6 +21,9 @@ const meetingStore = {
     },
     SET_ISSNAPSHOT_MODE(state, value) {
       state.isSnapshotMode = value
+    },
+    SET_CHATPANEL(state, value) {
+      state.isChatPanel = value
     }
   },
   actions: {
@@ -40,6 +44,9 @@ const meetingStore = {
       commit('SET_ISMUSIC_MODE', false)
       commit('SET_ISANONYMOUS_MODE', false)
       commit('SET_ISSNAPSHOT_MODE', false)
+    },
+    clickChatPanel({ commit }, value) {
+      commit('SET_CHATPANEL', value)
     }
   }
 
