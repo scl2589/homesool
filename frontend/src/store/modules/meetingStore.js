@@ -34,6 +34,12 @@ const meetingStore = {
     },
     startSnapshotMode({ commit }) {
       commit('SET_ISSNAPSHOT_MODE', true)
+    },
+    closeMultiPanel({ commit }) {
+      commit('SET_ISGAME_MODE', false)
+      commit('SET_ISMUSIC_MODE', false)
+      commit('SET_ISANONYMOUS_MODE', false)
+      commit('SET_ISSNAPSHOT_MODE', false)
     }
   }
 

@@ -13,14 +13,13 @@
         :class="{ 'col-4' : (isMultiPanel || isChatPanel), 'col-0' : !isMultiPanel && !isChatPanel }"
         v-if="isMultiPanel || isChatPanel"
       >
-          <div
+          <MultiPanel
             class="multi-panel"
             :class="{ 'half-height' : isChatPanel, 'full-height' : !isChatPanel }"
             v-if="isMultiPanel"
           >
             
-          </div>
-
+          </MultiPanel>
           <div
             class="chat-panel"
             :class="{ 'half-height' : isMultiPanel, 'full-height' : !isMultiPanel }"
@@ -87,12 +86,16 @@
 
 <script>
 import { mapState, mapActions } from 'vuex' 
+import MultiPanel from '@/components/meetingpage/multipanel/multipanel'
 export default {
   name: 'MeetingPage',
   data() {
     return {
       isChatPanel: false
     }
+  },
+  components: {
+    MultiPanel
   },
   computed: {
     ...mapState('meetingStore', ['isGameMode', 'isMusicMode', 'isAnonymousMode', 'isSnapshotMode']),
@@ -123,11 +126,10 @@ export default {
 }
 
 .right-panel {
-  background-color: yellow;
+  /* background-color: yellow; */
 }
 
 .multi-panel {
-  background-color: green;
   max-width: 100%;
 }
 
