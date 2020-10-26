@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="row no-gutters" style="height:91vh;">
+    <div class="row no-gutters theme-background" style="height:91vh;">
       <div 
         class="left-panel" 
         :class="{'col-8' : (isMultiPanel || isChatPanel), 'col-12' : !isMultiPanel && !isChatPanel }"
@@ -13,21 +13,18 @@
         :class="{ 'col-4' : (isMultiPanel || isChatPanel), 'col-0' : !isMultiPanel && !isChatPanel }"
         v-if="isMultiPanel || isChatPanel"
       >
-          <div
-            class="multi-panel"
+          <MultiPanel
+            class="multi-panel d-flex align-items-center"
             :class="{ 'half-height' : isChatPanel, 'full-height' : !isChatPanel }"
             v-if="isMultiPanel"
           >
-            
-          </div>
-
-          <div
+          </MultiPanel>
+          <ChatPanel
             class="chat-panel"
             :class="{ 'half-height' : isMultiPanel, 'full-height' : !isMultiPanel }"
             v-if="isChatPanel"
           >
-
-          </div>
+          </ChatPanel>
 
       </div>
     </div>
@@ -86,21 +83,24 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex' 
+import MultiPanel from '@/components/meetingpage/multipanel/MultiPanel'
+import ChatPanel from '@/components/meetingpage/ChatPanel'
 import LeftPanel from '@/components/meetingpage/LeftPanel.vue'
 
 export default {
   name: 'MeetingPage',
   data() {
     return {
-      isChatPanel: false
     }
   },
   components: {
+    MultiPanel,
+    ChatPanel
     LeftPanel
   },
   computed: {
-    ...mapState('meetingStore', ['isGameMode', 'isMusicMode', 'isAnonymousMode', 'isSnapshotMode']),
+    ...mapState('meetingStore', ['isGameMode', 'isMusicMode', 'isAnonymousMode', 'isSnapshotMode', 'isChatPanel']),
     isMultiPanel() {
       if (this.isGameMode || this.isMusicMode || this.isAnonymousMode || this.isSnapshotMode) {
         return true
@@ -110,22 +110,36 @@ export default {
     }
   },
   methods: {
-    ...mapActions('meetingStore', ['startGameMode', 'startMusicMode', 'startAnonymousMode', 'startSnapshotMode']),
+    ...mapActions('meetingStore', ['startGameMode', 'startMusicMode', 'startAnonymousMode', 'startSnapshotMode', 'clickChatPanel']),
     clickChatMode() {
-      this.isChatPanel = !this.isChatPanel
+      if (this.isChatPanel === true) {
+        this.clickChatPanel(false)
+      } else {
+        this.clickChatPanel(true)
+      }
     }
   }
 }
 </script>
 
 <style scoped>
+.theme-background {
+  background-image: 
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    url('../assets/images/basic_back.png');
+  background-size: contain;
+  background-repeat: repeat;
+}
+
 .right-panel {
-  background-color: yellow;
+  /* background-color: yellow; */
 }
 
 .multi-panel {
-  background-color: green;
+  background-color: #232323;
   max-width: 100%;
+  border: 5px solid #606060;
+  border-radius: 10px;
 }
 
 .chat-panel {
