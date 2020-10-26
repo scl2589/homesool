@@ -28,28 +28,28 @@ const meetingStore = {
   },
   actions: {
     startGameMode({ commit }) {
-      commit('SET_ISGAME_MODE', true)
       commit('SET_ISANONYMOUS_MODE', false)
       commit('SET_ISSNAPSHOT_MODE', false)
       commit('SET_ISMUSIC_MODE', false)
+      commit('SET_ISGAME_MODE', true)
     },
     startMusicMode({ commit }) {
-      commit('SET_ISMUSIC_MODE', true)
       commit('SET_ISANONYMOUS_MODE', false)
       commit('SET_ISSNAPSHOT_MODE', false)
       commit('SET_ISGAME_MODE', false)
+      commit('SET_ISMUSIC_MODE', true)
     },
     startAnonymousMode({ commit }) {
-      commit('SET_ISANONYMOUS_MODE', true)
       commit('SET_ISGAME_MODE', false)
       commit('SET_ISSNAPSHOT_MODE', false)
       commit('SET_ISMUSIC_MODE', false)
+      commit('SET_ISANONYMOUS_MODE', true)
     },
     startSnapshotMode({ commit }) {
-      commit('SET_ISSNAPSHOT_MODE', true)
       commit('SET_ISGAME_MODE', false)
       commit('SET_ISMUSIC_MODE', false)
       commit('SET_ISANONYMOUS_MODE', false)
+      commit('SET_ISSNAPSHOT_MODE', true)
     },
     closeMultiPanel({ commit }) {
       commit('SET_ISGAME_MODE', false)
