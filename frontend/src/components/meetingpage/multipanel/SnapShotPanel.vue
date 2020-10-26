@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column justify-content-between p-2 w-100">
+  <div class="d-flex flex-column justify-content-between p-2 w-100" data-app>
     <section class="countdown">
       <div v-show="!expired" class="timer">
         <h3>Snapshot</h3>
@@ -32,11 +32,34 @@
         </div>
         <div class="box">
           <div class="spacer"></div>
-          <p class="value">
-            <img src="../../../assets/images/sample.png">
-          </p>
+          <div class="value d-flex justify-content-center">
+            <div id="preview"></div>
+          </div>
           <p class="label">여러분의 사진입니다! 마음에 드시나요?</p>
         </div>
+        <!-- <v-dialog
+          v-model="dialog"
+          width="500"
+        >
+          <v-card>
+            <v-card-text>
+              <div class="attach"></div>
+            </v-card-text>
+
+            <v-divider></v-divider>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="primary"
+                text
+                @click="dialog = false"
+              >
+                닫기
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog> -->
       </div>
     
     </section>
@@ -45,6 +68,8 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import html2canvas from 'html2canvas'
+
 export default {
   name: 'SnapShotPanel',
   data() {
@@ -52,6 +77,8 @@ export default {
       seconds: 'CAPTUREE!',
       remain: 5,
       expired: false,
+      dialog: false,
+      captured: null
     }
   },
   computed: {
@@ -65,6 +92,21 @@ export default {
             this.remain--;
           }, 1000)
         } else {
+          html2canvas(document.querySelector("#capture"), {
+            userCORS:true,
+          }).then(canvas => {
+            canvas.style.maxWidth="80%"
+            canvas.style.height="auto"
+            canvas.style.marginLeft="auto"
+            canvas.style.marginRight="auto"
+            this.captured = canvas
+            document.getElementById('preview').appendChild(canvas)  
+            // canvas.addEventListener("click", () => {
+            //   this.dialog = true
+            //   document.getElementById('attach').appendChild(canvas)
+            // } )
+            
+        });
           this.expired = true;
         }
       },
@@ -79,7 +121,17 @@ export default {
         this.startSnapshotMode()
       }, 500);
     },
-    savePhoto() {}
+    savePhoto() {
+      // html2canvas(document.querySelector("#capture")).then(canvas => {
+      //     document.getElementById('preview').appendChild(canvas)
+      // });
+      this.captured
+      var a = document.createElement('a');
+    // toDataURL defaults to png, so we need to request a jpeg, then convert for file download.
+    a.href = this.captured.toDataURL("image/jpeg").replace("image/jpeg", "image/octet-stream");
+    a.download = 'file.jpg';
+    a.click();
+    }
   }
 }
 </script>
@@ -133,7 +185,7 @@ body{
   perspective: 1000px;
   .box{
     display: inline-block;
-    width: 10rem;
+    width: 8rem;
     text-align: center;
     background: nth($palette, 3);
     //needed for firestorm
@@ -179,7 +231,7 @@ body{
     .value{
       position: relative;
       margin: 0;
-      padding: 0.5rem 0 1rem;
+      // padding: 0.5rem 0 1rem;
       font-size: 3em;
       color: rgba(nth($palette, 5), .6);
       background: nth($palette, 2);
@@ -187,8 +239,8 @@ body{
       animation: wind 4s ease-out alternate infinite;
       box-shadow: 0 15px 10px -10px rgba(nth($palette, 4), 0);
 
-      img {
-        max-width: 90%;
+      #preview {
+        max-width: 100%;
       }
     }
     .label{
@@ -213,7 +265,7 @@ body{
 }
 .expired-timer{
   .box{
-    width: 80%;
+    width: 60%;
   }
 }
 

@@ -2,6 +2,7 @@
   <div>
     <div class="row no-gutters theme-background" style="height:91vh;">
       <div 
+        id="capture"
         class="left-panel" 
         :class="{'col-8' : (isMultiPanel || isChatPanel), 'col-12' : !isMultiPanel && !isChatPanel }"
       >
@@ -123,7 +124,7 @@ export default {
 </script>
 
 <style scoped>
-.theme-background {
+.left-panel {
   background-image: 
     linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
     url('../assets/images/basic_back.png');
@@ -132,7 +133,7 @@ export default {
 }
 
 .right-panel {
-  /* background-color: yellow; */
+  background-color: black;
 }
 
 .multi-panel {
