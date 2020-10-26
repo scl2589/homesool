@@ -96,7 +96,7 @@ export default {
   },
   components: {
     MultiPanel,
-    ChatPanel
+    ChatPanel,
     LeftPanel
   },
   computed: {
