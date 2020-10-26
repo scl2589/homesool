@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column justify-content-between p-2 w-100" data-app>
+  <div class="d-flex flex-column justify-content-between p-2 w-100">
     <section class="countdown">
       <div v-show="!expired" class="timer">
         <h3>Snapshot</h3>
