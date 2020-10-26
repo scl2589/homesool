@@ -4,7 +4,10 @@
       class="btn close-btn"
       @click="closeChatPanel"
     >
-      <i class="fas fa-times"></i>
+      <i 
+        class="fas fa-times"
+        style="color:white;"
+      ></i>
     </button>
   </div>
 </template>

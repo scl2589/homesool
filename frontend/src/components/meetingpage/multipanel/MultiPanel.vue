@@ -5,11 +5,16 @@
         class="btn close-btn"
         @click="closeMultiPanel"
       >
-        <i class="fas fa-times"></i>
+        <i 
+          class="fas fa-times"
+          style="color:white;"
+        ></i>
       </button>
     </div>
     <AnonymousPanel v-if="isAnonymousMode">
     </AnonymousPanel>
+    <SnapShotPanel v-if="isSnapshotMode">
+    </SnapShotPanel>
   </div>
 </template>
 
@@ -17,11 +22,13 @@
 import { mapState, mapActions } from 'vuex'
 
 import AnonymousPanel from '@/components/meetingpage/multipanel/AnonymousPanel'
+import SnapShotPanel from '@/components/meetingpage/multipanel/SnapShotPanel'
 
 export default {
   name: 'MultiPanel',
   components: {
-    AnonymousPanel
+    AnonymousPanel,
+    SnapShotPanel,
   },
   computed: {
     ...mapState('meetingStore', ['isGameMode', 'isMusicMode', 'isAnonymousMode', 'isSnapshotMode']),
