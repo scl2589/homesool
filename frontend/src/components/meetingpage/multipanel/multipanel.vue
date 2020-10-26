@@ -1,18 +1,28 @@
 <template>
-  <div class="text-right">
-    <button
-      class="btn close-btn"
-      @click="closeMultiPanel"
-    >
-      <i class="fas fa-times"></i>
-    </button>
+  <div>
+    <div class="text-right">
+      <button
+        class="btn close-btn"
+        @click="closeMultiPanel"
+      >
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <AnonymousPanel v-if="isAnonymousMode">
+    </AnonymousPanel>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex'
+
+import AnonymousPanel from '@/components/meetingpage/multipanel/AnonymousPanel'
+
 export default {
   name: 'multipanel',
+  components: {
+    AnonymousPanel
+  },
   computed: {
     ...mapState('meetingStore', ['isGameMode', 'isMusicMode', 'isAnonymousMode', 'isSnapshotMode']),
   },

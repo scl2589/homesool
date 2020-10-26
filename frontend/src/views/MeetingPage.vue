@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="row no-gutters" style="height:91vh;">
+    <div class="row no-gutters theme-background" style="height:91vh;">
       <div 
         class="left-panel" 
         :class="{'col-8' : (isMultiPanel || isChatPanel), 'col-12' : !isMultiPanel && !isChatPanel }"
@@ -14,18 +14,16 @@
         v-if="isMultiPanel || isChatPanel"
       >
           <MultiPanel
-            class="multi-panel"
+            class="multi-panel d-flex align-items-center"
             :class="{ 'half-height' : isChatPanel, 'full-height' : !isChatPanel }"
             v-if="isMultiPanel"
           >
-            
           </MultiPanel>
           <ChatPanel
             class="chat-panel"
             :class="{ 'half-height' : isMultiPanel, 'full-height' : !isMultiPanel }"
             v-if="isChatPanel"
           >
-
           </ChatPanel>
 
       </div>
@@ -122,7 +120,7 @@ export default {
 </script>
 
 <style scoped>
-.left-panel {
+.theme-background {
   background-image: 
     linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
     url('../assets/images/basic_back.png');
@@ -135,7 +133,10 @@ export default {
 }
 
 .multi-panel {
+  background-color: #232323;
   max-width: 100%;
+  border: 5px solid #606060;
+  border-radius: 10px;
 }
 
 .chat-panel {
