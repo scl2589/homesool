@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div id="nav">
+    <div id="nav" v-if="$route.name !== 'MeetingPage'">
       <h3>술이술이홈술이</h3>
     </div>
     <router-view/>
