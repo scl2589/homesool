@@ -12,7 +12,8 @@ const meetingStore = {
     isSnapshotMode: false,
     isChatPanel: false,
     selectedSong: null,
-    songs: null
+    songs: null,
+    theme: 'basic',
   },
   getters: {
   },
@@ -37,6 +38,9 @@ const meetingStore = {
     },
     SET_SONGS(state, songs) {
       state.songs = songs
+    },
+    SET_THEME(state, theme) {
+      state.theme = theme
     }
   },
   actions: {
@@ -101,6 +105,9 @@ const meetingStore = {
     closeSingingPanel({ commit }) {
       commit('SET_SONGS', null)
       commit('SET_SELECTED_SONG', null)
+    },
+    changeTheme({ commit }, theme) {
+      commit('SET_THEME', theme)
     }
   }
 
