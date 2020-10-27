@@ -82,7 +82,7 @@ const meetingStore = {
     searchSong({ commit }, keyword) {
       axios.get(SERVER.YOUTUBE_URL, {
         params: {
-          key: secrets.YOUTUBE.SECRET_KEY,
+          key: secrets.YOUTUBE.SECRET_KEY[Math.floor(Math.random() * secrets.YOUTUBE.SECRET_KEY.length)],
           part: 'snippet',
           type: 'video',
           q: '[KY 금영노래방]' + keyword,
