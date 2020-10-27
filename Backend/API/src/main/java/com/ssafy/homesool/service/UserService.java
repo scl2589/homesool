@@ -50,7 +50,6 @@ public class UserService {
 				kakaoUserDto.getKakaoAccount().getEmail() // email
 			);
 		}
-		System.out.println("kakao id : >>>>>>>>>>>>>>> " +kakaoUserDto.getId());
 		response.setToken(jwtTokenProvider.createToken(kakaoUserDto.getId()));
 		return response;
 	}
@@ -85,7 +84,7 @@ public class UserService {
 		//기존 주량 정보 무조건 삭제
 		userDrinkRepository.deleteAllByUserId(userId);
 		
-		//saveAll 사용하면 한번에 넣을 수 있을텐데 잘 모르곘음 ㅜㅜ..
+		//saveAll 사용하면 한번에 넣을 수 있을텐데 잘 모르겠음
 		for(UserDrink drink : userReq.getDrinks()) {
 			UserDrink userDrink = UserDrink.builder()
 					.userId(userId)

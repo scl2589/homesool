@@ -6,7 +6,7 @@ import org.mapstruct.factory.Mappers;
 import com.ssafy.homesool.dto.UserDto;
 import com.ssafy.homesool.entity.User;
 
-@Mapper(componentModel="spring")
+@Mapper
 public interface UserMapper {
 	UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
