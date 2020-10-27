@@ -1,10 +1,10 @@
 <template>
-  <div id="app">
+  <v-app id="app">
     <div id="nav" v-if="$route.name==='meet'">
       <h3>술이술이홈술이</h3>
     </div>
     <router-view/>
-  </div>
+  </v-app>
 </template>
 
 <style lang="scss">
