@@ -1,4 +1,5 @@
-<template >
+<template>
+  <v-app id="app">
   <div id="app">
     <div id="nav" v-if="$route.name==='meet'">
       <!-- <span id="logo">술이술이홈술이</span> -->
@@ -12,7 +13,7 @@
       </span>
     </div>
     <router-view/>
-  </div>
+  </v-app>
 </template>
 <script>
 // import http from '../utils/http-common.js';
