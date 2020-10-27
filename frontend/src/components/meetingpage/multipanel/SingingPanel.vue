@@ -31,7 +31,7 @@
             class="song-thumbnail"
             :src="song.snippet.thumbnails.medium.url"
             :alt="song.snippet.title"
-            @click="selectSong(song)"
+            @click="clickSelectSong(song)"
           >
           <!-- <p>{{ song.snippet.title }}</p> -->
         </div>
@@ -61,6 +61,10 @@ export default {
       } else {
         return false
       }
+    },
+    clickSelectSong(song) {
+      this.selectSong(song);
+      this.songKeyword = null;
     }
   },
   beforeDestroy() {
