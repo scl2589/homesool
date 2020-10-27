@@ -12,7 +12,8 @@ const meetingStore = {
     isSnapshotMode: false,
     isChatPanel: false,
     selectedSong: null,
-    songs: null
+    songs: null,
+    theme: 'basic',
   },
   getters: {
   },
@@ -37,6 +38,9 @@ const meetingStore = {
     },
     SET_SONGS(state, songs) {
       state.songs = songs
+    },
+    SET_THEME(state, theme) {
+      state.theme = theme
     }
   },
   actions: {
@@ -78,7 +82,7 @@ const meetingStore = {
     searchSong({ commit }, keyword) {
       axios.get(SERVER.YOUTUBE_URL, {
         params: {
-          key: secrets.YOUTUBE.SECRET_KEY,
+          key: secrets.YOUTUBE.SECRET_KEY[Math.floor(Math.random() * secrets.YOUTUBE.SECRET_KEY.length)],
           part: 'snippet',
           type: 'video',
           q: '[KY 금영노래방]' + keyword,
@@ -101,6 +105,9 @@ const meetingStore = {
     closeSingingPanel({ commit }) {
       commit('SET_SONGS', null)
       commit('SET_SELECTED_SONG', null)
+    },
+    changeTheme({ commit }, theme) {
+      commit('SET_THEME', theme)
     }
   }
 
