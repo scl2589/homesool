@@ -1,0 +1,116 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.05);
+}
+
+body {
+  font-family: Roboto, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;
+}
+
+a {
+  color: inherit;
+  cursor: inherit;
+  text-decoration: inherit;
+}
+
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+button {
+  font-weight: bold !important;
+}
+
+.session-form label {
+  font-size: 12px;
+}
+
+.subscribe-remote-check .mat-checkbox-label {
+  line-height: 15px !important;
+}
+
+.mat-expansion-panel-body {
+  font-size: 9.5px !important;
+  padding: 0 9px 0px !important;
+  margin: 0 2px 0 2px !important;
+  background-color: white;
+  border: 3px solid #e0e0e0;
+  line-height: 13px;
+  padding: 4px 7px 3px 7px !important;
+  word-break: break-all;
+}
+
+.mat-expansion-indicator {
+  display: none;
+}
+
+.mat-expansion-indicator::after {
+  display: none;
+}
+
+.mat-expansion-panel-spacing {
+  margin: 3px 0 !important;
+}
+
+#recorder-preview video {
+  width: 500px;
+  height: inherit;
+}
+
+/*Rotating animation*/
+
+@-webkit-keyframes rotating
+/* Safari and Chrome */
+
+  {
+  from {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+  to {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes rotating {
+  from {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+  to {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+}
+
+.rotating {
+  -webkit-animation: rotating 1s linear infinite;
+  -moz-animation: rotating 1s linear infinite;
+  -ms-animation: rotating 1s linear infinite;
+  -o-animation: rotating 1s linear infinite;
+  animation: rotating 1s linear infinite;
+  cursor: default !important;
+}
+
+.rotating:hover {
+  color: inherit !important;
+}
+
+/*End rotating animation*/
