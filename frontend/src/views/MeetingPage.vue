@@ -130,6 +130,16 @@ export default {
       }
     }
   },
+  watch: {
+    isSingingMode(value) {
+      if (value) {
+        if (!song.paused) {
+          song.pause();
+          this.playing = false;
+        }
+      }
+    }
+  },
   methods: {
     ...mapActions('meetingStore', ['startGameMode', 'startSingingMode', 'startAnonymousMode', 'startSnapshotMode', 'clickChatPanel']),
     clickChatMode() {
