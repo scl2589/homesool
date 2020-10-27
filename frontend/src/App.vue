@@ -6,7 +6,7 @@
       <span id="login">
         <button id="kakao_login" @click="login()">
             <img id="kakao_img" src="@/assets/images/kakao_login_large.png"/>
-            <!-- <img id="kakao_img" src="../public/img/kakao.png" /> -->
+            <!-- <img id="kakao_img" src="@/assets/images/kakao.png" /> -->
             <!-- <span id="kakao_font">로그인</span> -->
         </button>
       </span>
