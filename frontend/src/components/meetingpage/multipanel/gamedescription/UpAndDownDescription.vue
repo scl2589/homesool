@@ -35,7 +35,7 @@
               alt="sample image"
             >
             <p class="description">
-              3. 숫자를 맞힌다면 Win!!!<br> 전 순서의 사람이 벌칙 당첨!!
+              3. 숫자를 맞힌다면 Win!!!<br> 이전 순서의 사람이 벌칙 당첨!!
             </p>
           </div>
         </div>
