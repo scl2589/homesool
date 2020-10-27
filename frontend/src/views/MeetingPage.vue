@@ -10,7 +10,7 @@
       </div>
 
       <div 
-        class="right-panel" 
+        class="right-panel"
         :class="{ 'col-4' : (isMultiPanel || isChatPanel), 'col-0' : !isMultiPanel && !isChatPanel }"
         v-if="isMultiPanel || isChatPanel"
       >
@@ -59,7 +59,7 @@
           </button>
           <div class="dropdown-menu text-center">
             <li class="dropdown-item" @click="startGameMode">술게임 모드</li>
-            <li class="dropdown-item" @click="startMusicMode">노래방 모드</li>
+            <li class="dropdown-item" @click="startSingingMode">노래방 모드</li>
             <li class="dropdown-item" @click="startAnonymousMode">진실의 방 모드</li>
           </div>
         </div>
@@ -121,9 +121,9 @@ export default {
     LeftPanel
   },
   computed: {
-    ...mapState('meetingStore', ['isGameMode', 'isMusicMode', 'isAnonymousMode', 'isSnapshotMode', 'isChatPanel']),
+    ...mapState('meetingStore', ['isGameMode', 'isSingingMode', 'isAnonymousMode', 'isSnapshotMode', 'isChatPanel']),
     isMultiPanel() {
-      if (this.isGameMode || this.isMusicMode || this.isAnonymousMode || this.isSnapshotMode) {
+      if (this.isGameMode || this.isSingingMode || this.isAnonymousMode || this.isSnapshotMode) {
         return true
       } else {
         return false
@@ -131,7 +131,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('meetingStore', ['startGameMode', 'startMusicMode', 'startAnonymousMode', 'startSnapshotMode', 'clickChatPanel']),
+    ...mapActions('meetingStore', ['startGameMode', 'startSingingMode', 'startAnonymousMode', 'startSnapshotMode', 'clickChatPanel']),
     clickChatMode() {
       if (this.isChatPanel === true) {
         this.clickChatPanel(false)
@@ -149,7 +149,6 @@ export default {
       }
     },
     setVolume(e) {
-      console.log(e.target.value)
       song.volume = e.target.value / 100;
     },
     clickChangeTheme() {
