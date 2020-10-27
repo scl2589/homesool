@@ -48,9 +48,35 @@
           <span class="sr-only">Next</span>
         </button>
       </div>
-      <div class="d-flex justify-content-between mx-2 mt-auto">
-        <div>
-          <button>벌칙</button>
+      <div class="d-flex justify-content-between align-items-center mx-2 mt-auto">
+        <div class="penalty">
+          <!-- Default dropup button -->
+          <!-- <div class="btn-group dropup">
+            <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              벌칙 - {{ penalty }}
+            </button>
+            <div class="dropdown-menu">
+              <li class="dropdown-item" @click="changePenalty('술 한 잔 마시기')">
+                술 한 잔 마시기 
+              </li>
+              <li class="dropdown-item">
+                5분동안 음소거
+              </li>
+              <li class="dropdown-item">
+                5분동안 카메라 정지
+              </li>
+            </div>
+          </div> -->
+          <v-select
+            :items="items"
+            label="벌칙"
+            width="10px"
+            hide-details
+            dense
+            append-icon=""
+            solo
+          ></v-select>
+          
         </div>
         <div>
           <button
@@ -68,6 +94,16 @@
 <script>
 export default {
   name: 'SmileLeadsToAlcoholDescritpion',
+  data() {
+    return {
+      penalty: null,
+      items: [
+        '술 한 잔 마시기', 
+        '5분동안 음소거',
+        '5분동안 카메라 정지'
+      ],
+    }
+  }
 }
 </script>
 
@@ -98,4 +134,28 @@ p, h1, h2, h3, h4, h5, h6, button {
   height: 38vh;
 }
 
+.penalty {
+  width: 70%;
+}
+.v-input__slot {
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 5vh !important;
+}
+
+.v-select__selection--comma {
+  margin: 0 !important;
+}
+/* 
+.v-input {
+  width: 60% !important;
+}
+
+.v-input__slot {
+  width: 60% !important;
+}
+
+.v-input__control {
+  width: 60% !important;
+} */
 </style>
