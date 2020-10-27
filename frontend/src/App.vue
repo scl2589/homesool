@@ -1,4 +1,4 @@
-<template>
+<template >
   <div id="app">
     <div id="nav" v-if="$route.name !== 'MeetingPage'">
       <!-- <span id="logo">술이술이홈술이</span> -->
@@ -51,10 +51,13 @@ export default {
 $header-height:35px;
 $header-margin:5px;
 #nav {
-  padding: 15px;
+  height:$header-height + 2 * $header-margin;
+  padding: $header-margin;
+  // padding: $header-height;
   #logo{
+    padding: auto 0;
     float:left;
-    height:$header-height * 1.1;
+    height:$header-height;
   }
   #kakao_img {
     // float:right;
@@ -62,7 +65,6 @@ $header-margin:5px;
     position: inherit;
     height: $header-height;
     // height: $header-height - 2 * $header-margin;
-    margin: $header-margin;
   }
   #kakao_login{
     float:right;

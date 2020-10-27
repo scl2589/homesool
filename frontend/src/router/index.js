@@ -1,22 +1,28 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
 
-import MeetingPage from '@/views/MeetingPage'
+import HomePage from '@/views/HomePage';
+import MeetingPage from '@/views/MeetingPage';
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes = [
   {
+    path: '/',
+    name: 'HomePage',
+    component: HomePage,
+  },
+  {
     path: '/meet',
     name: 'MeetingPage',
-    component: MeetingPage
-  }
-]
+    component: MeetingPage,
+  },
+];
 
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;
