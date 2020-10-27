@@ -1,6 +1,7 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
 
+import HomePage from '@/views/HomePage'
 import MeetingPage from '@/views/MeetingPage'
 // Game Selection
 import SmileLeadsToAlcoholDescription from '@/components/meetingpage/multipanel/gamedescription/SmileLeadsToAlcoholDescription'
@@ -8,10 +9,14 @@ import UpAndDownDescription from '@/components/meetingpage/multipanel/gamedescri
 import StrawberryGameDescription from '@/components/meetingpage/multipanel/gamedescription/StrawberryGameDescription'
 import LiarGameDescription from '@/components/meetingpage/multipanel/gamedescription/LiarGameDescription'
 import ConsonantQuizDescription from '@/components/meetingpage/multipanel/gamedescription/ConsonantQuizDescription'
-
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes = [
+  {
+    path: '/',
+    name: 'HomePage',
+    component: HomePage,
+  },
   {
     path: '/meet',
     name: 'MeetingPage',
@@ -50,7 +55,7 @@ const routes = [
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;

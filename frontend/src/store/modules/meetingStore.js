@@ -96,6 +96,7 @@ const meetingStore = {
     },
     selectSong({ commit }, song) {
       commit('SET_SELECTED_SONG', song)
+      console.log(document.getElementById('test'))
     },
     closeSingingPanel({ commit }) {
       commit('SET_SONGS', null)
