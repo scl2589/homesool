@@ -1,6 +1,16 @@
 <template>
   <div>
-    <div class="text-right">
+    <div class="d-flex justify-content-between">
+      <button
+        class="btn goback-btn"
+        v-if="selectedSong"
+        @click="closeSingingPanel"
+      >
+        <i 
+          class="fas fa-arrow-left"
+          style="color:white;"
+        ></i>
+      </button>
       <button
         class="btn close-btn"
         @click="closeMultiPanel"
@@ -15,6 +25,10 @@
     </AnonymousPanel>
     <SnapShotPanel v-if="isSnapshotMode">
     </SnapShotPanel>
+    <SingingPanel v-if="isSingingMode">
+    </SingingPanel>
+    <GameSelectionPanel v-if="isGameMode">
+    </GameSelectionPanel>
   </div>
 </template>
 
@@ -23,18 +37,22 @@ import { mapState, mapActions } from 'vuex'
 
 import AnonymousPanel from '@/components/meetingpage/multipanel/AnonymousPanel'
 import SnapShotPanel from '@/components/meetingpage/multipanel/SnapShotPanel'
+import SingingPanel from '@/components/meetingpage/multipanel/SingingPanel'
+import GameSelectionPanel from '@/components/meetingpage/multipanel/GameSelectionPanel'
 
 export default {
   name: 'MultiPanel',
   components: {
     AnonymousPanel,
     SnapShotPanel,
+    SingingPanel,
+    GameSelectionPanel
   },
   computed: {
-    ...mapState('meetingStore', ['isGameMode', 'isMusicMode', 'isAnonymousMode', 'isSnapshotMode']),
+    ...mapState('meetingStore', ['isGameMode', 'isSingingMode', 'isAnonymousMode', 'isSnapshotMode', 'selectedSong']),
   },
   methods: {
-    ...mapActions('meetingStore', ['closeMultiPanel']),
+    ...mapActions('meetingStore', ['closeMultiPanel', 'closeSingingPanel']),
   }
 }
 </script>
@@ -44,6 +62,12 @@ export default {
   position: absolute;
   top: 10px;
   right: 10px;
+}
+
+.goback-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
 }
 
 </style>

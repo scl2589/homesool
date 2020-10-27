@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div id="nav" v-if="$route.name !== 'MeetingPage'">
+    <div id="nav" v-if="$route.name==='meet'">
       <!-- <span id="logo">술이술이홈술이</span> -->
       <img id="logo" src="@/assets/images/basic_title.png" alt="술이술이홈술이">
       <span id="login">
