@@ -1,12 +1,12 @@
 <template >
   <div id="app">
-    <div id="nav" v-if="$route.name !== 'MeetingPage'">
+    <div id="nav" v-if="$route.name==='meet'">
       <!-- <span id="logo">술이술이홈술이</span> -->
       <img id="logo" src="@/assets/images/basic_title.png" alt="술이술이홈술이">
       <span id="login">
         <button id="kakao_login" @click="login()">
             <img id="kakao_img" src="@/assets/images/kakao_login_large.png"/>
-            <!-- <img id="kakao_img" src="../public/img/kakao.png" /> -->
+            <!-- <img id="kakao_img" src="@/assets/images/kakao.png" /> -->
             <!-- <span id="kakao_font">로그인</span> -->
         </button>
       </span>
