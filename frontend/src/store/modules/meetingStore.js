@@ -1,3 +1,4 @@
+import router from "../../router"
 import SERVER from '@/api/api'
 import secrets from '@/secrets'
 import axios from 'axios'
@@ -58,16 +59,18 @@ const meetingStore = {
       commit('SET_ISANONYMOUS_MODE', true)
     },
     startSnapshotMode({ commit }) {
+      commit('SET_ISSNAPSHOT_MODE', true)
       commit('SET_ISGAME_MODE', false)
       commit('SET_ISSINGING_MODE', false)
       commit('SET_ISANONYMOUS_MODE', false)
-      commit('SET_ISSNAPSHOT_MODE', true)
+      
     },
     closeMultiPanel({ commit }) {
       commit('SET_ISGAME_MODE', false)
       commit('SET_ISSINGING_MODE', false)
       commit('SET_ISANONYMOUS_MODE', false)
       commit('SET_ISSNAPSHOT_MODE', false)
+      router.push({ name: 'MeetingPage'})
     },
     clickChatPanel({ commit }, value) {
       commit('SET_CHATPANEL', value)
