@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import meetingStore from '@/store/modules/meetingStore';
 // import http from '../utils/http-common.js';
 // import jwt_decode from 'jwt-decode';
-
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -58,5 +58,7 @@ export default new Vuex.Store({
   //     //   });
   //   },
   // },
-  // modules: {},
+  modules: {
+    meetingStore: meetingStore,
+  },
 });

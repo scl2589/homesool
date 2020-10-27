@@ -1,6 +1,7 @@
-<template>
-  <v-app id="app">
-    <div id="nav" v-if="$route.name==='meet'">
+<template >
+  <div id="app">
+    <div id="nav" v-if="!meetingpages.includes($route.name)">
+    <!-- <div id="nav" v-if="$route.name!=='MeetingPage'"> -->
       <!-- <span id="logo">술이술이홈술이</span> -->
       <img id="logo" src="@/assets/images/basic_title.png" alt="술이술이홈술이">
       <span id="login">
@@ -17,6 +18,18 @@
 <script>
 // import http from '../utils/http-common.js';
 export default {
+  data(){
+    return{
+      meetingpages : [
+        'MeetingPage', 
+        'SmileLeadsToAlcoholDescription', 
+        'UpAndDownDescription', 
+        'StrawberryGameDescription', 
+        'LiarGameDescription', 
+        'ConsonantQuizDescription'
+      ],
+    }
+  },
   computed: {
     // getToken() {
     //   return this.$store.getters.getToken;
