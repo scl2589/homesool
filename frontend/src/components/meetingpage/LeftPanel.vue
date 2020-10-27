@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="d-flex justify-content-center align-items-center">
-      <img class="theme-deco" src="@/assets/images/basic_deco.png" alt="가랜드">
-      <img class="theme-title" src="@/assets/images/basic_title.png" alt="술이술이홈술이">
-      <img class="theme-deco" src="@/assets/images/basic_deco.png" alt="가랜드">
+    <div class="d-flex justify-content-center align-items-center mt-3">
+      <img class="theme-deco" :src="require(`@/assets/images/${theme}_deco.png`)" alt="theme-deco">
+      <img class="theme-title" :src="require(`@/assets/images/${theme}_title.png`)" alt="theme-title">
+      <img class="theme-deco" :src="require(`@/assets/images/${theme}_deco.png`)" alt="theme-deco">
     </div>
     <div class="row no-gutters d-flex justify-content-around">
       <div class="col-4 personal-screen">
@@ -29,18 +29,28 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
-  name: 'LeftPanel'
+  name: 'LeftPanel',
+  computed: {
+    ...mapState('meetingStore', ['theme'])
+  },
+  watch: {
+    theme() {
+      this.$forceUpdate();
+    }
+  }
 }
 </script>
 
 <style scoped>
 .theme-title {
-  width: 50%;
+  max-width: 30vw;
+  max-height: 20vh;
 }
 
 .theme-deco {
-  width: 15%;
+  width: 10vw;
 }
 
 .personal-screen {

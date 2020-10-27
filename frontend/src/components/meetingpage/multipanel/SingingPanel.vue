@@ -33,7 +33,6 @@
             :alt="song.snippet.title"
             @click="clickSelectSong(song)"
           >
-          <!-- <p>{{ song.snippet.title }}</p> -->
         </div>
       </div>
     </div>

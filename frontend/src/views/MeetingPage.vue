@@ -3,8 +3,7 @@
     <div class="row no-gutters theme-background" style="height:91vh;">
       <div 
         id="capture"
-        class="left-panel" 
-        :class="{'col-8' : (isMultiPanel || isChatPanel), 'col-12' : !isMultiPanel && !isChatPanel }"
+        :class="{'col-8' : (isMultiPanel || isChatPanel), 'col-12' : !isMultiPanel && !isChatPanel, 'basic-theme' : theme === 'basic', 'christmas-theme' : theme === 'christmas'}"
       >
         <LeftPanel></LeftPanel>
       </div>
@@ -112,7 +111,7 @@ export default {
   name: 'MeetingPage',
   data() {
     return {
-      playing: false,
+      playing: false
     }
   },
   components: {
@@ -121,7 +120,7 @@ export default {
     LeftPanel
   },
   computed: {
-    ...mapState('meetingStore', ['isGameMode', 'isSingingMode', 'isAnonymousMode', 'isSnapshotMode', 'isChatPanel']),
+    ...mapState('meetingStore', ['isGameMode', 'isSingingMode', 'isAnonymousMode', 'isSnapshotMode', 'isChatPanel', 'theme']),
     isMultiPanel() {
       if (this.isGameMode || this.isSingingMode || this.isAnonymousMode || this.isSnapshotMode) {
         return true
@@ -141,7 +140,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('meetingStore', ['startGameMode', 'startSingingMode', 'startAnonymousMode', 'startSnapshotMode', 'clickChatPanel']),
+    ...mapActions('meetingStore', ['startGameMode', 'startSingingMode', 'startAnonymousMode', 'startSnapshotMode', 'clickChatPanel', 'changeTheme']),
     clickChatMode() {
       if (this.isChatPanel === true) {
         this.clickChatPanel(false)
@@ -180,6 +179,7 @@ export default {
       }).then((result) => {
         if (result.isConfirmed && result.value) {
           this.changeTheme(result.value);
+          this.changeThemeBGM(result.value);
           Swal.fire(
             '테마 변경!',
             `테마가 ${result.value}(으)로 변경 되었습니다.`,
@@ -188,7 +188,7 @@ export default {
         }
       })
     },
-    changeTheme(theme) {
+    changeThemeBGM(theme) {
       if (song) {
         song.pause();
       }
@@ -212,10 +212,18 @@ export default {
 </script>
 
 <style scoped>
-.left-panel {
+.basic-theme {
   background-image: 
     linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
     url('../assets/images/basic_back.png');
+  background-size: contain;
+  background-repeat: repeat;
+}
+
+.christmas-theme {
+  background-image: 
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+    url('../assets/images/christmas_back.png');
   background-size: contain;
   background-repeat: repeat;
 }
