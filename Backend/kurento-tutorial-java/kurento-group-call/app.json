@@ -1,0 +1,5 @@
+{"apps": [{ "name": "Kurento","cwd": ".", 
+"args": [ "-jar", "/home/ubuntu/s03p31a503/Backend/kurento-tutorial-java/kurento-group-call/target/kurento-group-call-6.14.1-SNAPSHOT-exec.jar"],
+"env": {}, "script": "/usr/bin/java", "node_args": [],
+"log_date_format": "YYYY-MM-DD HH:mm Z", "exec_interpreter": "none",
+"exec_mode": "fork"}]}
