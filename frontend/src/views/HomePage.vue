@@ -1,15 +1,16 @@
 <template>
     <div>
         <home-banner/>
-        <div id="wrapper">
-            <div id="host">
+        
+        <div id="wrapper" class="d-flex justify-content-center">
+            <div id="host" class="p-1 bd-highlight">
                 <img src="@/assets/images/host.png" alt="호스트">
-                <button id="hostbtn">주최하기</button>
+                <button @click="hostbtn()">주최하기</button>
             </div>
-            <div id="guest">
+            <div id="guest" class="p-1 bd-highlight">
                 <img src="@/assets/images/guest.png" alt="게스트">
-                <input placeholder="입장 코드를 입력하세요" :v-bind="inputkey">
-                <button id="guestbtn">입장하기</button>
+                <input placeholder="입장 코드를 입력하세요" v-model="inputkey">
+                <button v-show="inputkey" @click="guestbtn()">입장하기</button>
             </div>
         </div>
     </div>
@@ -27,10 +28,19 @@ export default {
             inputkey: ''
         }
     },
-    watch: {
-        inputkey: function (val) {
-        console.log(val);
+    methods: {
+        hostbtn(){
+            console.log("host 버튼 클릭됨");
+            // 가입 여부 확인
+            // 방 생성 창 띄워주기
         },
+        guestbtn(){
+            console.log("입력받은 input key : " + this.inputkey);
+            // key 존재하는지 api로 검증
+            // 가입 여부 확인
+            // if(존재) 방 연결
+            // else 잘못된 key라고 알려주기
+        }
     },
 }
 </script>
@@ -39,23 +49,25 @@ export default {
 $buttonheight:50px;
 #wrapper{
     width:100%;
-    height: 50vh;
+    height: 60vh;
     position: relative;
-    background-color: red;
+    // background-color: red;
     div{
+        color:white;
         img{    
+            margin: 0 auto;
+            display: block;
             padding: 10%;
             height:70%;
         }
-        #hostbtn{
-            width:50%;
-            height: $buttonheight * 2;
-            font-size: $buttonheight / 2;            
-        }
-        #guestbtn{
-            width:50%;
+        button{
+            display: block;
             height: $buttonheight;
-            font-size: $buttonheight / 2;
+            font-size: $buttonheight / 2;    
+            margin: 0 auto;
+            width:40%;
+            border-radius: 5px;
+            background-color:rgba(255, 255, 255, 0.109);
         }
         input{
             display:block;
@@ -65,29 +77,30 @@ $buttonheight:50px;
             background-color: transparent;
             border: 2px solid rgba(255, 255, 255, 0.5);
             border-radius: 5px;
+            text-align: center;
+            color:white;
         }
-        input::-webkit-input-placeholder {text-align: center;}
+        input::-webkit-input-placeholder {text-align: center; color:white}
         input::-moz-placeholder { text-align: center;}
         input:-ms-input-placeholder { text-align: center;}
         input:-moz-placeholder { text-align: center;}
-        input::placeholder { text-align: center;}
-        span{
-            display:block;
+        input::placeholder { text-align: center;color:white}
+    }
+    #host{
+        position: relative;
+        height:100%;
+        width:25%;
+        // background-color:red;
+    }
+    #guest{
+        position: relative;
+        height:100%;
+        width:25%;
+        // background-color:yellow;
+        button{
+            margin-top: 3%;
         }
     }
 }
-#host{
-    position: relative;
-    width:35%;
-    display: inline-block;
-    background-color: green;
-    height:100%;
-}
-#guest{
-    position: relative;
-    width:35%;
-    display: inline-block;
-    background-color: blue;  
-    height:100%;
-}
+
 </style>
