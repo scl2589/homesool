@@ -1,6 +1,9 @@
 package com.ssafy.homesool.dto;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.ssafy.homesool.entity.UserDrink;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -12,28 +15,33 @@ public class UserDto {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	public static class UserInfo {
-		@ApiModelProperty(value = "User id", example = "1486633352")
+		@ApiModelProperty(value = "User id", example = "1404739104")
 		private long id;
 
-		@ApiModelProperty(value = "User name", example = "김싸피")
+		@ApiModelProperty(value = "User name", example = "차윤석")
 		private String name;
 
-		@ApiModelProperty(value = "User email", example = "ssafy@ssafy.com")
+		@ApiModelProperty(value = "User email", example = "c9boom7@naver.com")
 		private String email;
 		
-		@ApiModelProperty(value = "User birth", example = "2000-01-01")
-		private Date birth;
-		
+		@ApiModelProperty(value = "User Drinks", example = ""
+				+ "[{\"liquorName\" : \"소주\", \"liquorLimit\" : \"3\" }]")
+		private List<UserDrink> drinks = new ArrayList<>();
 	}
 
 	@Data
 	@AllArgsConstructor
 	@NoArgsConstructor
 	public static class UserRequest {
-		@ApiModelProperty(value = "User name", example = "김싸피")
+		@ApiModelProperty(value = "User name", example = "차윤석")
 		private String name;
 
-		@ApiModelProperty(value = "User email", example = "ssafy@ssafy.com")
+		@ApiModelProperty(value = "User email", example = "c9boom7@naver.com")
 		private String email;
+		
+		@ApiModelProperty(value = "User Drinks", example = ""
+				+ "[{\"liquorName\" : \"소주\", \"liquorLimit\" : \"3\" }]")
+		private List<UserDrink> drinks = new ArrayList<>();
 	}
+
 }

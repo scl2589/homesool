@@ -60,7 +60,7 @@ public class UserController {
 		@ApiResponse(code = 404, message = "Not Found")
 	})
 	private ResponseEntity<UserDto.UserInfo> getUserInfo(
-		@ApiParam(value = "유저 id", required = true, example = "1486633352") @PathVariable long userId) {
+		@ApiParam(value = "유저 id", required = true, example = "1404739104") @PathVariable long userId) {
 		logger.debug(String.format("get info with %d 호출", userId));
 		return new ResponseEntity<>(userService.findById(userId), HttpStatus.OK);
 	}
@@ -74,8 +74,8 @@ public class UserController {
 		@ApiResponse(code = 403, message = "Forbidden"),
 		@ApiResponse(code = 404, message = "Not Found")
 	})
-	private ResponseEntity<UserDto.UserInfo> updateParentInfo(
-		@ApiParam(value = "유저 id", required = true, example = "1486633352") @PathVariable long userId,
+	private ResponseEntity<UserDto.UserInfo> updateUserInfo(
+		@ApiParam(value = "유저 id", required = true, example = "1404739104") @PathVariable long userId,
 		@ApiParam(value = "업데이트할 유저 정보", required = true) @RequestBody UserDto.UserRequest userReq) {
 		logger.debug(String.format("update info with %d 호출", userId));
 		return new ResponseEntity<>(userService.update(userId, userReq), HttpStatus.OK);
@@ -91,7 +91,7 @@ public class UserController {
 		@ApiResponse(code = 404, message = "Not Found")
 	})
 	private ResponseEntity<?> withdrawal(
-		@ApiParam(value = "유저 id", required = true, example = "1486633352") @PathVariable long userId) {
+		@ApiParam(value = "유저 id", required = true, example = "1404739104") @PathVariable long userId) {
 		logger.debug(String.format("withdrawal with %d 호출", userId));
 		userService.withdrawal(userId);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);

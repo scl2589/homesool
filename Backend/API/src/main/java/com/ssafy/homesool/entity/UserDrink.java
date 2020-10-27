@@ -1,13 +1,10 @@
 package com.ssafy.homesool.entity;
 
-
-import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,19 +17,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class User {
+public class UserDrink {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false, updatable = false)
 	private long id;
 
-	@Column(nullable = false, length = 50)
-	private String name;
+	@Column(nullable = false, updatable = false)
+	private long userId;
 	
-	@Column(nullable = false, updatable = false, length = 50)
-	private String email;
+	@Column(nullable = false, length = 45)
+	private String liquorName;
 	
-	@OneToMany(
-		cascade = CascadeType.ALL,
-		mappedBy = "userId")
-	private List<UserDrink> drinks;
+	@Column(nullable = false)
+	private int liquorLimit;
 }
