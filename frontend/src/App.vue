@@ -1,5 +1,5 @@
-<template >
-  <div id="app">
+<template>
+  <v-app id="app">
     <div id="nav" v-if="!meetingpages.includes($route.name)">
     <!-- <div id="nav" v-if="$route.name!=='MeetingPage'"> -->
       <!-- <span id="logo">술이술이홈술이</span> -->
