@@ -1,23 +1,50 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+
+import MeetingPage from '@/views/MeetingPage'
+// Game Selection
+import SmileLeadsToAlcoholDescription from '@/components/meetingpage/multipanel/gamedescription/SmileLeadsToAlcoholDescription'
+import UpAndDownDescription from '@/components/meetingpage/multipanel/gamedescription/UpAndDownDescription'
+import StrawberryGameDescription from '@/components/meetingpage/multipanel/gamedescription/StrawberryGameDescription'
+import LiarGameDescription from '@/components/meetingpage/multipanel/gamedescription/LiarGameDescription'
+import ConsonantQuizDescription from '@/components/meetingpage/multipanel/gamedescription/ConsonantQuizDescription'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/',
-    name: 'Home',
-    component: Home
+    path: '/meet',
+    name: 'MeetingPage',
+    component: MeetingPage,
+    children: [
+      // Game Selection
+      {
+        path: 'smile',
+        component: SmileLeadsToAlcoholDescription,
+        name: 'SmileLeadsToAlcoholDescription'
+      },
+      {
+        path: 'upanddown',
+        component: UpAndDownDescription,
+        name: 'UpAndDownDescription'
+      },
+      {
+        path: 'strawberry',
+        component: StrawberryGameDescription,
+        name: 'StrawberryGameDescription'
+      },
+      {
+        path: 'liar',
+        component: LiarGameDescription,
+        name: 'LiarGameDescription'
+      },
+      {
+        path: 'consonant',
+        component: ConsonantQuizDescription,
+        name: 'ConsonantQuizDescription'
+      }
+    ]
   },
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
 ]
 
 const router = new VueRouter({
