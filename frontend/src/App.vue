@@ -13,7 +13,7 @@
       </span>
     </div>
     <router-view/>
-  </div>
+  </v-app>
 </template>
 <script>
 // import http from '../utils/http-common.js';
