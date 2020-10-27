@@ -1,16 +1,17 @@
 <template>
     <div>
         <home-banner/>
-        
-        <div id="wrapper" class="d-flex justify-content-center">
-            <div id="host" class="p-1 bd-highlight">
-                <img src="@/assets/images/host.png" alt="호스트">
-                <button @click="hostbtn()">주최하기</button>
-            </div>
-            <div id="guest" class="p-1 bd-highlight">
-                <img src="@/assets/images/guest.png" alt="게스트">
-                <input placeholder="입장 코드를 입력하세요" v-model="inputkey">
-                <button v-show="inputkey" @click="guestbtn()">입장하기</button>
+        <div class="row">
+            <div id="wrapper" class="d-flex justify-content-center">
+                <div id="host" class="p-1 bd-highlight">
+                    <img src="@/assets/images/host.png" alt="호스트">
+                    <button @click="hostbtn()">주최하기</button>
+                </div>
+                <div id="guest" class="p-1 bd-highlight">
+                    <img src="@/assets/images/guest.png" alt="게스트">
+                    <input placeholder="입장 코드를 입력하세요" v-model="inputkey">
+                    <button v-show="inputkey" @click="guestbtn()">입장하기</button>
+                </div>
             </div>
         </div>
     </div>
@@ -73,6 +74,7 @@ $buttonheight:50px;
         }
         input{
             display:block;
+            width:auto;
             height: $buttonheight;
             font-size: $buttonheight / 2;
             margin:0 auto;

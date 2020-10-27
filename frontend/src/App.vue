@@ -28,6 +28,7 @@ export default {
         'LiarGameDescription', 
         'ConsonantQuizDescription'
       ],
+      isNew: true,
     }
   },
   computed: {
@@ -38,6 +39,17 @@ export default {
    methods : {
     login(){
       console.log('로그인');
+      
+      if(this.isNew){
+      // 회원이 아니면
+        console.log('회원이 아닙니다.');
+        this.$router.push('/register');
+
+      }else{
+        // 회원이면
+        console.log('회원입니다.');
+
+      }
       // Kakao.Auth.login({
       //   success: this.kakaoLoginStore,
       // });
