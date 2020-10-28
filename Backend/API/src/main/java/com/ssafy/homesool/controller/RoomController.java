@@ -1,0 +1,91 @@
+package com.ssafy.homesool.controller;
+
+import java.util.List;
+
+import org.mariadb.jdbc.internal.logging.Logger;
+import org.mariadb.jdbc.internal.logging.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+
+import com.ssafy.homesool.dto.RoomDto;
+import com.ssafy.homesool.dto.RoomDto.RoomInfo;
+import com.ssafy.homesool.entity.Member;
+import com.ssafy.homesool.entity.Room;
+import com.ssafy.homesool.service.RoomService;
+
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("room")
+@Api(tags = {"Room Controller"})
+@Tag(name = "Room Controller", description = "미팅과 관련된 기능")
+public class RoomController {
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	private final RoomService roomService;
+
+	@PostMapping
+	@ApiOperation(value = "미팅 시작", notes = "새로 미팅을 주최한다. response로 10자리 code를 반환한다", response = RoomDto.InsertRoomInfo.class)
+	@ApiResponses(value = {
+		@ApiResponse(code = 201, message = "Created"),
+		@ApiResponse(code = 400, message = "Bad Request"),
+		@ApiResponse(code = 401, message = "Unauthorized"),
+		@ApiResponse(code = 403, message = "Forbidden"),
+		@ApiResponse(code = 404, message = "Not Found")
+	})
+	private ResponseEntity<RoomDto.RoomResponse> addRoom(
+		@ApiParam(value = "호스트 유저 id와 시작 시각", required = true) @RequestBody RoomDto.InsertRoomInfo insertRoomInfo) {
+		logger.debug("add Room 호출\n" + insertRoomInfo.toString());
+		//방 생성
+		RoomDto.RoomResponse roomResponse = roomService.add(insertRoomInfo);
+		//멤버 목록에 추가
+		roomService.addMember(roomResponse.getCode(), insertRoomInfo.getHostId());
+		return new ResponseEntity<>(roomResponse, HttpStatus.OK);
+	}
+	
+	@PutMapping
+	@ApiOperation(value = "미팅 종료", notes = "미팅을 종료하고 종료 시각을 기록한다.", response = RoomDto.UpdateRoomInfo.class)
+	@ApiResponses(value = {
+		@ApiResponse(code = 200, message = "OK"),
+		@ApiResponse(code = 400, message = "Bad Request"),
+		@ApiResponse(code = 401, message = "Unauthorized"),
+		@ApiResponse(code = 403, message = "Forbidden"),
+		@ApiResponse(code = 404, message = "Not Found")
+	})
+	private ResponseEntity<Room> updateRoom(
+		@ApiParam(value = "미팅 id와 종료 시각",required = true) @RequestBody RoomDto.UpdateRoomInfo updateRoomInfo){
+		logger.debug(String.format("update Room {%s} end time {%s} 호출",updateRoomInfo.getRoomId(), updateRoomInfo.getEndTime().toString()));
+		return new ResponseEntity<Room>(roomService.update(updateRoomInfo.getRoomId(), updateRoomInfo.getEndTime()),HttpStatus.OK);
+	}
+	
+	@PostMapping("{code}/with/{userId}")
+	@ApiOperation(value = "미팅 멤버 추가", notes = "미팅에 접속하고 멤버 목록에 추가한 후 response로 roomId를 보내준다.", response = Long.class)
+	@ApiResponses(value = {
+		@ApiResponse(code = 201, message = "Created"),
+		@ApiResponse(code = 400, message = "Bad Request"),
+		@ApiResponse(code = 401, message = "Unauthorized"),
+		@ApiResponse(code = 403, message = "Forbidden"),
+		@ApiResponse(code = 404, message = "Not Found")
+	})
+	private ResponseEntity<Long> addMember(
+		@ApiParam(value = "방 코드",required = true, example = "A1B2C3D4E5") @PathVariable String code,
+		@ApiParam(value = "유저 id",required = true, example = "1404739104") @PathVariable long userId){
+		logger.debug(String.format("add Member {%d} in {%s} 호출",userId,code));
+		return new ResponseEntity<>(roomService.addMember(code,userId),HttpStatus.OK);
+	}
+}

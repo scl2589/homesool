@@ -73,9 +73,19 @@
             <img src="@/assets/images/setting.png" alt="setting">
           </button>
           <div class="dropdown-menu dropdown-menu-right text-center">
-            <li class="dropdown-item" @click="clickChangeTheme">테마 변경</li>
+            <li 
+              class="dropdown-item" 
+              @click="clickChangeTheme"
+            >
+              테마 변경
+            </li>
             <li class="dropdown-item">미팅 링크 복사</li>
-            <li class="dropdown-item">미팅 나가기</li>
+            <li 
+              class="dropdown-item"
+              @click="clickExitMeeting"
+            >
+              미팅 나가기
+            </li>
           </div>
         </div>
       </div>
@@ -206,6 +216,28 @@ export default {
           song.play();
         }
       }
+    },
+    clickExitMeeting() {
+      var swal = Swal.mixin({
+        customClass: {
+          confirmButton: 'btn btn-success mr-2',
+          cancelButton: 'btn btn-danger'
+        },
+        buttonsStyling: false
+      })
+
+      swal.fire({
+        text: "정말 현재 술자리에서 나가시겠습니까?",
+        showCancelButton: true,
+        confirmButtonText: '네',
+        cancelButtonText: '아니요',
+        icon: "warning",
+      })
+      .then((result) => {
+        if (result.value) {
+          window.close()
+        } 
+      })
     }
   },
   beforeRouteLeave (to, from, next) {

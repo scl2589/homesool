@@ -81,30 +81,41 @@ const meetingStore = {
       commit('SET_ISGAME_MODE', true)
     },
     startSingingMode({ commit }) {
+      if (router.name !== 'MeetingPage') {
+        router.push({ name : 'MeetingPage' })
+      }
       commit('SET_ISANONYMOUS_MODE', false)
       commit('SET_ISSNAPSHOT_MODE', false)
       commit('SET_ISGAME_MODE', false)
       commit('SET_ISSINGING_MODE', true)
     },
     startAnonymousMode({ commit }) {
+      if (router.name !== 'MeetingPage') {
+        router.push({ name : 'MeetingPage' })
+      }
       commit('SET_ISGAME_MODE', false)
       commit('SET_ISSNAPSHOT_MODE', false)
       commit('SET_ISSINGING_MODE', false)
       commit('SET_ISANONYMOUS_MODE', true)
     },
     startSnapshotMode({ commit }) {
-      commit('SET_ISSNAPSHOT_MODE', true)
+      if (router.name !== 'MeetingPage') {
+        router.push({ name : 'MeetingPage' })
+      }
       commit('SET_ISGAME_MODE', false)
       commit('SET_ISSINGING_MODE', false)
       commit('SET_ISANONYMOUS_MODE', false)
+      commit('SET_ISSNAPSHOT_MODE', true)
       
     },
     closeMultiPanel({ commit }) {
+      if (router.name !== 'MeetingPage') {
+        router.push({ name : 'MeetingPage' })
+      }
+      commit('SET_ISSNAPSHOT_MODE', false)
       commit('SET_ISGAME_MODE', false)
       commit('SET_ISSINGING_MODE', false)
       commit('SET_ISANONYMOUS_MODE', false)
-      commit('SET_ISSNAPSHOT_MODE', false)
-      router.push({ name: 'MeetingPage'})
     },
     clickChatPanel({ commit }, value) {
       commit('SET_CHATPANEL', value)
