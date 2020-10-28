@@ -11,6 +11,9 @@
             <span id="kakao_font">로그인</span> -->
         </button>
       </span>
+      <span>
+        <button @click="clickMyPage" style="color:white;">마이페이지</button>
+      </span>
     </div>
     <router-view/>
   </v-app>
@@ -47,6 +50,9 @@ export default {
         access_token: authObj.access_token,
       });
     },
+    clickMyPage() {
+      this.$router.push({ name: 'MyPage'})
+    }
    },
 }
 </script>
