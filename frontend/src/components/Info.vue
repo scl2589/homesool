@@ -1,107 +1,102 @@
 <template>
   <div id="myinfo">
     <h1 id="title">회원가입</h1>
-    <div class="row no-gutters">
-      <div class="col-sm-4 infotitle">
-        <p>닉네임</p>
+    <div class="d-flex flex-column form">
+      <div class="row no-gutters">
+        <div class="col-sm-4 infotitle">
+          <p>닉네임</p>
+        </div>
+        <div class="col-sm-8 infosub">
+          <input 
+            class="info-inputbox w-100"
+            placeholder="홈술이"
+            v-model="signupData.name"
+          >
+        </div>
       </div>
-      <div class="col-sm-8 infosub">
-        <input 
-          class="info-inputbox w-100"
-          v-model="signupData.name"
+      <div class="row no-gutters">
+        <div class="col-sm-4 infotitle">
+          <p>이메일</p>
+        </div>
+        <div class="col-sm-8 infosub">
+          <input 
+            class="info-inputbox w-100" 
+            placeholder="ssafy@ssafy.com"
+            v-model="signupData.email"
+          >
+        </div>
+      </div>
+      <div class="row no-gutters">
+        <div class="col-sm-4 infotitle">
+          <p>주량</p>
+        </div>
+        <div class="col-sm-8 infosub" id="juryang">
+          <div 
+            class="row no-gutters"
+            v-for="(drink, i) in signupData.drinks"
+            :key=i
+          >
+            <div class="col-sm-3">{{drink.liquorName}}</div>
+            <div class="col-sm-3">{{drink.liquorLimit}}잔</div>
+            <div class="col-sm-3">
+              <button 
+                class="remove-col mr-1"
+                @click="clickSubtract(drink.liquorName)"
+              >
+                -
+              </button>
+              <button 
+                class="add-col"
+                @click="clickAdd(drink.liquorName)"
+              >
+                +
+              </button>
+            </div>
+            <div class="col-sm-3 text-right">
+              <i 
+                class="fas fa-trash"
+                @click="clickDelete(i)"
+              ></i>
+            </div>
+          </div>
+          <div class="d-flex justify-content-start mt-2">
+            <div class="col-sm-6">
+              <input
+                class="new-liquor"
+                type="text"
+                v-model="newLiquor"
+                placeholder="주종 입력"
+                @keyup.enter="clickAddLiquor"
+              >
+            </div>
+            <div class="offset-sm-3 col-sm-3">
+              <button 
+                class="btn btn-secondary"
+                @click="clickAddLiquor"
+              >
+                추가하기
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex justify-content-center mt-auto">
+        <button
+          class="btn btn-lg btn-yellow"
+          @click="clickSignup"
         >
+          가입하기
+        </button>
       </div>
     </div>
-    <div class="row no-gutters">
-      <div class="col-sm-4 infotitle">
-        <p>이메일</p>
-      </div>
-      <div class="col-sm-8 infosub">
-        <input 
-          class="info-inputbox w-100" 
-          placeholder="ex) ssafy@naver.com"
-          v-model="signupData.email"
-        >
-      </div>
-    </div>
-    <div class="row no-gutters">
-      <div class="col-sm-4 infotitle">
-        <p>주량</p>
-      </div>
-      <div class="col-sm-8 infosub" id="juryang">
-        <div class="row no-gutters">
-          <div class="col-sm-3">소주</div>
-          <div class="col-sm-3">{{signupData.drinks[0].liquorLimit}}잔</div>
-          <div class="col-sm-3">이미지</div>
-          <div class="col-sm-3">
-            <button 
-              class="remove-col"
-              @click="clickSubtract('soju')"
-            >
-              -
-            </button>
-            <button 
-              class="add-col"
-              @click="clickAdd('soju')"
-            >
-              +
-            </button>
-          </div>
-        </div>
-        <div class="row no-gutters">
-          <div class="col-sm-3">맥주</div>
-          <div class="col-sm-3">{{signupData.drinks[1].liquorLimit}}잔</div>
-          <div class="col-sm-3">이미지</div>
-          <div class="col-sm-3">
-            <button 
-              class="remove-col"
-              @click="clickSubtract('beer')"
-            >
-              -
-            </button>
-            <button 
-              class="add-col"
-              @click="clickAdd('beer')"
-            >
-              +
-            </button>
-          </div>
-        </div>
-        <div class="row no-gutters">
-          <div class="col-sm-3">막걸리</div>
-          <div class="col-sm-3">{{signupData.drinks[2].liquorLimit}}잔</div>
-          <div class="col-sm-3">이미지</div>
-          <div class="col-sm-3">
-            <button 
-              class="remove-col"
-              @click="clickSubtract('makegeolli')"
-            >
-              -
-            </button>
-            <button 
-              class="add-col"
-              @click="clickAdd('makegeolli')"
-            >
-              +
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="d-flex justify-content-center mt-3">
-      <button
-        class="btn btn-lg btn-yellow"
-        @click="clickSignup"
-      >
-        가입하기
-      </button>
-    </div>
+
   </div>
 </template>
 
 <script>
 import axios from 'axios'
 import SERVER from '@/api/api'
+import Swal from 'sweetalert2'
 
 export default {
   name: 'Info',
@@ -111,49 +106,53 @@ export default {
         name: '',
         email: '',
         drinks: [
-          {
-            liquorName: '소주',
-            liquorLimit: 7,
-          },
-          {
-            liquorName: '맥주',
-            liquorLimit: 3,
-          },
-          {
-            liquorName: '막걸리',
-            liquorLimit: 3
-          }
         ]
-      }
+      },
+      newLiquor: null
     }
   },
   methods: {
-    clickSubtract(type) {
-      if (type === 'soju') {
-        this.signupData.drinks[0].liquorLimit--
-        if (this.signupData.drinks[0].liquorLimit === -1) {
-          this.signupData.drinks[0].liquorLimit = 0
-        }
-      } else if (type === 'beer') {
-        this.signupData.drinks[1].liquorLimit--
-        if (this.signupData.drinks[1].liquorLimit === -1) {
-          this.signupData.drinks[1].liquorLimit = 0
-        }
-      } else if (type === 'makegeolli') {
-        this.signupData.drinks[2].liquorLimit--
-        if (this.signupData.drinks[2].liquorLimit === -1) {
-          this.signupData.drinks[2].liquorLimit = 0
+    clickSubtract(liquorName) {
+      for (var drink of this.signupData.drinks) {
+        if (drink.liquorName == liquorName) {
+          drink.liquorLimit--
+          if (drink.liquorLimit === -1) {
+            drink.liquorLimit = 0
+          }
         }
       }
     },
-    clickAdd(type) {
-      if (type === 'soju') {
-        this.signupData.drinks[0].liquorLimit++
-      } else if (type === 'beer') {
-        this.signupData.drinks[1].liquorLimit++
-      } else if (type === 'makegeolli') {
-        this.signupData.drinks[2].liquorLimit++
+    clickAdd(liquorName) {
+      for (var drink of this.signupData.drinks) {
+        if (drink.liquorName == liquorName) {
+          drink.liquorLimit++
+        }
       }
+    },
+    clickAddLiquor() {
+      if (this.newLiquor !== null) {
+        this.signupData.drinks.push({
+          liquorName: this.newLiquor,
+          liquorLimit: 1,
+        })
+        this.newLiquor = null
+      } else {
+        var swal = Swal.mixin({
+          customClass: {
+            confirmButton: 'btn btn-danger',
+          },
+          buttonsStyling: false
+        })
+
+        swal.fire({
+          title: "주종을 입력해주세요",
+          icon: "warning",
+        })
+      }
+    },
+    clickDelete(index) {
+      this.signupData.drinks[index] = null;
+      delete this.signupData.drinks[index];
     },
     clickSignup() {
       axios.put(SERVER.URL + SERVER.ROUTES.user + '/' + this.$store.state.id, this.signupData, 
@@ -209,16 +208,35 @@ export default {
 
 .remove-col {
   background-color: rgba(255, 255, 255, 0.1);
-  padding: 10%;
+  padding: 0 10%;
 }
 .add-col {
   background-color: rgba(255, 255, 255, 0.1);
-  padding: 10%;
+  padding: 0 10%;
 }
 
 #juryang {
-  .col-sm-3 {
-    padding: 0px;
+  .col-sm-3, .col-sm-6 {
+    padding: 0;
   }
+}
+
+.new-liquor {
+  font-size: 0.8em;
+  color: white;
+  width: 50%;
+}
+
+.new-liquor:active, .new-liquor:link, .new-liquor:focus {
+  outline-style: none;
+  border-bottom: 1px solid white;
+}
+
+.form {
+  height: 50vh;
+}
+
+.row {
+  flex: 0 0 0 !important;
 }
 </style>
