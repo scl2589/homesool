@@ -24,7 +24,7 @@ const routes = [
     component: RegisterPage,
   },
   {
-    path: '/meet',
+    path: '/meet/:sessionId',
     name: 'MeetingPage',
     component: MeetingPage,
     children: [
