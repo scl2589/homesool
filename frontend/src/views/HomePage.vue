@@ -41,8 +41,8 @@ export default {
             // 가입 여부 확인
             // if(존재) 방 연결
             // else 잘못된 key라고 알려주기
-            
-            this.$router.push('/meet');
+            let routeData = this.$router.resolve({name: 'MeetingPage'});
+            window.open(routeData.href, '_blank');
         }
     },
 }
