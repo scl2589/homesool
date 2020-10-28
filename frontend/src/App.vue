@@ -4,11 +4,11 @@
     <!-- <div id="nav" v-if="$route.name!=='MeetingPage'"> -->
       <!-- <span id="logo">술이술이홈술이</span> -->
       <img id="logo" src="@/assets/images/basic_title.png" alt="술이술이홈술이">
-      <span id="login">
+      <span id="login" v-if="!token">
         <button id="kakao_login" @click="login()">
             <img id="kakao_img" src="@/assets/images/kakao_login_large.png"/>
-            <!-- <img id="kakao_img" src="@/assets/images/kakao.png" /> -->
-            <!-- <span id="kakao_font">로그인</span> -->
+            <!-- <img id="kakao_img" src="@/assets/images/kakao.png" />
+            <span id="kakao_font">로그인</span> -->
         </button>
       </span>
     </div>
@@ -16,7 +16,7 @@
   </v-app>
 </template>
 <script>
-// import http from '../utils/http-common.js';
+import { mapState } from 'vuex'
 export default {
   data(){
     return{
@@ -28,37 +28,25 @@ export default {
         'LiarGameDescription', 
         'ConsonantQuizDescription'
       ],
-      isNew: true,
     }
   },
   computed: {
-    // getToken() {
-    //   return this.$store.getters.getToken;
-    // },
+    ...mapState(['token']),
+    getToken() {
+      return this.$store.getters.getToken;
+    },
   },
    methods : {
     login(){
-      console.log('로그인');
-      
-      if(this.isNew){
-      // 회원이 아니면
-        console.log('회원이 아닙니다.');
-        this.$router.push('/register');
-
-      }else{
-        // 회원이면
-        console.log('회원입니다.');
-
-      }
-      // Kakao.Auth.login({
-      //   success: this.kakaoLoginStore,
-      // });
+      window.Kakao.Auth.login({
+        success: this.kakaoLoginStore,
+      });
     },
-    // kakaoLoginStore(authObj) {
-    //   this.$store.dispatch('kakaoLogin', {
-    //     access_token: authObj.access_token,
-    //   });
-    // },
+    kakaoLoginStore(authObj) {
+      this.$store.dispatch('kakaoLogin', {
+        access_token: authObj.access_token,
+      });
+    },
    },
 }
 </script>
