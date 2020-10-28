@@ -54,7 +54,7 @@
             </div>
             <div class="col-sm-3 text-right">
               <i 
-                class="fas fa-trash"
+                class="fas fa-trash delete"
                 @click="clickDelete(i)"
               ></i>
             </div>
@@ -151,8 +151,7 @@ export default {
       }
     },
     clickDelete(index) {
-      this.signupData.drinks[index] = null;
-      delete this.signupData.drinks[index];
+      this.signupData.drinks.splice(index, 1)
     },
     clickSignup() {
       axios.put(SERVER.URL + SERVER.ROUTES.user + '/' + this.$store.state.id, this.signupData, 
@@ -209,10 +208,12 @@ export default {
 .remove-col {
   background-color: rgba(255, 255, 255, 0.1);
   padding: 0 10%;
+  border-radius: 10%;
 }
 .add-col {
   background-color: rgba(255, 255, 255, 0.1);
   padding: 0 10%;
+  border-radius: 10%;
 }
 
 #juryang {
@@ -238,5 +239,9 @@ export default {
 
 .row {
   flex: 0 0 0 !important;
+}
+
+.delete {
+  cursor: pointer;
 }
 </style>
