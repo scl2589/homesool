@@ -2,7 +2,7 @@ package com.ssafy.homesool.service;
 
 
 import java.util.Date;
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 
 import com.ssafy.homesool.dto.RoomDto;
 import com.ssafy.homesool.dto.RoomDto.InsertRoomInfo;
-import com.ssafy.homesool.entity.Member;
 import com.ssafy.homesool.entity.Member;
 import com.ssafy.homesool.entity.Room;
 import com.ssafy.homesool.mapper.RoomMapper;
@@ -45,7 +44,7 @@ public class RoomService {
 	}
 
 	public Room update(long roomId, Date endTime) {
-		Room room= roomRepository.findOneByroomId(roomId);
+		Room room= roomRepository.findOneByRoomId(roomId);
 		room.updateEndTime(endTime);
 		return roomRepository.save(room);
 	}
@@ -54,6 +53,10 @@ public class RoomService {
 		long roomId = roomRepository.findOneByCode(code).getRoomId();
 		Member member = new Member(roomId, userId);
 		return memberRepository.save(member).getRoomId();
+	}
+
+	public List<RoomDto.RoomInfo> get(long userId) {
+		return RoomMapper.INSTANCE.toInfo(roomRepository.getRoomsInfo(userId));
 	}
 	
 	

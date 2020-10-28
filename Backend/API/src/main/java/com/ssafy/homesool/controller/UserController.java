@@ -1,5 +1,7 @@
 package com.ssafy.homesool.controller;
 
+import java.util.List;
+
 import org.mariadb.jdbc.internal.logging.Logger;
 import org.mariadb.jdbc.internal.logging.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -22,7 +24,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 import com.ssafy.homesool.dto.LoginDto;
+import com.ssafy.homesool.dto.RoomDto;
 import com.ssafy.homesool.dto.UserDto;
+import com.ssafy.homesool.service.RoomService;
 import com.ssafy.homesool.service.UserService;
 
 @RequiredArgsConstructor
@@ -34,7 +38,8 @@ public class UserController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private final UserService userService;
-
+	private final RoomService roomService;
+	
 	@PostMapping("login")
 	@ApiOperation(value = "카카오 로그인", notes = "카카오 API를 이용한 로그인", response = LoginDto.Response.class)
 	@ApiResponses(value = {
@@ -80,7 +85,22 @@ public class UserController {
 		logger.debug(String.format("update info with %d 호출", userId));
 		return new ResponseEntity<>(userService.update(userId, userReq), HttpStatus.OK);
 	}
-
+	
+	@GetMapping("{userId}/rooms")
+	@ApiOperation(value = "미팅 기록 조회", notes = "미팅 참여기록을 날짜별로 보여준다.", response = RoomDto.RoomInfo.class)
+	@ApiResponses(value = {
+		@ApiResponse(code = 200, message = "OK"),
+		@ApiResponse(code = 400, message = "Bad Request"),
+		@ApiResponse(code = 401, message = "Unauthorized"),
+		@ApiResponse(code = 403, message = "Forbidden"),
+		@ApiResponse(code = 404, message = "Not Found")
+	})
+	private ResponseEntity<List<RoomDto.RoomInfo>> getRoomsInfo(
+		@ApiParam(value = "유저 id",required = true, example = "1404739104") @PathVariable long userId){
+		logger.debug(String.format("get Room {%d} 호출",userId));
+		return new ResponseEntity<>(roomService.get(userId),HttpStatus.OK);
+	}
+	
 	@DeleteMapping("{userId}")
 	@ApiOperation(value = "회원 탈퇴", notes = "유저 id로 정보를 삭제한다.")
 	@ApiResponses(value = {

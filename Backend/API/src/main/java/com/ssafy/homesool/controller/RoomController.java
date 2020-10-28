@@ -1,5 +1,7 @@
 package com.ssafy.homesool.controller;
 
+import java.util.List;
+
 import org.mariadb.jdbc.internal.logging.Logger;
 import org.mariadb.jdbc.internal.logging.LoggerFactory;
 import org.springframework.http.HttpStatus;
