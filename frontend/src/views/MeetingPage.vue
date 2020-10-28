@@ -130,7 +130,7 @@ export default {
     LeftPanel
   },
   computed: {
-    ...mapState('meetingStore', ['isGameMode', 'isSingingMode', 'isAnonymousMode', 'isSnapshotMode', 'isChatPanel', 'theme']),
+    ...mapState('meetingStore', ['isGameMode', 'isSingingMode', 'isAnonymousMode', 'isSnapshotMode', 'isChatPanel', 'theme', 'mySessionId']),
     isMultiPanel() {
       if (this.isGameMode || this.isSingingMode || this.isAnonymousMode || this.isSnapshotMode) {
         return true
@@ -150,7 +150,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('meetingStore', ['startGameMode', 'startSingingMode', 'startAnonymousMode', 'startSnapshotMode', 'clickChatPanel', 'changeTheme']),
+    ...mapActions('meetingStore', ['startGameMode', 'startSingingMode', 'startAnonymousMode', 'startSnapshotMode', 'clickChatPanel', 'changeTheme', 'leaveSession']),
     clickChatMode() {
       if (this.isChatPanel === true) {
         this.clickChatPanel(false)
@@ -238,6 +238,12 @@ export default {
           window.close()
         } 
       })
+    }
+  },
+  beforeRouteLeave (to, from, next) {
+    if (confirm('술자리에서 나가시겠습니까?')) {
+      this.leaveSession();
+      next();
     }
   }
 }
