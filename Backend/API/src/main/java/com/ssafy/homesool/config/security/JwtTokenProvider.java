@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
 
 	private final UserDetailsService userDetailsService;
-	private final long tokenValidMilisecond = 1000L * 60 * 60 * 2; // 2시간만 토큰 유효
+	private final long tokenValidMilisecond = 1000L * 60 * 60 * 6; // 6시간 토큰 유효
 	@Value("spring.jwt.secret")
 	private String secretKey;
 
