@@ -41,7 +41,7 @@
           justify="center"
         >
           <div class="display-3">
-              <div> 언택드 술모임! </div>
+              <div> 언택트 술모임! </div>
             <img src="@/assets/images/partytemp3.jpg" alt="배너1" class="banner">
           </div>
         </v-row>

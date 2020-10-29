@@ -31,7 +31,18 @@ public class RoomDto {
 		@ApiModelProperty(value = "Room code", example = "A1B2C3D4E5")
 		private String code;
 	}
-
+	
+	@Data
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public static class RoomResponse {
+		@ApiModelProperty(value = "Room id", example = "1")
+		private long roomId;
+		
+		@ApiModelProperty(value = "Room code", example = "A1B2C3D4E5")
+		private String code;
+	}
+	
 	@Data
 	@AllArgsConstructor
 	@NoArgsConstructor
@@ -47,8 +58,8 @@ public class RoomDto {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	public static class UpdateRoomInfo {
-		@ApiModelProperty(value = "Room Code", example = "A1B2C3D4E5")
-		private String code;
+		@ApiModelProperty(value = "Room Id", example = "1")
+		private long roomId;
 
 		@ApiModelProperty(value = "End time", example = "")
 		private Date endTime;

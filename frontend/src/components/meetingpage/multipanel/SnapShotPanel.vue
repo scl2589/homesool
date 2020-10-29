@@ -117,9 +117,9 @@ export default {
     ...mapActions('meetingStore', ['closeMultiPanel', 'startSnapshotMode']),
     retakePhoto() {
       this.closeMultiPanel()
-      setInterval(() => {
+      setTimeout(() => {
         this.startSnapshotMode()
-      }, 500);
+      }, 100);
     },
     savePhoto() {
       // html2canvas(document.querySelector("#capture")).then(canvas => {
