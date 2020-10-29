@@ -12,6 +12,7 @@ import com.ssafy.homesool.dto.RoomDto;
 import com.ssafy.homesool.dto.RoomDto.InsertRoomInfo;
 import com.ssafy.homesool.entity.Member;
 import com.ssafy.homesool.entity.Room;
+import com.ssafy.homesool.exception.RoomNotFoundException;
 import com.ssafy.homesool.mapper.RoomMapper;
 import com.ssafy.homesool.repository.MemberRepository;
 import com.ssafy.homesool.repository.RoomRepository;
@@ -50,8 +51,12 @@ public class RoomService {
 	}
 
 	public long addMember(String code, long userId) {
-		long roomId = roomRepository.findOneByCode(code).getRoomId();
-		Member member = new Member(roomId, userId);
+		
+		Room room = roomRepository.findOneByCode(code);
+		// Room Not Found or Room is closed
+		if(room == null || room.getEndTime() != null) 
+			throw new RoomNotFoundException(code);
+		Member member = new Member(room.getRoomId(), userId);
 		return memberRepository.save(member).getRoomId();
 	}
 
