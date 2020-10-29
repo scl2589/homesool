@@ -152,7 +152,7 @@ const meetingStore = {
       commit('SET_THEME', theme)
     },
 
-    createSessionId({ rootGetters, commit, dispatch }) {
+    createSessionId({ rootGetters, dispatch }) {
       const ct = new Date();
       const createData = {
         "hostId": rootGetters.getId,
@@ -160,7 +160,6 @@ const meetingStore = {
       }
       axios.post(SERVER.URL + SERVER.ROUTES.room, createData, rootGetters.config)
         .then(res => {
-          commit('SET_MYSESSIONID', res.data.code);
           dispatch('joinSession', res.data.code);
         })
         .catch(err => {

@@ -29,7 +29,13 @@ export default new Vuex.Store({
     getUser: function(state) {
       return state.user;
     },
-    getId: state => (jwt_decode(state.token).sub),
+    getId: function(state) {
+      if (state.token) {
+        return jwt_decode(state.token).sub;
+      } else {
+        return false;
+      }
+    },
     config: state => ({ headers: { 'X-AUTH-TOKEN': state.token }}),
   },
   mutations: {
