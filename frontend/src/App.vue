@@ -11,8 +11,9 @@
             <span id="kakao_font">로그인</span> -->
         </button>
       </span>
-      <span>
-        <button @click="clickMyPage">마이페이지</button>
+      <span v-else id="afterlogin">
+        <button @click="clickMyPage" >마이페이지</button>
+        <button @click="clickLogout" >로그아웃</button>
       </span>
     </div>
     <router-view/>
@@ -51,6 +52,15 @@ export default {
       });
     },
     clickMyPage() {
+      this.$router.push({ name: 'MyPage'}).catch(()=>{});
+    },
+    clickLogout(){
+			// localStorage.clear();
+			this.$store.commit('setToken', null)
+      this.$store.commit('setUser', null)
+      this.$store.commit('setId', null)
+      this.$store.commit('setIsNew', null)
+      this.$router.push('/').catch(()=>{});
       this.$router.push({ name: ''})
     }
    },
@@ -90,7 +100,6 @@ $header-margin:5px;
     // login 2
     // color: #333;
     // background-color: #ffe500;
-    // line-height: $header-height;
     // border-radius: $header-height / 6;
   }
   #kakao_font {
@@ -107,6 +116,19 @@ $header-margin:5px;
 
     &.router-link-exact-active {
       color: #42b983;
+    }
+  }
+  #afterlogin{
+    float:right;
+    // line-height: $header-height / 3 * 2;
+    button{
+      background-color: rgba(255, 255, 255, 0.50);
+      // height: $header-height / 3 * 2;
+      vertical-align:middle;
+      border-radius: $header-height / 6;
+      padding: $header-margin;
+      margin: $header-margin;
+      color:white;
     }
   }
 }
