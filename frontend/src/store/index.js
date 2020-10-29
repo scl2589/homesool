@@ -66,7 +66,6 @@ export default new Vuex.Store({
             })
             .then(({ data }) => {
               context.commit('setUser', data);
-              console.log("setUser이 되었다!!")
             });
             console.log(data.new)
             if (data.new === true) {
