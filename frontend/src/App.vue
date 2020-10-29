@@ -54,14 +54,17 @@ export default {
     clickMyPage() {
       this.$router.push({ name: 'MyPage'}).catch(()=>{});
     },
-    clickLogout(){
-			// localStorage.clear();
-			this.$store.commit('setToken', null)
-      this.$store.commit('setUser', null)
-      this.$store.commit('setId', null)
-      this.$store.commit('setIsNew', null)
-      this.$router.push('/').catch(()=>{});
-      this.$router.push({ name: ''})
+    // clickLogout(){
+		// 	// localStorage.clear();
+		// 	this.$store.commit('setToken', null)
+    //   this.$store.commit('setUser', null)
+    //   this.$store.commit('setId', null)
+    //   this.$store.commit('setIsNew', null)
+    //   this.$router.push('/').catch(()=>{});
+    //   this.$router.push({ name: ''})
+    // }
+      clickLogout(){
+      this.$store.dispatch('kakaoLogout');
     }
    },
 }
