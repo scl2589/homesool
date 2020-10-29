@@ -27,6 +27,7 @@ const meetingStore = {
     subscribers: [],
     myUserName: 'Participant' + Math.floor(Math.random() * 100),
     mySessionId: null,
+    myself: null,
   },
   getters: {
   },
@@ -72,6 +73,9 @@ const meetingStore = {
     },
     SET_SUBSCRIBERS(state, subscribers) {
       state.subscribers = subscribers
+    },
+    SET_MYSELF(state, subscriber) {
+      state.myself = subscriber
     }
   },
   actions: {
@@ -190,6 +194,7 @@ const meetingStore = {
       const subscribers = [];
 			session.on('streamCreated', ({ stream }) => {
         const subscriber = session.subscribe(stream);
+        commit('SET_MYSELF', subscriber)
 				subscribers.push(subscriber);
 			});
 			// On every Stream destroyed...
@@ -214,7 +219,7 @@ const meetingStore = {
 							resolution: '640x480',  // The resolution of your video
 							frameRate: 30,			// The frame rate of your video
 							insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
-							mirror: true       	// Whether to mirror your local video or not
+              mirror: true,       	// Whether to mirror your local video or not
 						});
 						// --- Publish your stream ---
             session.publish(publisher);
@@ -311,7 +316,21 @@ const meetingStore = {
 					.then(data => resolve(data.token))
 					.catch(error => reject(error.response));
 			});
-		},
+    },
+    clickMuteVideo({ state }) {
+      if (state.publisher.stream.videoActive) {
+        state.publisher.publishVideo(false)
+      } else {
+        state.publisher.publishVideo(true) 
+      }
+    },
+    clickMuteAudio({ state }) {
+      if (state.publisher.stream.audioActive) {
+        state.publisher.publishAudio(false)
+      } else {
+        state.publisher.publishAudio(true) 
+      }
+    }
   }
 
 }

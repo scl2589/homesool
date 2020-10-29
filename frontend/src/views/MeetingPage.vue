@@ -40,10 +40,19 @@
       </div>
 
       <div>
-        <button class="btn mr-2">
-          <img src="@/assets/images/webcam.png" alt="webcam">
+        <button 
+          class="btn mr-2"
+          @click="clickMuteVideo"
+        >
+          <img 
+            src="@/assets/images/webcam.png" 
+            alt="webcam"
+          >
         </button>
-        <button class="btn mr-2">
+        <button 
+          class="btn mr-2"
+          @click="clickMuteAudio"
+        >
           <img src="@/assets/images/voice.png" alt="voice">
         </button>
         <button class="btn mr-2">
@@ -150,7 +159,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('meetingStore', ['startGameMode', 'startSingingMode', 'startAnonymousMode', 'startSnapshotMode', 'clickChatPanel', 'changeTheme', 'leaveSession']),
+    ...mapActions('meetingStore', ['startGameMode', 'startSingingMode', 'startAnonymousMode', 'startSnapshotMode', 'clickChatPanel', 'changeTheme', 'leaveSession', 'clickMuteVideo', 'clickMuteAudio']),
     clickChatMode() {
       if (this.isChatPanel === true) {
         this.clickChatPanel(false)
@@ -238,7 +247,7 @@ export default {
           window.close()
         } 
       })
-    }
+    },
   },
   beforeRouteLeave (to, from, next) {
     if (confirm('술자리에서 나가시겠습니까?')) {
