@@ -19,7 +19,7 @@
 
 <script>
 import HomeBanner from "@/components/homepage/HomeBanner.vue";
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 
 export default {
   name: "HomePage",
@@ -32,24 +32,25 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(['getId']),
+    ...mapState(['token']),
     ...mapState('meetingStore', ['mySessionId'])
   },
   methods: {
-    ...mapActions('meetingStore', ['createSessionId', 'joinSession']),
+    ...mapActions('meetingStore', ['createSessionId', 'checkSessionId']),
     hostbtn() {
-      console.log("host 버튼 클릭됨");
-      // 가입 여부 확인
-      // 방 생성 창 띄워주기
+      if (!this.getId) {
+        alert('먼저 로그인을 해주세요!')
+        return false;
+      }
       this.createSessionId();
-      this.joinSession(this.mySessionId);
     },
     guestbtn() {
-      console.log("입력받은 input key : " + this.inputSessionId);
-      // key 존재하는지 api로 검증
-      // 가입 여부 확인
-      // if(존재) 방 연결
-      // else 잘못된 key라고 알려주기
-      this.joinSession(this.inputSessionId);
+      if (!this.getId) {
+        alert('먼저 로그인을 해주세요!')
+        return false;
+      }
+      this.checkSessionId(this.inputSessionId);
     }
   },
 };
