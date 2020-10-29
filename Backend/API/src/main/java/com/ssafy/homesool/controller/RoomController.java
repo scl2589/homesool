@@ -35,6 +35,7 @@ import com.ssafy.homesool.dto.RoomDto;
 import com.ssafy.homesool.dto.UserDto;
 import com.ssafy.homesool.dto.RoomDto.RoomInfo;
 import com.ssafy.homesool.entity.Room;
+import com.ssafy.homesool.entity.Member;
 import com.ssafy.homesool.service.PhotoService;
 import com.ssafy.homesool.service.RoomService;
 

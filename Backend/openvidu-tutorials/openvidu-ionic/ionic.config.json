@@ -1,7 +1,0 @@
-{
-  "name": "openvidu-ionic",
-  "integrations": {
-    "cordova": {}
-  },
-  "type": "angular"
-}
