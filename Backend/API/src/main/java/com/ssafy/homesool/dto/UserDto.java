@@ -64,9 +64,13 @@ public class UserDto {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	public static class UserRecordDetail {
-		@ApiModelProperty(value = "User Drinks", example = ""
+		@ApiModelProperty(value = "User Drink Records", example = ""
 				+ "[{\"liquorName\" : \"소주\", \"liquorLimit\" : \"3\" }]")
 		private List<UserRecord2> records = new ArrayList<>();
+		
+		@ApiModelProperty(value = "Photo Sources", example = ""
+				+ "[\"http:/k3a503.p.ssafy.io/images/fileName\"]")
+		private List<String> srcs = new ArrayList<>();
 	}
 	
 	@Builder
