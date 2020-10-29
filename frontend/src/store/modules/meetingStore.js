@@ -3,6 +3,7 @@ import SERVER from '@/api/api'
 import secrets from '@/secrets'
 import axios from 'axios'
 import { OpenVidu } from 'openvidu-browser';
+import moment from 'moment'
 
 const OPENVIDU_SERVER_SECRET = "MY_SECRET";
 
@@ -151,9 +152,31 @@ const meetingStore = {
       commit('SET_THEME', theme)
     },
 
-    createSessionId({ commit }) {
-      // axios 요청 보내서 sessionId 가져오기
-      commit('SET_MYSESSIONID', 'test')
+    createSessionId({ rootGetters, commit, dispatch }) {
+      const ct = new Date();
+      const createData = {
+        "hostId": rootGetters.getId,
+        "startTime": moment(ct).format('YYYY-MM-DDTHH:mm:ss')
+      }
+      axios.post(SERVER.URL + SERVER.ROUTES.room, createData, rootGetters.config)
+        .then(res => {
+          commit('SET_MYSESSIONID', res.data.code);
+          dispatch('joinSession', res.data.code);
+        })
+        .catch(err => {
+          console.log(err.response.data)
+        })
+    },
+    checkSessionId({ rootGetters, dispatch }, sessionId) {
+      axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${sessionId}/with/${rootGetters.getId}`, null, rootGetters.config)
+        .then(res => {
+          console.log(res.data);
+          dispatch('joinSession', sessionId);
+        })
+        .catch(err => {
+          console.log(err.response.data)
+          alert('초대코드가 유효하지 않습니다.')
+        })
     },
 
     // openvidu
