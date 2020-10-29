@@ -12,8 +12,8 @@
         </button>
       </span>
       <span v-else id="afterlogin">
-        <button @click="clickMyPage" style="color:white;">마이페이지</button>
-        <button @click="clickLogout" style="color:white;">로그아웃</button>
+        <button @click="clickMyPage" >마이페이지</button>
+        <button @click="clickLogout" >로그아웃</button>
       </span>
     </div>
     <router-view/>
@@ -60,8 +60,8 @@ export default {
       this.$store.commit('setUser', null)
       this.$store.commit('setId', null)
       this.$store.commit('setIsNew', null)
-      // this.$store.cookies.commit('auth-token', null)
       this.$router.push('/').catch(()=>{});
+      this.$router.push({ name: ''})
     }
    },
 }
@@ -128,7 +128,7 @@ $header-margin:5px;
       border-radius: $header-height / 6;
       padding: $header-margin;
       margin: $header-margin;
-      // color: black;
+      color:white;
     }
   }
 }

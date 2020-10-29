@@ -4,6 +4,7 @@ export default {
   OPENVIDU_URL: "https://k3a503.p.ssafy.io",
   ROUTES: {
     user: '/user',
-    login: '/user/login'
+    login: '/user/login',
+    room: '/room',
   }
 }
