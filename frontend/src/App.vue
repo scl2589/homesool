@@ -12,7 +12,7 @@
         </button>
       </span>
       <span>
-        <button @click="clickMyPage" style="color:white;">마이페이지</button>
+        <button @click="clickMyPage">마이페이지</button>
       </span>
     </div>
     <router-view/>
@@ -51,7 +51,7 @@ export default {
       });
     },
     clickMyPage() {
-      this.$router.push({ name: 'MyPage'})
+      this.$router.push({ name: ''})
     }
    },
 }
