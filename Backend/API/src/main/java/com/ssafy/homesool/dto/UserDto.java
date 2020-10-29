@@ -7,6 +7,7 @@ import com.ssafy.homesool.entity.UserDrink;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -43,5 +44,40 @@ public class UserDto {
 				+ "[{\"liquorName\" : \"소주\", \"liquorLimit\" : \"3\" }]")
 		private List<UserDrink> drinks = new ArrayList<>();
 	}
-
+	
+	@Data
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public static class UserRecord {
+		@ApiModelProperty(value = "Record id", example = "0")
+		private long recordId;
+		
+		@ApiModelProperty(value = "Liquor name", example = "소주")
+		private String liquorName;
+		
+		@ApiModelProperty(value = "Liqour limit", example = "3")
+		private int liquorLimit;
+	}
+	
+	@Builder
+	@Data
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public static class UserRecordDetail {
+		@ApiModelProperty(value = "User Drinks", example = ""
+				+ "[{\"liquorName\" : \"소주\", \"liquorLimit\" : \"3\" }]")
+		private List<UserRecord2> records = new ArrayList<>();
+	}
+	
+	@Builder
+	@Data
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public static class UserRecord2 {
+		@ApiModelProperty(value = "Liquor name", example = "소주")
+		private String liquorName;
+		
+		@ApiModelProperty(value = "Liqour limit", example = "3")
+		private int liquorLimit;
+	}
 }

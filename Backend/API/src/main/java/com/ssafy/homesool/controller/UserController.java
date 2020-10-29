@@ -101,6 +101,39 @@ public class UserController {
 		return new ResponseEntity<>(roomService.get(userId),HttpStatus.OK);
 	}
 	
+	@GetMapping("{userId}/room/{roomId}")
+	@ApiOperation(value = "미팅 정보 상세 조회", notes = "상세한 미팅 정보를 조회한다")
+	@ApiResponses(value = {
+		@ApiResponse(code = 200, message = "OK"),
+		@ApiResponse(code = 400, message = "Bad Request"),
+		@ApiResponse(code = 401, message = "Unauthorized"),
+		@ApiResponse(code = 403, message = "Forbidden"),
+		@ApiResponse(code = 404, message = "Not Found")
+	})
+	private ResponseEntity<UserDto.UserRecordDetail> getRecord(
+		@ApiParam(value = "유저 id",required = true, example = "1404739104") @PathVariable long userId,
+		@ApiParam(value = "미팅 id",required = true, example = "1") @PathVariable long roomId){
+		logger.debug(String.format("get Record {%d} room {%d} 호출",userId,roomId));
+		return new ResponseEntity<>(userService.getRecord(userId, roomId),HttpStatus.OK);
+	}
+	
+	@PutMapping("{userId}/record/{roomId}")
+	@ApiOperation(value = "음주 기록 추가/수정", notes = "실시간 음주량을 갱신한다")
+	@ApiResponses(value = {
+		@ApiResponse(code = 200, message = "OK"),
+		@ApiResponse(code = 400, message = "Bad Request"),
+		@ApiResponse(code = 401, message = "Unauthorized"),
+		@ApiResponse(code = 403, message = "Forbidden"),
+		@ApiResponse(code = 404, message = "Not Found")
+	})
+	private ResponseEntity<Long> updateRecord(
+		@ApiParam(value = "유저 id",required = true, example = "1404739104") @PathVariable long userId,
+		@ApiParam(value = "미팅 id",required = true, example = "1") @PathVariable long roomId,
+		@ApiParam(value = "음주 기록",required = true) @RequestBody UserDto.UserRecord userRecord){
+		logger.debug(String.format("update Record {%d} room {%d} 호출",userId,roomId));
+		return new ResponseEntity<>(userService.updateRecord(userId, roomId, userRecord),HttpStatus.OK);
+	}
+	
 	@DeleteMapping("{userId}")
 	@ApiOperation(value = "회원 탈퇴", notes = "유저 id로 정보를 삭제한다.")
 	@ApiResponses(value = {
@@ -116,4 +149,5 @@ public class UserController {
 		userService.withdrawal(userId);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
+	
 }

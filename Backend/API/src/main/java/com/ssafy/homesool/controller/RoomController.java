@@ -88,4 +88,6 @@ public class RoomController {
 		logger.debug(String.format("add Member {%d} in {%s} 호출",userId,code));
 		return new ResponseEntity<>(roomService.addMember(code,userId),HttpStatus.OK);
 	}
+	
+	
 }

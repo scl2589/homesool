@@ -1,7 +1,5 @@
 package com.ssafy.homesool.service;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -17,11 +15,14 @@ import com.ssafy.homesool.config.security.JwtTokenProvider;
 import com.ssafy.homesool.dto.KakaoUserDto;
 import com.ssafy.homesool.dto.LoginDto;
 import com.ssafy.homesool.dto.UserDto;
+import com.ssafy.homesool.dto.UserDto.UserRecordDetail;
 import com.ssafy.homesool.entity.User;
 import com.ssafy.homesool.entity.UserDrink;
+import com.ssafy.homesool.entity.UserRecord;
 import com.ssafy.homesool.exception.UserNotFoundException;
 import com.ssafy.homesool.mapper.UserMapper;
 import com.ssafy.homesool.repository.UserDrinkRepository;
+import com.ssafy.homesool.repository.UserRecordRepository;
 import com.ssafy.homesool.repository.UserRepository;
 
 @RequiredArgsConstructor
@@ -29,6 +30,7 @@ import com.ssafy.homesool.repository.UserRepository;
 public class UserService {
 	private final UserRepository userRepository;
 	private final UserDrinkRepository userDrinkRepository;
+	private final UserRecordRepository userRecordRepository;
 
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RestTemplate restTemplate = new RestTemplate(); // could not autowired
@@ -106,8 +108,28 @@ public class UserService {
 //				.orElseThrow(() -> new UserNotFoundException(userId)));
 	}
 
+	public long updateRecord(long userId, long roomId, UserDto.UserRecord record) {
+		UserRecord userRecord = UserRecord.builder()
+				.userId(userId)
+				.roomId(roomId)
+				.liquorName(record.getLiquorName())
+				.liquorLimit(record.getLiquorLimit())
+				.build();
+		if(record.getRecordId() != 0)
+			userRecord.setId(record.getRecordId());
+		return userRecordRepository.save(userRecord).getId();
+	}
+	
+	public UserDto.UserRecordDetail getRecord(long userId, long roomId) {
+		UserRecordDetail userRecordDetail = new UserRecordDetail();
+		
+		userRecordDetail.setRecords(
+				UserMapper.INSTANCE.toRecord(
+						userRecordRepository.findAllByUserIdAndRoomId(userId,roomId)));
+		return userRecordDetail;
+	}
+	
 	public void withdrawal(long userId) {
 		userRepository.deleteById(userId);
 	}
-
 }
