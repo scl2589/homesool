@@ -97,6 +97,7 @@
 import axios from 'axios'
 import SERVER from '@/api/api'
 import Swal from 'sweetalert2'
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'Info',
@@ -110,6 +111,9 @@ export default {
       },
       newLiquor: null
     }
+  },
+  computed: {
+    ...mapGetters(['getId'])
   },
   methods: {
     clickSubtract(liquorName) {
@@ -154,7 +158,7 @@ export default {
       this.signupData.drinks.splice(index, 1)
     },
     clickSignup() {
-      axios.put(SERVER.URL + SERVER.ROUTES.user + '/' + this.$store.state.id, this.signupData, 
+      axios.put(SERVER.URL + SERVER.ROUTES.user + '/' + this.getId, this.signupData, 
       {
         headers: {'X-AUTH-TOKEN' : this.$store.state.token}
       })

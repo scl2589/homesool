@@ -159,7 +159,16 @@ export default {
     LeftPanel
   },
   computed: {
-    ...mapState('meetingStore', ['isGameMode', 'isSingingMode', 'isAnonymousMode', 'isSnapshotMode', 'isChatPanel', 'theme', 'mySessionId']),
+    ...mapState('meetingStore', [
+      'isGameMode',
+      'isSingingMode',
+      'isAnonymousMode',
+      'isSnapshotMode',
+      'isChatPanel',
+      'theme',
+      'mySessionId',
+      'publisher',
+    ]),
     isMultiPanel() {
       if (this.isGameMode || this.isSingingMode || this.isAnonymousMode || this.isSnapshotMode) {
         return true
