@@ -1,9 +1,9 @@
-import router from "../../router"
-import SERVER from '@/api/api'
-import secrets from '@/secrets'
-import axios from 'axios'
+import router from "../../router";
+import SERVER from '@/api/api';
+import secrets from '@/secrets';
+import axios from 'axios';
 import { OpenVidu } from 'openvidu-browser';
-import moment from 'moment'
+import moment from 'moment';
 
 const OPENVIDU_SERVER_SECRET = "MY_SECRET";
 
@@ -29,109 +29,119 @@ const meetingStore = {
     subscribers: [],
     nickName: 'temp' + Math.floor(Math.random() * 100),
     mySessionId: null,
-    roomId: null
+    roomId: null,
+    myself: null,
+    
+    //chatting
+    messages: []
   },
   getters: {
   },
   mutations: {
     SET_ISGAME_MODE(state, value) {
-      state.isGameMode = value
+      state.isGameMode = value;
     },
     SET_ISSINGING_MODE(state, value) {
-      state.isSingingMode = value
+      state.isSingingMode = value;
     },
     SET_ISANONYMOUS_MODE(state, value) {
-      state.isAnonymousMode = value
+      state.isAnonymousMode = value;
     },
     SET_ISSNAPSHOT_MODE(state, value) {
-      state.isSnapshotMode = value
+      state.isSnapshotMode = value;
     },
     SET_CHATPANEL(state, value) {
-      state.isChatPanel = value
+      state.isChatPanel = value;
     },
     SET_SELECTED_SONG(state, song) {
-      state.selectedSong = song
+      state.selectedSong = song;
     },
     SET_SONGS(state, songs) {
-      state.songs = songs
+      state.songs = songs;
     },
     SET_THEME(state, theme) {
-      state.theme = theme
+      state.theme = theme;
     },
     SET_MYSESSIONID(state, sessionId) {
-      state.mySessionId = sessionId
+      state.mySessionId = sessionId;
     },
     SET_ROOMID(state, roomId) {
-      state.roomId = roomId
+      state.roomId = roomId;
     },
     SET_OV(state, OV) {
-      state.OV = OV
+      state.OV = OV;
     },
     SET_SESSION(state, session) {
-      state.session = session
+      state.session = session;
     },
     SET_MAINSTREAMMANAGER(state, mainStreamManager) {
-      state.mainStreamManager = mainStreamManager
+      state.mainStreamManager = mainStreamManager;
     },
     SET_PUBLISHER(state, publisher) {
-      state.publisher = publisher
+      state.publisher = publisher;
     },
     SET_SUBSCRIBERS(state, subscribers) {
-      state.subscribers = subscribers
+      state.subscribers = subscribers;
     },
     SET_CURRENT_DRINK(state, drinkId) {
-      state.currentDrink = drinkId
+      state.currentDrink = drinkId;
     },
     SET_NICKNAME(state, nickName) {
-      state.nickName = nickName
+      state.nickName = nickName;
+    },
+    SET_MYSELF(state, subscriber) {
+      state.myself = subscriber;
+    },
+    SET_MESSAGES(state, data) {
+      state.messages.push(data);
     }
   },
   actions: {
     startGameMode({ commit }) {
-      commit('SET_ISANONYMOUS_MODE', false)
-      commit('SET_ISSNAPSHOT_MODE', false)
-      commit('SET_ISSINGING_MODE', false)
-      commit('SET_ISGAME_MODE', true)
+      commit('SET_ISANONYMOUS_MODE', false);
+      commit('SET_ISSNAPSHOT_MODE', false);
+      commit('SET_ISSINGING_MODE', false);
+      commit('SET_ISGAME_MODE', true);
     },
     startSingingMode({ commit }) {
       if (router.name !== 'MeetingPage') {
-        router.push({ name : 'MeetingPage' })
+        router.push({ name : 'MeetingPage' });
       }
-      commit('SET_ISANONYMOUS_MODE', false)
-      commit('SET_ISSNAPSHOT_MODE', false)
-      commit('SET_ISGAME_MODE', false)
-      commit('SET_ISSINGING_MODE', true)
+      commit('SET_ISANONYMOUS_MODE', false);
+      commit('SET_ISSNAPSHOT_MODE', false);
+      commit('SET_ISGAME_MODE', false);
+      commit('SET_ISSINGING_MODE', true);
     },
     startAnonymousMode({ commit }) {
       if (router.name !== 'MeetingPage') {
-        router.push({ name : 'MeetingPage' })
+        router.push({ name : 'MeetingPage' });
       }
-      commit('SET_ISGAME_MODE', false)
-      commit('SET_ISSNAPSHOT_MODE', false)
-      commit('SET_ISSINGING_MODE', false)
-      commit('SET_ISANONYMOUS_MODE', true)
+      commit('SET_ISGAME_MODE', false);
+      commit('SET_ISSNAPSHOT_MODE', false);
+      commit('SET_ISSINGING_MODE', false);
+      commit('SET_ISANONYMOUS_MODE', true);
     },
     startSnapshotMode({ commit }) {
       if (router.name !== 'MeetingPage') {
-        router.push({ name : 'MeetingPage' })
+        router.push({ name : 'MeetingPage' });
       }
-      commit('SET_ISGAME_MODE', false)
-      commit('SET_ISSINGING_MODE', false)
-      commit('SET_ISANONYMOUS_MODE', false)
-      commit('SET_ISSNAPSHOT_MODE', true)
+      commit('SET_ISGAME_MODE', false);
+      commit('SET_ISSINGING_MODE', false);
+      commit('SET_ISANONYMOUS_MODE', false);
+      commit('SET_ISSNAPSHOT_MODE', true);
       
     },
     closeMultiPanel({ commit }) {
       if (router.name !== 'MeetingPage') {
-        router.push({ name : 'MeetingPage' })
+        router.push({ name : 'MeetingPage' });
       }
-      commit('SET_ISSNAPSHOT_MODE', false)
-      commit('SET_ISGAME_MODE', false)
-      commit('SET_ISSINGING_MODE', false)
-      commit('SET_ISANONYMOUS_MODE', false)
+      commit('SET_ISSNAPSHOT_MODE', false);
+      commit('SET_ISGAME_MODE', false);
+      commit('SET_ISSINGING_MODE', false);
+      commit('SET_ISANONYMOUS_MODE', false);
     },
     clickChatPanel({ commit }, value) {
-      commit('SET_CHATPANEL', value)
+      commit('SET_CHATPANEL', value);
     },
     searchSong({ commit }, keyword) {
       axios.get(SERVER.YOUTUBE_URL, {
@@ -145,23 +155,23 @@ const meetingStore = {
       })
         .then(res => {
           res.data.items.forEach(item => {
-            const parser = new DOMParser()
-            const doc = parser.parseFromString(item.snippet.title, 'text/html')
-            item.snippet.title = doc.body.innerText
-          })
-          commit('SET_SONGS', res.data.items)
-        })
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(item.snippet.title, 'text/html');
+            item.snippet.title = doc.body.innerText;
+          });
+          commit('SET_SONGS', res.data.items);
+        });
     },
     selectSong({ commit }, song) {
-      commit('SET_SELECTED_SONG', song)
-      console.log(document.getElementById('test'))
+      commit('SET_SELECTED_SONG', song);
+      console.log(document.getElementById('test'));
     },
     closeSingingPanel({ commit }) {
-      commit('SET_SONGS', null)
-      commit('SET_SELECTED_SONG', null)
+      commit('SET_SONGS', null);
+      commit('SET_SELECTED_SONG', null);
     },
     changeTheme({ commit }, theme) {
-      commit('SET_THEME', theme)
+      commit('SET_THEME', theme);
     },
 
     createSessionId({ rootGetters, commit, dispatch }) {
@@ -169,7 +179,7 @@ const meetingStore = {
       const createData = {
         "hostId": rootGetters.getId,
         "startTime": moment(ct).format('YYYY-MM-DDTHH:mm:ss')
-      }
+      };
       axios.post(SERVER.URL + SERVER.ROUTES.room, createData, rootGetters.config)
         .then(res => {
           commit('SET_ROOMID', res.data.roomId);
@@ -204,6 +214,7 @@ const meetingStore = {
       const subscribers = [];
 			session.on('streamCreated', ({ stream }) => {
         const subscriber = session.subscribe(stream);
+        commit('SET_MYSELF', subscriber)
 				subscribers.push(subscriber);
 			});
 			// On every Stream destroyed...
@@ -228,7 +239,7 @@ const meetingStore = {
 							resolution: '640x480',  // The resolution of your video
 							frameRate: 30,			// The frame rate of your video
 							insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
-							mirror: true       	// Whether to mirror your local video or not
+              mirror: true,       	// Whether to mirror your local video or not
 						});
 						// --- Publish your stream ---
             session.publish(publisher);
@@ -355,6 +366,27 @@ const meetingStore = {
         .catch(err => {
           console.log(err.response.data)
         })
+    },
+    sendMessage({ state }, message) {
+      state.session.signal({
+        data: message,  // Any string (optional)
+        to: [],                     // Array of Connection objects (optional. Broadcast to everyone if empty)
+        // type: 'my-chat'             // The type of message (optional)
+      })
+        .then(() => {
+          console.log("Message successfully sent");
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    receiveMessage({ state, commit }) {
+      state.session.on('signal', (event) => {
+        let data = new Object()
+        data.message = event.data
+        data.sender = event.from.data.slice(15,-2)
+        commit('SET_MESSAGES', data)
+      })
     }
   }
 }

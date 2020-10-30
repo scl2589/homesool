@@ -40,16 +40,43 @@
       </div>
 
       <div>
-        <button class="btn mr-2">
-          <img src="@/assets/images/webcam.png" alt="webcam" v-if="publisher.stream.videoActive">
-          <img src="@/assets/images/webcam_off.png" alt="webcam_off" v-else>
+        <button 
+          class="btn mr-2"
+          @click="clickMuteVideo"
+        >
+          <img 
+            src="@/assets/images/webcam.png" 
+            alt="webcam"
+            v-if="publisher.stream.videoActive"
+          >
+          <img 
+            src="@/assets/images/webcam_off.png" 
+            alt="webcam_off"
+            v-else
+          >
         </button>
-        <button class="btn mr-2">
-          <img src="@/assets/images/voice.png" alt="voice" v-if="publisher.stream.audioActive">
-          <img src="@/assets/images/voice_off.png" alt="voice_off" v-else>
+        <button 
+          class="btn mr-2"
+          @click="clickMuteAudio"
+        >
+          <img 
+            src="@/assets/images/voice.png" 
+            alt="voice"
+            v-if="publisher.stream.audioActive"
+          >
+          <img 
+            src="@/assets/images/voice_off.png" 
+            alt="voice_off"
+            v-else
+          >
         </button>
-        <button class="btn mr-2">
-          <img src="@/assets/images/screenshare.png" alt="screenshare">
+        <button 
+          class="btn mr-2"
+        >
+          <img 
+            src="@/assets/images/screenshare.png" 
+            alt="screenshare"
+          >
         </button>
         <button class="btn mr-2" @click="startSnapshotMode">
           <img src="@/assets/images/snapshot.png" alt="snapshot">
@@ -152,7 +179,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('meetingStore', ['startGameMode', 'startSingingMode', 'startAnonymousMode', 'startSnapshotMode', 'clickChatPanel', 'changeTheme', 'leaveSession']),
+    ...mapActions('meetingStore', ['startGameMode', 'startSingingMode', 'startAnonymousMode', 'startSnapshotMode', 'clickChatPanel', 'changeTheme', 'leaveSession', 'clickMuteVideo', 'clickMuteAudio']),
     clickChatMode() {
       if (this.isChatPanel === true) {
         this.clickChatPanel(false)
@@ -240,7 +267,7 @@ export default {
           window.close()
         } 
       })
-    }
+    },
   },
   beforeRouteLeave (to, from, next) {
     if (confirm('술자리에서 나가시겠습니까?')) {
@@ -280,7 +307,7 @@ export default {
 }
 
 .chat-panel {
-  background-color: blue;
+  background-color: #232323;
   max-width: 100%;
 }
 

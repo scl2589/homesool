@@ -3,11 +3,11 @@ import Vuex from 'vuex';
 
 import jwt_decode from 'jwt-decode';
 // import http from '../utils/http-common.js';
-import axios from 'axios'
+import axios from 'axios';
 import router from '@/router';
-import cookies from 'vue-cookies'
+import cookies from 'vue-cookies';
 
-import SERVER from '@/api/api'
+import SERVER from '@/api/api';
 import meetingStore from '@/store/modules/meetingStore';
 
 Vue.use(Vuex);
@@ -36,7 +36,7 @@ export default new Vuex.Store({
         return false;
       }
     },
-    config: state => ({ headers: { 'X-AUTH-TOKEN': state.token }}),
+    config: (state) => ({ headers: { 'X-AUTH-TOKEN': state.token } }),
   },
   mutations: {
     setToken(state, payload) {
@@ -50,7 +50,7 @@ export default new Vuex.Store({
     },
     setId(state, payload) {
       state.id = payload;
-    }
+    },
   },
   actions: {
     kakaoLogin({ commit, dispatch }, { access_token }) {
@@ -78,7 +78,17 @@ export default new Vuex.Store({
         .catch((err) => {
           console.error(err.response.data);
         })
-    }
+    },
+    kakaoLogout(context) {
+      localStorage.clear();
+      cookies.set('auth-token', null);
+      context.commit('setIsNew', null);
+      context.commit('setToken', null);
+      context.commit('setUser', null);
+      context.commit('setId', null);
+      cookies.remove('auth-token');
+      router.push({ name: 'HomePage' }).catch(() => {});
+    },
   },
   modules: {
     meetingStore: meetingStore,

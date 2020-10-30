@@ -9,6 +9,28 @@
         style="color:white;"
       ></i>
     </button>
+    <!-- 채팅 보내기 -->
+    <div class="pt-10">
+      <input type="text" v-model="message" style="background-color:white">
+      <button
+        class="btn btn-yellow"
+        @click="sendMessage(message)"
+      >
+        보내기
+      </button>
+    </div>
+    <!-- 채팅 내역 -->
+    <div id="chat-area" style="background-color:white">
+      <div 
+        v-for="(message, i) of messages"
+        :key="i"
+      >
+        {{message.message}}
+        {{message.sender}}
+        {{message.sender.clientData}}
+      </div>
+      
+    </div>
   </div>
 </template>
 
@@ -16,14 +38,22 @@
 import { mapState, mapActions }from 'vuex'
 export default {
   name: 'ChatPanel',
-  comptued: {
-    ...mapState('meetingStore', ['isChatPanel'])
+  data() {
+    return {
+      message: ""
+    }
+  },
+  computed: {
+    ...mapState('meetingStore', ['isChatPanel', 'messages'])
   },
   methods: {
-    ...mapActions('meetingStore', ['clickChatPanel']),
+    ...mapActions('meetingStore', ['clickChatPanel', 'sendMessage', 'receiveMessage']),
     closeChatPanel() {
       this.clickChatPanel(false)
-    }
+    },
+  },
+  mounted() {
+    this.receiveMessage()
   }
 }
 </script>

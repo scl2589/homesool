@@ -3,7 +3,7 @@ HELP.md
 build/
 log/
 API/bin/
-bin
+bin/
 /bin/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/

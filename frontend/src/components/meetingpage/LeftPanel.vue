@@ -10,13 +10,15 @@
 				<h1 id="session-title">{{ mySessionId }}</h1>
 				<input class="btn btn-large btn-danger" type="button" id="buttonLeaveSession" @click="leaveSession" value="Leave session">
 			</div>
-			<div id="main-video" class="col-md-6">
+			<!-- <div id="main-video" class="col-md-6">
 				<user-video :stream-manager="mainStreamManager"/>
-			</div>
-			<div id="video-container" class="col-md-6">
-				<user-video :stream-manager="publisher" @click.native="updateMainVideoStreamManager(publisher)"/>
-				<user-video v-for="(sub, index) in subscribers" :key="index" :stream-manager="sub" @click.native="updateMainVideoStreamManager(sub)"/>
-			</div>
+			</div> -->
+      <div class="row no-gutters">
+        <div id="video-container" class="col-4">
+          <user-video :stream-manager="publisher" @click.native="updateMainVideoStreamManager(publisher)"/>
+          <user-video v-for="(sub, index) in subscribers" :key="index" :stream-manager="sub" @click.native="updateMainVideoStreamManager(sub)"/>
+        </div>
+      </div>
 		</div>
   </div>
 </template>
