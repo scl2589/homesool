@@ -1,5 +1,5 @@
 <template>
-	<video autoplay width="100px"/>
+	<video autoplay class="video"/>
 </template>
 
 <script>
@@ -13,3 +13,8 @@ export default {
 	},
 };
 </script>
+<style scoped>
+.video {
+	max-width: 100%;
+}
+</style>
