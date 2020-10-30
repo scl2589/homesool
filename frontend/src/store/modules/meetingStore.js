@@ -28,6 +28,9 @@ const meetingStore = {
     myUserName: 'Participant' + Math.floor(Math.random() * 100),
     mySessionId: null,
     myself: null,
+    
+    //chatting
+    messages: []
   },
   getters: {
   },
@@ -76,6 +79,9 @@ const meetingStore = {
     },
     SET_MYSELF(state, subscriber) {
       state.myself = subscriber
+    },
+    SET_MESSAGES(state, data) {
+      state.messages.push(data)
     }
   },
   actions: {
@@ -330,6 +336,27 @@ const meetingStore = {
       } else {
         state.publisher.publishAudio(true) 
       }
+    },
+    sendMessage({ state }, message) {
+      state.session.signal({
+        data: message,  // Any string (optional)
+        to: [],                     // Array of Connection objects (optional. Broadcast to everyone if empty)
+        // type: 'my-chat'             // The type of message (optional)
+      })
+        .then(() => {
+          console.log("Message successfully sent");
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    receiveMessage({ state, commit }) {
+      state.session.on('signal', (event) => {
+        let data = new Object()
+        data.message = event.data
+        data.sender = event.from.data.slice(15,-2)
+        commit('SET_MESSAGES', data)
+      })
     }
   }
 
