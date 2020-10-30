@@ -53,10 +53,19 @@
           class="btn mr-2"
           @click="clickMuteAudio"
         >
-          <img src="@/assets/images/voice.png" alt="voice">
+          <img 
+            src="@/assets/images/voice.png" 
+            alt="voice"
+          >
         </button>
-        <button class="btn mr-2">
-          <img src="@/assets/images/screenshare.png" alt="screenshare">
+        <button 
+          class="btn mr-2"
+          @click="clickScreenshare"
+        >
+          <img 
+            src="@/assets/images/screenshare.png" 
+            alt="screenshare"
+          >
         </button>
         <button class="btn mr-2" @click="startSnapshotMode">
           <img src="@/assets/images/snapshot.png" alt="snapshot">
