@@ -383,8 +383,10 @@ const meetingStore = {
     receiveMessage({ state, commit }) {
       state.session.on('signal', (event) => {
         let data = new Object()
+        let time = new Date()
         data.message = event.data
         data.sender = event.from.data.slice(15,-2)
+        data.time = moment(time).format('HH:mm')
         commit('SET_MESSAGES', data)
       })
     }
