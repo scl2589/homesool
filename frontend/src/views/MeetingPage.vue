@@ -60,7 +60,6 @@
         </button>
         <button 
           class="btn mr-2"
-          @click="clickScreenshare"
         >
           <img 
             src="@/assets/images/screenshare.png" 
@@ -296,7 +295,7 @@ export default {
 }
 
 .chat-panel {
-  background-color: blue;
+  background-color: #232323;
   max-width: 100%;
 }
 
