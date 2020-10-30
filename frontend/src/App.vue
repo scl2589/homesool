@@ -20,7 +20,7 @@
   </v-app>
 </template>
 <script>
-import { mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 export default {
   data(){
     return{
@@ -40,7 +40,15 @@ export default {
       return this.$store.getters.getToken;
     },
   },
-   methods : {
+  watch: {
+    token(value) {
+      if (value) {
+        this.getMyInfo();
+      }
+    }
+  },
+  methods : {
+    ...mapActions(['getMyInfo']),
     login(){
       window.Kakao.Auth.login({
         success: this.kakaoLoginStore,
@@ -63,10 +71,15 @@ export default {
     //   this.$router.push('/').catch(()=>{});
     //   this.$router.push({ name: ''})
     // }
-      clickLogout(){
+    clickLogout(){
       this.$store.dispatch('kakaoLogout');
     }
-   },
+  },
+  mounted() {
+    if (this.token) {
+      this.getMyInfo();
+    }
+  }
 }
 </script>
 <style lang="scss">

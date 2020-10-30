@@ -47,6 +47,12 @@
           <img 
             src="@/assets/images/webcam.png" 
             alt="webcam"
+            v-if="publisher.stream.videoActive"
+          >
+          <img 
+            src="@/assets/images/webcam_off.png" 
+            alt="webcam_off"
+            v-else
           >
         </button>
         <button 
@@ -56,6 +62,12 @@
           <img 
             src="@/assets/images/voice.png" 
             alt="voice"
+            v-if="publisher.stream.audioActive"
+          >
+          <img 
+            src="@/assets/images/voice_off.png" 
+            alt="voice_off"
+            v-else
           >
         </button>
         <button 
