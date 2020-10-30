@@ -4,15 +4,12 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 
 import org.mariadb.jdbc.internal.logging.Logger;
 import org.mariadb.jdbc.internal.logging.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -32,8 +29,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 import com.ssafy.homesool.dto.RoomDto;
-import com.ssafy.homesool.dto.UserDto;
-import com.ssafy.homesool.dto.RoomDto.RoomInfo;
 import com.ssafy.homesool.entity.Room;
 import com.ssafy.homesool.service.PhotoService;
 import com.ssafy.homesool.service.RoomService;
@@ -99,7 +94,6 @@ public class RoomController {
 		return new ResponseEntity<>(roomService.addMember(code,userId),HttpStatus.OK);
 	}
 	
-
 	@PostMapping("photo")
 	@ApiOperation(value = "사진 업로드", notes = "서버에 스크린샷을 저장한다.", response = String.class)
 	@ApiResponses(value = {
@@ -125,13 +119,12 @@ public class RoomController {
 				// String root_path =
 				// request.getSession().getServletContext().getRealPath("\\");
 
-//				String root_path = "C:\\Users\\multicampus\\git\\test\\";
-				String root_path = "C:\\Users\\multicampus\\Desktop\\";
+				String root_path = "C:\\Users\\multicampus\\git\\test\\";
 				String real_path = "/home/ubuntu/picture/";
 				// String attach_path = "resources\\upload\\";
 				filename = dateString + "_" + uploadfile.getOriginalFilename();
 
-				FileOutputStream fos = new FileOutputStream(root_path + filename);
+				FileOutputStream fos = new FileOutputStream(real_path + filename);
 				// 파일 저장할 경로 + 파일명을 파라미터로 넣고 fileOutputStream 객체 생성하고
 				InputStream is = uploadfile.getInputStream();
 				// file로 부터 inputStream을 가져온다.
