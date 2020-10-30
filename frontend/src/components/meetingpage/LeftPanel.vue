@@ -5,35 +5,41 @@
       <img class="theme-title" :src="require(`@/assets/images/${theme}_title.png`)" alt="theme-title">
       <img class="theme-deco" :src="require(`@/assets/images/${theme}_deco.png`)" alt="theme-deco">
     </div>
-    <div class="row no-gutters d-flex justify-content-around">
-      <div class="col-4 personal-screen">
-        여기에 사람들 얼굴쓰
-      </div>
-      <div class="col-4 personal-screen">
-        여기에 사람들 얼굴쓰
-      </div>
-      <div class="col-4 personal-screen">
-        여기에 사람들 얼굴쓰
-      </div>
-      <div class="col-4 personal-screen">
-        여기에 사람들 얼굴쓰
-      </div>
-      <div class="col-4 personal-screen">
-        여기에 사람들 얼굴쓰
-      </div>
-      <div class="col-4 personal-screen">
-        여기에 사람들 얼굴쓰
-      </div>
-    </div>
+    <div id="session" v-if="session">
+			<div id="session-header">
+				<h1 id="session-title">{{ mySessionId }}</h1>
+				<input class="btn btn-large btn-danger" type="button" id="buttonLeaveSession" @click="leaveSession" value="Leave session">
+			</div>
+			<!-- <div id="main-video" class="col-md-6">
+				<user-video :stream-manager="mainStreamManager"/>
+			</div> -->
+			<div id="video-container" class="col-sm-6" width>
+				<user-video :stream-manager="publisher" @click.native="updateMainVideoStreamManager(publisher)"/>
+				<user-video v-for="(sub, index) in subscribers" :key="index" :stream-manager="sub" @click.native="updateMainVideoStreamManager(sub)"/>
+			</div>
+		</div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex';
+import UserVideo from './UserVideo';
+
 export default {
   name: 'LeftPanel',
+  components: {
+    UserVideo
+  },
+  data() {
+    return {
+
+    }
+  },
   computed: {
-    ...mapState('meetingStore', ['theme'])
+    ...mapState('meetingStore', ['theme', 'session', 'mySessionId', 'mainStreamManager', 'publisher', 'subscribers'])
+  },
+  methods: {
+    ...mapActions('meetingStore', ['leaveSession', 'updateMainVideoStreamManager'])
   },
   watch: {
     theme() {

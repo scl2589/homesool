@@ -40,10 +40,19 @@
       </div>
 
       <div>
-        <button class="btn mr-2">
-          <img src="@/assets/images/webcam.png" alt="webcam">
+        <button 
+          class="btn mr-2"
+          @click="clickMuteVideo"
+        >
+          <img 
+            src="@/assets/images/webcam.png" 
+            alt="webcam"
+          >
         </button>
-        <button class="btn mr-2">
+        <button 
+          class="btn mr-2"
+          @click="clickMuteAudio"
+        >
           <img src="@/assets/images/voice.png" alt="voice">
         </button>
         <button class="btn mr-2">
@@ -73,9 +82,19 @@
             <img src="@/assets/images/setting.png" alt="setting">
           </button>
           <div class="dropdown-menu dropdown-menu-right text-center">
-            <li class="dropdown-item" @click="clickChangeTheme">테마 변경</li>
+            <li 
+              class="dropdown-item" 
+              @click="clickChangeTheme"
+            >
+              테마 변경
+            </li>
             <li class="dropdown-item">미팅 링크 복사</li>
-            <li class="dropdown-item">미팅 나가기</li>
+            <li 
+              class="dropdown-item"
+              @click="clickExitMeeting"
+            >
+              미팅 나가기
+            </li>
           </div>
         </div>
       </div>
@@ -120,7 +139,7 @@ export default {
     LeftPanel
   },
   computed: {
-    ...mapState('meetingStore', ['isGameMode', 'isSingingMode', 'isAnonymousMode', 'isSnapshotMode', 'isChatPanel', 'theme']),
+    ...mapState('meetingStore', ['isGameMode', 'isSingingMode', 'isAnonymousMode', 'isSnapshotMode', 'isChatPanel', 'theme', 'mySessionId']),
     isMultiPanel() {
       if (this.isGameMode || this.isSingingMode || this.isAnonymousMode || this.isSnapshotMode) {
         return true
@@ -140,7 +159,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('meetingStore', ['startGameMode', 'startSingingMode', 'startAnonymousMode', 'startSnapshotMode', 'clickChatPanel', 'changeTheme']),
+    ...mapActions('meetingStore', ['startGameMode', 'startSingingMode', 'startAnonymousMode', 'startSnapshotMode', 'clickChatPanel', 'changeTheme', 'leaveSession', 'clickMuteVideo', 'clickMuteAudio']),
     clickChatMode() {
       if (this.isChatPanel === true) {
         this.clickChatPanel(false)
@@ -206,6 +225,34 @@ export default {
           song.play();
         }
       }
+    },
+    clickExitMeeting() {
+      var swal = Swal.mixin({
+        customClass: {
+          confirmButton: 'btn btn-success mr-2',
+          cancelButton: 'btn btn-danger'
+        },
+        buttonsStyling: false
+      })
+
+      swal.fire({
+        text: "정말 현재 술자리에서 나가시겠습니까?",
+        showCancelButton: true,
+        confirmButtonText: '네',
+        cancelButtonText: '아니요',
+        icon: "warning",
+      })
+      .then((result) => {
+        if (result.value) {
+          window.close()
+        } 
+      })
+    },
+  },
+  beforeRouteLeave (to, from, next) {
+    if (confirm('술자리에서 나가시겠습니까?')) {
+      this.leaveSession();
+      next();
     }
   }
 }
