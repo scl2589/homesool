@@ -53,33 +53,32 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    kakaoLogin(context, { access_token }) {
+    kakaoLogin({ commit, dispatch }, { access_token }) {
       axios.post(SERVER.URL + SERVER.ROUTES.login, { accessToken: access_token })
         .then(({ data }) => {
-          context.commit('setIsNew', data.new);
-          context.commit('setToken', data.token);
-          var token = data.token;
-          var id = jwt_decode(token).sub;
-          context.commit('setId', id)
-          axios.get(SERVER.URL + SERVER.ROUTES.user + '/' + id, {
-              headers: { 'X-AUTH-TOKEN': data.token },
-            })
-            .then(({ data }) => {
-              context.commit('setUser', data);
-              console.log("setUser이 되었다!!")
-            });
-            console.log(data.new)
-            if (data.new === true) {
-              cookies.set('auth-token', token)
-              router.push({ name: 'RegisterPage' })
-            } else {
-              cookies.set('auth-token', token)
-            }
-        })
+          commit('setIsNew', data.new);
+          commit('setToken', data.token);
+          dispatch('getMyInfo');
+          if (data.new === true) {
+            cookies.set('auth-token', data.token)
+            router.push({ name: 'RegisterPage' })
+          } else {
+            cookies.set('auth-token', data.token)
+          }
+        }) 
         .catch((err) => {
           console.error(err);
         });
     },
+    getMyInfo({ commit, getters }) {
+      axios.get(SERVER.URL + SERVER.ROUTES.user + '/' + getters.getId, getters.config)
+        .then((res) => {
+          commit('setUser', res.data);
+        })
+        .catch((err) => {
+          console.error(err.response.data);
+        })
+    }
   },
   modules: {
     meetingStore: meetingStore,

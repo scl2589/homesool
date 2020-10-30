@@ -19,14 +19,17 @@ const meetingStore = {
     songs: null,
     theme: 'basic',
 
+    currentDrink: null,
+
     // openvidu
     OV: undefined,
     session: undefined,
     mainStreamManager: undefined,
     publisher: undefined,
     subscribers: [],
-    myUserName: 'Participant' + Math.floor(Math.random() * 100),
+    nickName: 'temp' + Math.floor(Math.random() * 100),
     mySessionId: null,
+    roomId: null
   },
   getters: {
   },
@@ -58,6 +61,9 @@ const meetingStore = {
     SET_MYSESSIONID(state, sessionId) {
       state.mySessionId = sessionId
     },
+    SET_ROOMID(state, roomId) {
+      state.roomId = roomId
+    },
     SET_OV(state, OV) {
       state.OV = OV
     },
@@ -72,6 +78,12 @@ const meetingStore = {
     },
     SET_SUBSCRIBERS(state, subscribers) {
       state.subscribers = subscribers
+    },
+    SET_CURRENT_DRINK(state, drinkId) {
+      state.currentDrink = drinkId
+    },
+    SET_NICKNAME(state, nickName) {
+      state.nickName = nickName
     }
   },
   actions: {
@@ -152,7 +164,7 @@ const meetingStore = {
       commit('SET_THEME', theme)
     },
 
-    createSessionId({ rootGetters, dispatch }) {
+    createSessionId({ rootGetters, commit, dispatch }) {
       const ct = new Date();
       const createData = {
         "hostId": rootGetters.getId,
@@ -160,21 +172,23 @@ const meetingStore = {
       }
       axios.post(SERVER.URL + SERVER.ROUTES.room, createData, rootGetters.config)
         .then(res => {
+          commit('SET_ROOMID', res.data.roomId);
           dispatch('joinSession', res.data.code);
         })
         .catch(err => {
           console.log(err.response.data)
         })
     },
-    checkSessionId({ rootGetters, dispatch }, sessionId) {
+    checkSessionId({ rootGetters, commit, dispatch }, sessionId) {
       axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${sessionId}/with/${rootGetters.getId}`, null, rootGetters.config)
         .then(res => {
-          console.log(res.data);
+          commit('SET_ROOMID', res.data.roomId);
           dispatch('joinSession', sessionId);
+          return true;
         })
         .catch(err => {
           console.log(err.response.data)
-          alert('초대코드가 유효하지 않습니다.')
+          return false;
         })
     },
 
@@ -203,7 +217,7 @@ const meetingStore = {
 			// 'getToken' method is simulating what your server-side should do.
 			// 'token' parameter should be retrieved and returned by your own backend
 			dispatch('getToken', mySessionId).then(token => {
-				session.connect(token, { clientData: state.myUserName })
+				session.connect(token, { clientData: state.nickName })
 					.then(() => {
 						// --- Get your own camera stream with the desired properties ---
 						let publisher = OV.initPublisher(undefined, {
@@ -223,7 +237,7 @@ const meetingStore = {
 						commit('SET_PUBLISHER', publisher);
             commit('SET_SESSION', session);
             commit('SET_SUBSCRIBERS', subscribers);
-            router.push({ name: 'MeetingPage', params: { sessionId: mySessionId }});
+            // router.push({ name: 'MeetingPage', params: { sessionId: mySessionId }});
 					})
 					.catch(error => {
 						console.log('There was an error connecting to the session:', error.code, error.message);
@@ -311,9 +325,38 @@ const meetingStore = {
 					.then(data => resolve(data.token))
 					.catch(error => reject(error.response));
 			});
-		},
+    },
+    clickMuteVideo({ state }) {
+      if (state.publisher.stream.videoActive) {
+        state.publisher.publishVideo(false)
+      } else {
+        state.publisher.publishVideo(true) 
+      }
+    },
+    clickMuteAudio({ state }) {
+      if (state.publisher.stream.audioActive) {
+        state.publisher.publishAudio(false)
+      } else {
+        state.publisher.publishAudio(true) 
+      }
+    },
+    enterSession({ state, rootGetters, commit }, enterData) {
+      commit('SET_NICKNAME', enterData.nickName);
+      commit('SET_CURRENT_DRINK', enterData.currentDrink);
+      const drinkData = {
+        "liquorLimit": 0,
+        "liquorName": enterData.currentDrink,
+        "recordId": 0
+      }
+      axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
+        .then(() => {
+          console.log('음주 기록 성공')
+        })
+        .catch(err => {
+          console.log(err.response.data)
+        })
+    }
   }
-
 }
 
 export default meetingStore
