@@ -202,7 +202,7 @@ const meetingStore = {
         })
         .catch(err => {
           console.log(err.response.data)
-          return false;
+          alert('초대코드가 유효하지 않습니다.')
         })
     },
 
@@ -362,12 +362,12 @@ const meetingStore = {
 					})
 					.catch(error => {
             console.log('There was an error connecting to the session:', error.code, error.message);
-            return false;
+            alert('오류가 발생했습니다. 입장 정보를 다시 한 번 확인해주세요.');
 					});
         })
         .catch(err => {
           console.log(err.response.data)
-          return false;
+          alert('오류가 발생했습니다. 입장 정보를 다시 한 번 확인해주세요.');
         })
     },
     sendMessage({ state }, message) {

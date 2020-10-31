@@ -186,9 +186,6 @@ export default {
         .then(() => {
           this.dialog = true;
         })
-        .catch(() => {
-          alert('초대코드가 유효하지 않습니다.')
-        })
     },
     clickClose() {
       this.leaveSession();
@@ -197,18 +194,14 @@ export default {
       this.currentDrink = null;
     },
     clickEnter() {
-      this.dialog = false;
       const enterData = {
         nickName: this.nickName,
         currentDrink: this.currentDrink
       }
       this.enterSession(enterData)
-        .then((res) => {
-          if (res) {
-            this.$router.push({ name: 'MeetingPage', params: { sessionId: this.mySessionId }});
-          } else {
-            alert('오류가 발생했습니다. 입장 정보를 다시 한 번 확인해주세요.');
-          }
+        .then(() => {
+          this.$router.push({ name: 'MeetingPage', params: { sessionId: this.mySessionId }});
+          this.dialog = false;
         })
     },
     clickCopyURL() {
