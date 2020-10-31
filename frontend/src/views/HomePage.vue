@@ -202,8 +202,14 @@ export default {
         nickName: this.nickName,
         currentDrink: this.currentDrink
       }
-      this.enterSession(enterData);
-      this.$router.push({ name: 'MeetingPage', params: { sessionId: this.mySessionId }});
+      this.enterSession(enterData)
+        .then((res) => {
+          if (res) {
+            this.$router.push({ name: 'MeetingPage', params: { sessionId: this.mySessionId }});
+          } else {
+            alert('오류가 발생했습니다. 입장 정보를 다시 한 번 확인해주세요.');
+          }
+        })
     },
     clickCopyURL() {
       const copyText = document.getElementById("copySessionId");
