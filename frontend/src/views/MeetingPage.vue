@@ -108,10 +108,14 @@
             >
               테마 변경
             </li>
-            <li class="dropdown-item">미팅 링크 복사</li>
+            <li
+              class="dropdown-item"
+              @click="clickCopyURL"
+            >
+              미팅 링크 복사
+            </li>
             <li 
               class="dropdown-item"
-              @click="clickExitMeeting"
             >
               미팅 나가기
             </li>
@@ -276,6 +280,19 @@ export default {
           window.close()
         } 
       })
+    },
+    clickCopyURL() {
+      const copyText = document.createElement("input");
+      copyText.value = `https://k3a503.p.ssafy.io/meet/${this.mySessionId}`
+      document.body.appendChild(copyText)
+      
+      copyText.select();
+      document.execCommand("copy");
+      document.body.removeChild(copyText)
+      Swal.fire({
+          icon: 'success',
+          html: `<p>https://k3a503.p.ssafy.io/meet/${this.mySessionId}</p><h5>주소가 복사되었습니다</h5>`
+        })
     },
   },
   beforeRouteLeave (to, from, next) {
