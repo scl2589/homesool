@@ -116,6 +116,7 @@
             </li>
             <li 
               class="dropdown-item"
+              @click="leaveRoom"
             >
               미팅 나가기
             </li>
@@ -281,6 +282,9 @@ export default {
         } 
       })
     },
+    leaveRoom() {
+      this.$router.push({ name: 'HomePage' });
+    },
     clickCopyURL() {
       const copyText = document.createElement("input");
       copyText.value = `https://k3a503.p.ssafy.io/meet/${this.mySessionId}`
@@ -300,7 +304,13 @@ export default {
       this.leaveSession();
       next();
     }
-  }
+  },
+  beforeMount() {
+    window.addEventListener('beforeunload', this.leaveSession);
+  },
+  beforeDestroy() {
+    window.removeEventListener('beforeunload', this.leaveSession);
+  },
 }
 </script>
 
