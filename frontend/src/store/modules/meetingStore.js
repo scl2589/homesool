@@ -20,6 +20,7 @@ const meetingStore = {
     theme: 'basic',
 
     currentDrink: null,
+    meetingDialog: false,
 
     // openvidu
     OV: undefined,
@@ -98,6 +99,9 @@ const meetingStore = {
     },
     SET_OVTOKEN(state, token) {
       state.ovToken = token;
+    },
+    SET_MEETING_DIALOG(state, value) {
+      state.meetingDialog = value;
     }
   },
   actions: {
@@ -176,6 +180,10 @@ const meetingStore = {
     },
     changeTheme({ commit }, theme) {
       commit('SET_THEME', theme);
+    },
+
+    changeMeetingDialog({ commit }, value) {
+      commit('SET_MEETING_DIALOG', value);
     },
 
     createSessionId({ rootGetters, commit, dispatch }) {
