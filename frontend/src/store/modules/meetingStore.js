@@ -31,6 +31,7 @@ const meetingStore = {
     mySessionId: null,
     roomId: null,
     myself: null,
+    ovToken: null,
     
     //chatting
     messages: []
@@ -94,6 +95,9 @@ const meetingStore = {
     },
     SET_MESSAGES(state, data) {
       state.messages.push(data);
+    },
+    SET_OVTOKEN(state, token) {
+      state.ovToken = token;
     }
   },
   actions: {
@@ -192,7 +196,7 @@ const meetingStore = {
     checkSessionId({ rootGetters, commit, dispatch }, sessionId) {
       axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${sessionId}/with/${rootGetters.getId}`, null, rootGetters.config)
         .then(res => {
-          commit('SET_ROOMID', res.data.roomId);
+          commit('SET_ROOMID', res.data);
           dispatch('joinSession', sessionId);
           return true;
         })
@@ -203,7 +207,7 @@ const meetingStore = {
     },
 
     // openvidu
-    joinSession ({ state, commit, dispatch }, mySessionId) {
+    joinSession ({ commit, dispatch }, mySessionId) {
       commit('SET_MYSESSIONID', mySessionId);
 			// --- Get an OpenVidu object ---
 			const OV = new OpenVidu();
@@ -228,31 +232,22 @@ const meetingStore = {
 			// 'getToken' method is simulating what your server-side should do.
 			// 'token' parameter should be retrieved and returned by your own backend
 			dispatch('getToken', mySessionId).then(token => {
-				session.connect(token, { clientData: state.nickName })
-					.then(() => {
-						// --- Get your own camera stream with the desired properties ---
-						let publisher = OV.initPublisher(undefined, {
-							audioSource: undefined, // The source of audio. If undefined default microphone
-							videoSource: undefined, // The source of video. If undefined default webcam
-							publishAudio: true,  	// Whether you want to start publishing with your audio unmuted or not
-							publishVideo: true,  	// Whether you want to start publishing with your video enabled or not
-							resolution: '640x480',  // The resolution of your video
-							frameRate: 30,			// The frame rate of your video
-							insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
-              mirror: true,       	// Whether to mirror your local video or not
-						});
-						// --- Publish your stream ---
-            session.publish(publisher);
-            commit('SET_OV', OV);
-            commit('SET_MAINSTREAMMANAGER', publisher);
-						commit('SET_PUBLISHER', publisher);
-            commit('SET_SESSION', session);
-            commit('SET_SUBSCRIBERS', subscribers);
-            // router.push({ name: 'MeetingPage', params: { sessionId: mySessionId }});
-					})
-					.catch(error => {
-						console.log('There was an error connecting to the session:', error.code, error.message);
-					});
+        let publisher = OV.initPublisher(undefined, {
+          audioSource: undefined, // The source of audio. If undefined default microphone
+          videoSource: undefined, // The source of video. If undefined default webcam
+          publishAudio: true,  	// Whether you want to start publishing with your audio unmuted or not
+          publishVideo: true,  	// Whether you want to start publishing with your video enabled or not
+          resolution: '640x480',  // The resolution of your video
+          frameRate: 30,			// The frame rate of your video
+          insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
+          mirror: true,       	// Whether to mirror your local video or not
+        });
+        commit('SET_OV', OV);
+        commit('SET_MAINSTREAMMANAGER', publisher);
+        commit('SET_PUBLISHER', publisher);
+        commit('SET_SESSION', session);
+        commit('SET_SUBSCRIBERS', subscribers);
+        commit('SET_OVTOKEN', token);
 			});
 			// window.addEventListener('beforeunload', dispatch('leaveSession'))
 		},
@@ -352,7 +347,6 @@ const meetingStore = {
       }
     },
     enterSession({ state, rootGetters, commit }, enterData) {
-      commit('SET_NICKNAME', enterData.nickName);
       commit('SET_CURRENT_DRINK', enterData.currentDrink);
       const drinkData = {
         "liquorLimit": 0,
@@ -361,10 +355,19 @@ const meetingStore = {
       }
       axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
         .then(() => {
-          console.log('음주 기록 성공')
+          state.session.connect(state.ovToken, { clientData: enterData.nickName })
+					.then(() => {
+            state.session.publish(state.publisher);
+            return true;
+					})
+					.catch(error => {
+            console.log('There was an error connecting to the session:', error.code, error.message);
+            return false;
+					});
         })
         .catch(err => {
           console.log(err.response.data)
+          return false;
         })
     },
     sendMessage({ state }, message) {
