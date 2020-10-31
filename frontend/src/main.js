@@ -5,7 +5,9 @@ import router from './router'
 import store from './store'
 import vueMoment from 'vue-moment'
 import secrets from './secrets'
+import VueCookies from 'vue-cookies'
 
+Vue.use(VueCookies)
 Vue.use(vueMoment);
 
 //  calendar

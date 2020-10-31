@@ -17,7 +17,7 @@
     
     <v-row justify="center">
       <v-dialog
-        v-model="dialog"
+        v-model="meetingDialog"
         persistent
         max-width="600px"
         v-if="user && publisher"
@@ -140,7 +140,6 @@ export default {
   data: () => {
     return {
       inputSessionId: '',
-      dialog: false,
       nickName: null,
       currentDrink: null,
       valid: true,
@@ -150,7 +149,7 @@ export default {
   computed: {
     ...mapGetters(['getId']),
     ...mapState(['token', 'user']),
-    ...mapState('meetingStore', ['mySessionId', 'session', 'mainStreamManager', 'publisher', 'subscribers'])
+    ...mapState('meetingStore', ['mySessionId', 'session', 'mainStreamManager', 'publisher', 'subscribers', 'meetingDialog'])
   },
   watch: {
     user(value) {
@@ -167,7 +166,8 @@ export default {
       'leaveSession',
       'clickMuteVideo',
       'clickMuteAudio',
-      'enterSession'
+      'enterSession',
+      'changeMeetingDialog'
     ]),
     hostbtn() {
       if (!this.getId) {
@@ -175,7 +175,7 @@ export default {
         return false;
       }
       this.createSessionId();
-      this.dialog = true;
+      this.changeMeetingDialog(true);
     },
     guestbtn() {
       if (!this.getId) {
@@ -184,12 +184,12 @@ export default {
       }
       this.checkSessionId(this.inputSessionId)
         .then(() => {
-          this.dialog = true;
+          this.changeMeetingDialog(true);
         })
     },
     clickClose() {
       this.leaveSession();
-      this.dialog = false;
+      this.changeMeetingDialog(false);
       this.nickName = this.user.name;
       this.currentDrink = null;
     },
@@ -201,7 +201,7 @@ export default {
       this.enterSession(enterData)
         .then(() => {
           this.$router.push({ name: 'MeetingPage', params: { sessionId: this.mySessionId }});
-          this.dialog = false;
+          this.changeMeetingDialog(false);
         })
     },
     clickCopyURL() {

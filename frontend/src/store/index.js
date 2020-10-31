@@ -18,6 +18,7 @@ export default new Vuex.Store({
     token: cookies.get('auth-token'),
     user: null,
     id: null,
+    invitedSessionId: null
   },
   getters: {
     getToken: function(state) {
@@ -51,9 +52,12 @@ export default new Vuex.Store({
     setId(state, payload) {
       state.id = payload;
     },
+    SET_INVITED_SESSIONID(state, sessionId) {
+      state.invitedSessionId = sessionId;
+    }
   },
   actions: {
-    kakaoLogin({ commit, dispatch }, { access_token }) {
+    kakaoLogin({ state, commit, dispatch }, { access_token }) {
       axios.post(SERVER.URL + SERVER.ROUTES.login, { accessToken: access_token })
         .then(({ data }) => {
           commit('setIsNew', data.new);
@@ -64,6 +68,13 @@ export default new Vuex.Store({
             router.push({ name: 'RegisterPage' })
           } else {
             cookies.set('auth-token', data.token)
+          }
+          if (state.invitedSessionId) {
+            dispatch("meetingStore/checkSessionId", state.invitedSessionId)
+              .then(() => {
+                dispatch("meetingStore/changeMeetingDialog", true);
+                commit('SET_INVITED_SESSIONID', null);
+              })
           }
         }) 
         .catch((err) => {
