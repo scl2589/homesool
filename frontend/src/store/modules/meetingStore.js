@@ -35,7 +35,7 @@ const meetingStore = {
     ovToken: null,
     
     //chatting
-    messages: []
+    messages: [],
   },
   getters: {
   },
@@ -96,6 +96,9 @@ const meetingStore = {
     },
     SET_MESSAGES(state, data) {
       state.messages.push(data);
+    },
+    SET_CLEARMESSAGES(state) {
+      state.messages = [];
     },
     SET_OVTOKEN(state, token) {
       state.ovToken = token;
@@ -268,6 +271,7 @@ const meetingStore = {
       commit('SET_MAINSTREAMMANAGER', undefined);
       commit('SET_PUBLISHER', undefined);
       commit('SET_MYSESSIONID', null);
+      commit('SET_CLEARMESSAGES');
 			// window.removeEventListener('beforeunload', dispatch('leaveSession'));
 		},
 		updateMainVideoStreamManager ({ state, commit }, stream) {
@@ -366,6 +370,14 @@ const meetingStore = {
           state.session.connect(state.ovToken, { clientData: enterData.nickName })
 					.then(() => {
             state.session.publish(state.publisher);
+            state.session.on('signal', (event) => {
+              let data = new Object()
+              let time = new Date()
+              data.message = event.data
+              data.sender = event.from.data.slice(15,-2)
+              data.time = moment(time).format('HH:mm')
+              commit('SET_MESSAGES', data)
+            })
             return true;
 					})
 					.catch(error => {
@@ -392,14 +404,14 @@ const meetingStore = {
         })
     },
     receiveMessage({ state, commit }) {
-      state.session.on('signal', (event) => {
-        let data = new Object()
-        let time = new Date()
-        data.message = event.data
-        data.sender = event.from.data.slice(15,-2)
-        data.time = moment(time).format('HH:mm')
-        commit('SET_MESSAGES', data)
-      })
+      // state.session.on('signal', (event) => {
+      //   let data = new Object()
+      //   let time = new Date()
+      //   data.message = event.data
+      //   data.sender = event.from.data.slice(15,-2)
+      //   data.time = moment(time).format('HH:mm')
+      //   commit('SET_MESSAGES', data)
+      // })
     }
   }
 }

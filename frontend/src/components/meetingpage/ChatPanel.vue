@@ -62,7 +62,6 @@ export default {
     ...mapActions("meetingStore", [
       "clickChatPanel",
       "sendMessage",
-      "receiveMessage",
     ]),
     closeChatPanel() {
       this.clickChatPanel(false);
@@ -71,9 +70,6 @@ export default {
       this.sendMessage(this.message)
       this.message = ""
     }
-  },
-  mounted() {
-    this.receiveMessage();
   },
 };
 </script>
@@ -127,11 +123,4 @@ export default {
   height: 80% !important;
   overflow-y: auto;
 }
-/* #chat-area {
-  height:82vh;
-}
-
-.footer {
-  height: 4vh;
-} */
 </style>
