@@ -27,6 +27,7 @@ const meetingStore = {
     session: undefined,
     mainStreamManager: undefined,
     publisher: undefined,
+    prePublisher: undefined,
     subscribers: [],
     nickName: 'temp' + Math.floor(Math.random() * 100),
     mySessionId: null,
@@ -81,6 +82,9 @@ const meetingStore = {
     },
     SET_PUBLISHER(state, publisher) {
       state.publisher = publisher;
+    },
+    SET_PRE_PUBLISHER(state, publisher) {
+      state.prePublisher = publisher;
     },
     SET_SUBSCRIBERS(state, subscribers) {
       state.subscribers = subscribers;
@@ -402,6 +406,49 @@ const meetingStore = {
           console.log(err)
         })
     },
+    startShareScreen({ state, commit, dispatch }) {
+      state.session.unpublish(state.publisher);
+      commit('SET_PRE_PUBLISHER', state.publisher);
+      commit('SET_PUBLISHER', undefined);
+      
+      dispatch('getToken', state.mySessionId).then(token => {
+        state.session.connect(token).then(() => {
+          var publisher = state.OV.initPublisher("html-element-id", {
+            audioSource: undefined, // The source of audio. If undefined default microphone
+            videoSource: "screen", // The source of video. If undefined default webcam
+            publishAudio: true,  	// Whether you want to start publishing with your audio unmuted or not
+            publishVideo: true,  	// Whether you want to start publishing with your video enabled or not
+            resolution: '1920x1080',  // The resolution of your video
+            frameRate: 30,			// The frame rate of your video
+            insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
+            mirror: false,       	// Whether to mirror your local video or not
+          });
+          publisher.once('accessAllowed', () => {
+            publisher.stream.getMediaStream().getVideoTracks()[0].addEventListener('ended', () => {
+              dispatch('stopShareScreen');
+            });
+            state.session.publish(publisher);
+            commit('SET_PUBLISHER', publisher);
+          });
+          publisher.once('accessDenied', () => {
+            console.warn('ScreenShare: Access Denied');
+          });
+        }).catch(error => {
+          console.warn('There was an error connecting to the session:', error.code, error.message);
+        })
+      })
+    },
+    stopShareScreen({ state, commit, dispatch }) {
+      state.session.unpublish(state.publisher);
+      commit('SET_PUBLISHER', undefined);
+      dispatch('getToken', state.mySessionId).then(token => {
+        state.session.connect(token).then(() => {
+          state.session.publish(state.prePublisher);
+          commit('SET_PUBLISHER', state.prePublisher);
+          commit('SET_PRE_PUBLISHER', null);
+        })
+      })
+    }
   }
 }
 
