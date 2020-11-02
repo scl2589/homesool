@@ -333,6 +333,7 @@ export default {
 
 .right-panel {
   background-color: black;
+  height: 100%;
 }
 
 .multi-panel {

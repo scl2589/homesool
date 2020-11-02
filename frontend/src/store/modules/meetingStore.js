@@ -392,9 +392,8 @@ const meetingStore = {
     },
     sendMessage({ state }, message) {
       state.session.signal({
-        data: message,  // Any string (optional)
-        to: [],                     // Array of Connection objects (optional. Broadcast to everyone if empty)
-        // type: 'my-chat'             // The type of message (optional)
+        data: message,
+        to: [],
       })
         .then(() => {
           console.log("Message successfully sent");
