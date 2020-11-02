@@ -7,6 +7,10 @@ import vueMoment from 'vue-moment'
 import secrets from './secrets'
 import VueCookies from 'vue-cookies'
 
+// vue-js grid
+import Grid from 'vue-js-grid'
+
+Vue.use(Grid)
 Vue.use(VueCookies)
 Vue.use(vueMoment);
 
