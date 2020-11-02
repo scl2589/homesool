@@ -72,10 +72,17 @@
         </button>
         <button 
           class="btn mr-2"
+          @click="clickShareScreen"
         >
           <img 
             src="@/assets/images/screenshare.png" 
             alt="screenshare"
+            v-if="prePublisher"
+          >
+          <img 
+            src="@/assets/images/screenshare_off.png" 
+            alt="screenshare"
+            v-else
           >
         </button>
         <button class="btn mr-2" @click="startSnapshotMode">
@@ -173,6 +180,7 @@ export default {
       'theme',
       'mySessionId',
       'publisher',
+      'prePublisher'
     ]),
     isMultiPanel() {
       if (this.isGameMode || this.isSingingMode || this.isAnonymousMode || this.isSnapshotMode) {
@@ -193,7 +201,19 @@ export default {
     }
   },
   methods: {
-    ...mapActions('meetingStore', ['startGameMode', 'startSingingMode', 'startAnonymousMode', 'startSnapshotMode', 'clickChatPanel', 'changeTheme', 'leaveSession', 'clickMuteVideo', 'clickMuteAudio']),
+    ...mapActions('meetingStore', [
+      'startGameMode',
+      'startSingingMode',
+      'startAnonymousMode',
+      'startSnapshotMode',
+      'clickChatPanel',
+      'changeTheme',
+      'leaveSession',
+      'clickMuteVideo',
+      'clickMuteAudio',
+      'startShareScreen',
+      'stopShareScreen'
+    ]),
     clickChatMode() {
       if (this.isChatPanel === true) {
         this.clickChatPanel(false)
@@ -298,6 +318,17 @@ export default {
           html: `<p>https://k3a503.p.ssafy.io/meet/${this.mySessionId}</p><h5>주소가 복사되었습니다</h5>`
         })
     },
+    clickShareScreen() {
+      if (this.prePublisher) {
+        if (confirm('화면 공유를 중단 하시겠습니까?')) {
+          this.stopShareScreen();
+        }
+      } else {
+        if (confirm('화면 공유를 시작 하시겠습니까?')) {
+          this.startShareScreen();
+        }
+      }
+    }
   },
   beforeRouteLeave (to, from, next) {
     if (confirm('술자리에서 나가시겠습니까?')) {
