@@ -55,6 +55,17 @@ export default {
       message: "",
     };
   },
+  watch: {
+    messages() {
+      setTimeout(() => {
+        var chatDiv = document.getElementById("chat-area");
+        chatDiv.scrollTo({
+        top: chatDiv.scrollHeight - chatDiv.clientHeight,
+        behavior: 'smooth'
+      })
+      }, 50);
+    }
+  },
   computed: {
     ...mapState("meetingStore", ["isChatPanel", "messages"]),
   },
@@ -80,10 +91,14 @@ export default {
   height: 100%;
 }
 
+.header {
+  position: relative;
+}
+
 .close-btn {
   position: absolute;
   color: white;
-  top: 10px;
+  top: 3px;
   right: 10px;
 }
 
@@ -120,7 +135,6 @@ export default {
 }
 
 #chat-area {
-  height: 80% !important;
   overflow-y: auto;
 }
 </style>
