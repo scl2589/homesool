@@ -205,8 +205,20 @@ const meetingStore = {
       commit('SET_SONGS', null);
       commit('SET_SELECTED_SONG', null);
     },
-    changeTheme({ commit }, theme) {
+    changeTheme({ state, commit }, theme) {
       commit('SET_THEME', theme);
+      state.session.signal({
+        data: {
+          theme: theme
+        },
+        to: [],
+      })
+        .then(() => {
+          console.log("theme changed");
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     },
 
     changeMeetingDialog({ commit }, value) {
@@ -402,12 +414,17 @@ const meetingStore = {
             commit('SET_NICKNAME', enterData.nickName);
             state.session.publish(state.publisher);
             state.session.on('signal', (event) => {
-              let data = new Object()
-              let time = new Date()
-              data.message = event.data
-              data.sender = event.from.data.slice(15,-2)
-              data.time = moment(time).format('HH:mm')
-              commit('SET_MESSAGES', data)
+              if (event.data.theme) {
+                commit('SET_THEME', event.data.theme);
+              }
+              if (event.data.message) {
+                let data = new Object()
+                let time = new Date()
+                data.message = event.data.message
+                data.sender = event.from.data.slice(15,-2)
+                data.time = moment(time).format('HH:mm')
+                commit('SET_MESSAGES', data)
+              }
             })
             return true;
 					})
@@ -423,7 +440,9 @@ const meetingStore = {
     },
     sendMessage({ state }, message) {
       state.session.signal({
-        data: message,
+        data: {
+          message: message
+        },
         to: [],
       })
         .then(() => {
