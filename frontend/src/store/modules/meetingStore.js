@@ -197,9 +197,19 @@ const meetingStore = {
           commit('SET_SONGS', res.data.items);
         });
     },
-    selectSong({ commit }, song) {
+    selectSong({ state, commit }, song) {
       commit('SET_SELECTED_SONG', song);
-      console.log(document.getElementById('test'));
+      state.session.signal({
+        type: 'song',
+        data: JSON.stringify(song),
+        to: [],
+      })
+        .then(() => {
+          console.log("song started");
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     },
     closeSingingPanel({ commit }) {
       commit('SET_SONGS', null);
@@ -422,6 +432,14 @@ const meetingStore = {
             });
             state.session.on('signal:theme', (event) => {
               commit('SET_THEME', event.data)
+            });
+            state.session.on('signal:song', (event) => {
+              const song = JSON.parse(event.data);
+              commit('SET_ISANONYMOUS_MODE', false);
+              commit('SET_ISSNAPSHOT_MODE', false);
+              commit('SET_ISGAME_MODE', false);
+              commit('SET_ISSINGING_MODE', true);
+              commit('SET_SELECTED_SONG', song);
             });
             return true;
 					})
