@@ -208,9 +208,9 @@ const meetingStore = {
     changeTheme({ state, commit }, theme) {
       commit('SET_THEME', theme);
       state.session.signal({
-        data: {
+        data: JSON.stringify({
           theme: theme
-        },
+        }),
         to: [],
       })
         .then(() => {
@@ -414,16 +414,17 @@ const meetingStore = {
             commit('SET_NICKNAME', enterData.nickName);
             state.session.publish(state.publisher);
             state.session.on('signal', (event) => {
-              if (event.data.theme) {
-                commit('SET_THEME', event.data.theme);
+              var data = JSON.parse(event.data);
+              if (data.theme) {
+                commit('SET_THEME', data.theme);
               }
-              if (event.data.message) {
-                let data = new Object()
+              if (data.message) {
+                let messageData = new Object()
                 let time = new Date()
-                data.message = event.data.message
-                data.sender = event.from.data.slice(15,-2)
-                data.time = moment(time).format('HH:mm')
-                commit('SET_MESSAGES', data)
+                messageData.message = data.message
+                messageData.sender = event.from.data.slice(15,-2)
+                messageData.time = moment(time).format('HH:mm')
+                commit('SET_MESSAGES', messageData)
               }
             })
             return true;
