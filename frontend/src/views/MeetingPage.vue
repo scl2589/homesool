@@ -198,6 +198,9 @@ export default {
           this.playing = false;
         }
       }
+    },
+    theme() {
+      this.changeThemeBGM(this.theme);
     }
   },
   methods: {
@@ -252,7 +255,6 @@ export default {
       }).then((result) => {
         if (result.isConfirmed && result.value) {
           this.changeTheme(result.value);
-          this.changeThemeBGM(result.value);
           Swal.fire(
             '테마 변경!',
             `테마가 ${result.value}(으)로 변경 되었습니다.`,
