@@ -77,7 +77,7 @@
           <img 
             src="@/assets/images/screenshare.png" 
             alt="screenshare"
-            v-if="prePublisher"
+            v-if="publisher2"
           >
           <img 
             src="@/assets/images/screenshare_off.png" 
@@ -180,7 +180,7 @@ export default {
       'theme',
       'mySessionId',
       'publisher',
-      'prePublisher'
+      'publisher2'
     ]),
     isMultiPanel() {
       if (this.isGameMode || this.isSingingMode || this.isAnonymousMode || this.isSnapshotMode) {
@@ -319,7 +319,7 @@ export default {
         })
     },
     clickShareScreen() {
-      if (this.prePublisher) {
+      if (this.publisher2) {
         if (confirm('화면 공유를 중단 하시겠습니까?')) {
           this.stopShareScreen();
         }
