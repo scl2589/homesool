@@ -78,7 +78,7 @@ export default {
       remain: 5,
       expired: false,
       dialog: false,
-      captured: null
+      captured: null,
     }
   },
   computed: {
@@ -92,6 +92,27 @@ export default {
             this.remain--;
           }, 1000)
         } else {
+          let canvas = document.getElementById('canvas')
+          let ctx = canvas.getContext('2d');
+          let videos = document.querySelectorAll('video')
+          let w, h
+          for (let i = 0, len = videos.length; i < len; i++ ) {
+            const v = videos[i]
+            if (!v.src) continue //no video here
+            try {
+              w = v.videoWidth
+              h = v.videoHeight 
+              canvas.width = w
+              canvas.height = h 
+              ctx.fillRect(0, 0, w, h) 
+              ctx.drawImage(v, 0, 0, w, h)
+              v.style.backgroundImage = `url(${canvas.toDataURL()})`
+              v.style.backgroundSize = 'cover'
+              ctx.clearRect(0, 0, w, h);
+            } catch(e) {
+              continue
+            }
+          }
           html2canvas(document.querySelector("#capture"), {
             userCORS:true,
           }).then(canvas => {
