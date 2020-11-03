@@ -441,9 +441,9 @@ const meetingStore = {
     },
     sendMessage({ state }, message) {
       state.session.signal({
-        data: {
+        data: JSON.stringify({
           message: message
-        },
+        }),
         to: [],
       })
         .then(() => {
