@@ -13,11 +13,9 @@
 			<!-- <div id="main-video" class="col-md-6">
 				<user-video :stream-manager="mainStreamManager"/>
 			</div> -->
-      <div class="row no-gutters">
-        <div id="video-container" class="col-4">
-          <user-video :stream-manager="publisher" @click.native="updateMainVideoStreamManager(publisher)"/>
-          <user-video v-for="(sub, index) in subscribers" :key="index" :stream-manager="sub" @click.native="updateMainVideoStreamManager(sub)"/>
-        </div>
+      <div class="d-flex row no-gutters">
+        <user-video class="my-2 px-2" :class="{ 'col-12': one, 'col-6' : two, 'col-4' : three, 'col-3' : eight, 'col-2' : twelve }" :stream-manager="publisher" @click.native="updateMainVideoStreamManager(publisher)"/>
+        <user-video class="my-2 px-2" :class="{ 'col-12': one, 'col-6' : two, 'col-4' : three, 'col-3' : eight, 'col-2' : twelve }" v-for="(sub, index) in subscribers" :key="index" :stream-manager="sub" @click.native="updateMainVideoStreamManager(sub)"/>
       </div>
 		</div>
   </div>
@@ -34,7 +32,11 @@ export default {
   },
   data() {
     return {
-
+      one: true,
+      two: false,
+      three: false,
+      eight: false,
+      twelve: false
     }
   },
   computed: {
@@ -46,6 +48,40 @@ export default {
   watch: {
     theme() {
       this.$forceUpdate();
+    },
+    subscribers() {
+      let count = this.subscribers.length + 1
+      if (count == 1) {
+        this.one = true
+        this.two = false
+        this.three = false
+        this.eight = false
+        this.twelve = false
+      } else if (count == 2 || count == 4) {
+        this.one = false
+        this.two = true
+        this.three = false
+        this.eight = false
+        this.twelve = false
+      } else if (count == 3 || count == 5 || count == 6) {
+        this.one = false
+        this.two = false
+        this.three = true
+        this.eight = false
+        this.twelve = false
+      } else if (count == 7 || count == 8) {
+        this.one = false
+        this.two = false
+        this.three = false
+        this.eight = true
+        this.twelve = false
+      } else {
+        this.one = false
+        this.two = false
+        this.three = false
+        this.eight = false
+        this.twelve = true
+      }
     }
   }
 }
