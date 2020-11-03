@@ -15,7 +15,7 @@
 			</div> -->
       <div class="row no-gutters">
         <div id="video-container" class="col-4">
-          <user-video :stream-manager="publisher" @click.native="updateMainVideoStreamManager(publisher)"/>
+          <user-video :stream-manager="publisher" @click.native="updateMainVideoStreamManager(publisher)" v-if="publisher"/>
           <user-video v-for="(sub, index) in subscribers" :key="index" :stream-manager="sub" @click.native="updateMainVideoStreamManager(sub)"/>
         </div>
       </div>

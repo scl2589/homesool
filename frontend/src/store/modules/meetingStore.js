@@ -24,16 +24,21 @@ const meetingStore = {
 
     // openvidu
     OV: undefined,
+    OV2: undefined,
     session: undefined,
+    session2: undefined,
     mainStreamManager: undefined,
+    mainStreamManager2: undefined,
     publisher: undefined,
-    prePublisher: undefined,
+    publisher2: undefined,
     subscribers: [],
-    nickName: 'temp' + Math.floor(Math.random() * 100),
+    subscribers2: [],
+    nickName: null,
     mySessionId: null,
     roomId: null,
     myself: null,
     ovToken: null,
+    ovToken2: null,
     
     //chatting
     messages: [],
@@ -74,20 +79,32 @@ const meetingStore = {
     SET_OV(state, OV) {
       state.OV = OV;
     },
+    SET_OV2(state, OV) {
+      state.OV2 = OV;
+    },
     SET_SESSION(state, session) {
       state.session = session;
+    },
+    SET_SESSION2(state, session) {
+      state.session2 = session;
     },
     SET_MAINSTREAMMANAGER(state, mainStreamManager) {
       state.mainStreamManager = mainStreamManager;
     },
+    SET_MAINSTREAMMANAGER2(state, mainStreamManager) {
+      state.mainStreamManager2 = mainStreamManager;
+    },
     SET_PUBLISHER(state, publisher) {
       state.publisher = publisher;
     },
-    SET_PRE_PUBLISHER(state, publisher) {
-      state.prePublisher = publisher;
+    SET_PUBLISHER2(state, publisher) {
+      state.publisher2 = publisher;
     },
     SET_SUBSCRIBERS(state, subscribers) {
       state.subscribers = subscribers;
+    },
+    SET_SUBSCRIBERS2(state, subscribers) {
+      state.subscribers2 = subscribers;
     },
     SET_CURRENT_DRINK(state, drinkId) {
       state.currentDrink = drinkId;
@@ -106,6 +123,9 @@ const meetingStore = {
     },
     SET_OVTOKEN(state, token) {
       state.ovToken = token;
+    },
+    SET_OVTOKEN2(state, token) {
+      state.ovToken2 = token;
     },
     SET_MEETING_DIALOG(state, value) {
       state.meetingDialog = value;
@@ -264,7 +284,6 @@ const meetingStore = {
         commit('SET_SUBSCRIBERS', subscribers);
         commit('SET_OVTOKEN', token);
 			});
-			// window.addEventListener('beforeunload', dispatch('leaveSession'))
 		},
 		leaveSession ({ state, commit }) {
 			// --- Leave the session by calling 'disconnect' method over the Session object ---
@@ -276,7 +295,14 @@ const meetingStore = {
       commit('SET_PUBLISHER', undefined);
       commit('SET_MYSESSIONID', null);
       commit('SET_CLEARMESSAGES');
-			// window.removeEventListener('beforeunload', dispatch('leaveSession'));
+      commit('SET_OVTOKEN', null);
+      if (state.session2) state.session2.disconnect();
+      commit('SET_OV2', undefined);
+      commit('SET_SESSION2', undefined);
+      commit('SET_SUBSCRIBERS2', []);
+      commit('SET_MAINSTREAMMANAGER2', undefined);
+      commit('SET_PUBLISHER2', undefined);
+      commit('SET_OVTOKEN2', null);
 		},
 		updateMainVideoStreamManager ({ state, commit }, stream) {
 			if (state.mainStreamManager === stream) return;
@@ -373,6 +399,7 @@ const meetingStore = {
         .then(() => {
           state.session.connect(state.ovToken, { clientData: enterData.nickName })
 					.then(() => {
+            commit('SET_NICKNAME', enterData.nickName);
             state.session.publish(state.publisher);
             state.session.on('signal', (event) => {
               let data = new Object()
@@ -407,47 +434,66 @@ const meetingStore = {
         })
     },
     startShareScreen({ state, commit, dispatch }) {
-      state.session.unpublish(state.publisher);
-      commit('SET_PRE_PUBLISHER', state.publisher);
-      commit('SET_PUBLISHER', undefined);
-      
-      dispatch('getToken', state.mySessionId).then(token => {
-        state.session.connect(token).then(() => {
-          var publisher = state.OV.initPublisher("html-element-id", {
-            audioSource: undefined, // The source of audio. If undefined default microphone
-            videoSource: "screen", // The source of video. If undefined default webcam
-            publishAudio: true,  	// Whether you want to start publishing with your audio unmuted or not
-            publishVideo: true,  	// Whether you want to start publishing with your video enabled or not
-            resolution: '1920x1080',  // The resolution of your video
-            frameRate: 30,			// The frame rate of your video
-            insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
-            mirror: false,       	// Whether to mirror your local video or not
-          });
-          publisher.once('accessAllowed', () => {
-            publisher.stream.getMediaStream().getVideoTracks()[0].addEventListener('ended', () => {
+      // --- Get an OpenVidu object ---
+			const OV2 = new OpenVidu();
+			// --- Init a session ---
+			const session2 = OV2.initSession();
+			// --- Specify the actions when events take place in the session ---
+			// On every new Stream received...
+      const subscribers2 = [];
+			session2.on('streamCreated', ({ stream }) => {
+        const subscriber2 = session2.subscribe(stream);
+				subscribers2.push(subscriber2);
+			});
+			// On every Stream destroyed...
+			session2.on('streamDestroyed', ({ stream }) => {
+				const index2 = subscribers2.indexOf(stream.streamManager, 0);
+				if (index2 >= 0) {
+					subscribers2.splice(index2, 1);
+				}
+			});
+      dispatch('getToken', state.mySessionId).then(token2 => {
+        let publisher2 = OV2.initPublisher(undefined, {
+          audioSource: false, // The source of audio. If undefined default microphone
+          videoSource: 'screen', // The source of video. If undefined default webcam
+          publishAudio: true,  	// Whether you want to start publishing with your audio unmuted or not
+          publishVideo: true,  	// Whether you want to start publishing with your video enabled or not
+          resolution: '1920x1080',  // The resolution of your video
+          frameRate: 30,			// The frame rate of your video
+          insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
+          mirror: false,       	// Whether to mirror your local video or not
+        });
+        session2.connect(token2, { clientData: state.nickName + '화면' })
+        .then(() => {
+          publisher2.once('accessAllowed', () => {
+            publisher2.stream.getMediaStream().getVideoTracks()[0].addEventListener('ended', () => {
               dispatch('stopShareScreen');
             });
-            state.session.publish(publisher);
-            commit('SET_PUBLISHER', publisher);
+            session2.publish(publisher2);
+            commit('SET_OV2', OV2);
+            commit('SET_MAINSTREAMMANAGER2', publisher2);
+            commit('SET_PUBLISHER2', publisher2);
+            commit('SET_SESSION2', session2);
+            commit('SET_SUBSCRIBERS2', subscribers2);
+            commit('SET_OVTOKEN2', token2);
           });
-          publisher.once('accessDenied', () => {
+          publisher2.once('accessDenied', () => {
             console.warn('ScreenShare: Access Denied');
           });
-        }).catch(error => {
-          console.warn('There was an error connecting to the session:', error.code, error.message);
         })
-      })
+        .catch(error => {
+          console.log('There was an error connecting to the session:', error.code, error.message);
+        });
+			});
     },
-    stopShareScreen({ state, commit, dispatch }) {
-      state.session.unpublish(state.publisher);
-      commit('SET_PUBLISHER', undefined);
-      dispatch('getToken', state.mySessionId).then(token => {
-        state.session.connect(token).then(() => {
-          state.session.publish(state.prePublisher);
-          commit('SET_PUBLISHER', state.prePublisher);
-          commit('SET_PRE_PUBLISHER', null);
-        })
-      })
+    stopShareScreen({ state, commit }) {
+      if (state.session2) state.session2.disconnect();
+      commit('SET_OV2', undefined);
+      commit('SET_SESSION2', undefined);
+      commit('SET_SUBSCRIBERS2', []);
+      commit('SET_MAINSTREAMMANAGER2', undefined);
+      commit('SET_PUBLISHER2', undefined);
+      commit('SET_OVTOKEN2', null);
     }
   }
 }
