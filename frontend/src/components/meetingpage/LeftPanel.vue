@@ -13,48 +13,28 @@
 			<!-- <div id="main-video" class="col-md-6">
 				<user-video :stream-manager="mainStreamManager"/>
 			</div> -->
-      <div id="video-container">
-        <grid
-          :center="false"
-          :draggable="true"
-          :sortable="true"
-          :items="colors"
-          :height="80"
-          :width="80"
-          @change="change"
-          @remove="remove"
-          @click="click"
-          @sort="sort">
-          <template slot="cell" scope="props">
-            <user-video 
-              :stream-manager="publisher" 
-            />
-            <user-video 
-              v-for="(sub, index) in subscribers" 
-              :key="index" 
-              :stream-manager="sub" 
-            />
-          </template>
-        </grid>
+      <div class="row no-gutters">
+        <div id="video-container" class="col-4">
+          <user-video :stream-manager="publisher" @click.native="updateMainVideoStreamManager(publisher)"/>
+          <user-video v-for="(sub, index) in subscribers" :key="index" :stream-manager="sub" @click.native="updateMainVideoStreamManager(sub)"/>
+        </div>
       </div>
-    </div>
+		</div>
   </div>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex';
 import UserVideo from './UserVideo';
-import { generateRGBColors } from "./utils.js";
+
 export default {
   name: 'LeftPanel',
   components: {
     UserVideo
   },
   data() {
-    let colors = generateRGBColors(1)
     return {
-      colors,
-      selected: null
+
     }
   },
   computed: {
@@ -67,22 +47,6 @@ export default {
     theme() {
       this.$forceUpdate();
     }
-  },
-  methods: {
-    click({ items, index }) {
-      let value = items.find((v) => v.index === index);
-      this.selected = value.item;
-      console.log(this.selected);
-    },
-    change(event) {
-      console.log("change", event);
-    },
-    remove(event) {
-      console.log("remove", event);
-    },
-    sort(event) {
-      console.log("sort", event);
-    },
   }
 }
 </script>
