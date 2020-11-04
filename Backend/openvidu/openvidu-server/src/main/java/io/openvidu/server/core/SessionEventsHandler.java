@@ -40,6 +40,7 @@ import io.openvidu.java.client.OpenViduRole;
 import io.openvidu.server.cdr.CallDetailRecord;
 import io.openvidu.server.config.OpenviduBuildInfo;
 import io.openvidu.server.config.OpenviduConfig;
+import io.openvidu.server.game.GameService;
 import io.openvidu.server.kurento.core.KurentoParticipant;
 import io.openvidu.server.kurento.endpoint.KurentoFilter;
 import io.openvidu.server.recording.Recording;
@@ -51,6 +52,9 @@ public class SessionEventsHandler {
 
 	@Autowired
 	protected RpcNotificationService rpcNotificationService;
+
+	@Autowired
+	protected GameService gameService;
 
 	@Autowired
 	protected CallDetailRecord CDR;
@@ -332,6 +336,10 @@ public class SessionEventsHandler {
 			}
 		}
 
+		if (message.has("gameStatus")) {
+			gameService.controlGame(participant, message, participants);
+			return;
+		}
 		JsonObject params = new JsonObject();
 		if (message.has("data")) {
 			params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_DATA_PARAM, message.get("data").getAsString());
@@ -360,35 +368,40 @@ public class SessionEventsHandler {
 
 		if (toSet.isEmpty()) {
 			// 타입이 게임일 때
-			if (message.get("type").getAsString().equals("signal:game")) {
-				// 단어 정하기
-				String word = "사과";
-				
-				// 참여자 전부 확인
-				for (Participant pp : participants) {
-					// pp -> 이번에 게임할 플레이어
-					params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_DATA_PARAM,
-							word + " " + pp.getParticipantPublicId());
-					// 브로드 캐스팅
-					for (Participant p : participants) {
-						System.out.println("data : " +params.get("data").getAsString());
-						rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
-								ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
-					}
-					// 게임시간 3초씩 주기
-					try {
-						Thread.sleep(3000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			} else {
-				for (Participant p : participants) {
-					rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
-							ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
-				}
+//			if (message.get("type").getAsString().equals("signal:game")) {
+//				// 단어 정하기
+//				String word = "사과";
+//				
+//				// 참여자 전부 확인
+//				for (Participant pp : participants) {
+//					// pp -> 이번에 게임할 플레이어
+//					params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_DATA_PARAM,
+//							word + " " + pp.getParticipantPublicId());
+//					// 브로드 캐스팅
+//					for (Participant p : participants) {
+//						System.out.println("data : " +params.get("data").getAsString());
+//						rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+//								ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+//					}
+//					// 게임시간 3초씩 주기
+//					try {
+//						Thread.sleep(3000);
+//					} catch (InterruptedException e) {
+//						e.printStackTrace();
+//					}
+//				}
+//			} else {
+//				for (Participant p : participants) {
+//					rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+//							ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+//				}
+			for (Participant p : participants) {
+				rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+						ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
 			}
-		} else {
+		} else
+
+		{
 			Set<String> participantPublicIds = participants.stream().map(Participant::getParticipantPublicId)
 					.collect(Collectors.toSet());
 			if (participantPublicIds.containsAll(toSet)) {
