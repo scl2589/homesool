@@ -81,6 +81,7 @@
         <div>
           <button
             class="btn-yellow rounded"
+            @click="clickStartGame()"
           >
             시작하기
           </button>
@@ -92,6 +93,7 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   name: 'SmileLeadsToAlcoholDescritpion',
   data() {
@@ -102,6 +104,16 @@ export default {
         '5분동안 음소거',
         '5분동안 카메라 정지'
       ],
+    }
+  },
+   methods:{
+     ...mapActions("meetingStore", [
+      "clickChatPanel",
+      "sendGameRequest",
+    ]),
+     clickStartGame() {
+     alert("게임시작");
+      this.sendGameRequest(0,0,1);
     }
   }
 }

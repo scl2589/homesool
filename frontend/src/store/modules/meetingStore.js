@@ -441,6 +441,11 @@ const meetingStore = {
               commit('SET_ISSINGING_MODE', true);
               commit('SET_SELECTED_SONG', song);
             });
+            state.session.on('signal:game', (event) => {
+              console.log('여기')
+              console.log(event.type)
+              console.log(event.penaltyId)
+            });
             return true;
 					})
 					.catch(error => {
@@ -527,6 +532,23 @@ const meetingStore = {
       commit('SET_MAINSTREAMMANAGER2', undefined);
       commit('SET_PUBLISHER2', undefined);
       commit('SET_OVTOKEN2', null);
+    },
+    sendGameRequest({ state }, gameId, penaltyId, gameStatus){
+      state.session.signal({
+        data:"",
+        gameId:gameId,
+        paneltyId:penaltyId,
+        gameStatus:gameStatus,
+        to: [],
+        type: 'game'
+      })
+        .then(() => {
+          console.log("Message successfully sent");
+          console.log(this.data);
+        })
+        .catch((err) => {
+          console.log(err)
+      })
     }
   }
 }
