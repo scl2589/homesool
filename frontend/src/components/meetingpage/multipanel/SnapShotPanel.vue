@@ -113,7 +113,7 @@ export default {
               continue
             }
           }
-          html2canvas(document.querySelector("#capture"), {
+          html2canvas(document.getElementById('snapshot'), {
             userCORS:true,
           }).then(canvas => {
             canvas.style.maxWidth="80%"

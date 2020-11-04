@@ -16,5 +16,18 @@ export default {
 <style scoped>
 .video {
 	max-width: 100%;
+	/* height: 65vh; */
+}
+
+.height70 {
+  height: 65vh !important;
+}
+
+.height30 {
+	height: 30vh !important;
+}
+
+.height15 {
+	height: 15vh !important;
 }
 </style>

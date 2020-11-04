@@ -62,39 +62,129 @@ export default {
     theme() {
       this.$forceUpdate();
     },
-    subscribers() {
-      let count = this.subscribers.length + 1
-      if (count == 1) {
-        this.one = true
-        this.two = false
-        this.three = false
-        this.eight = false
-        this.twelve = false
-      } else if (count == 2 || count == 4) {
-        this.one = false
-        this.two = true
-        this.three = false
-        this.eight = false
-        this.twelve = false
-      } else if (count == 3 || count == 5 || count == 6) {
-        this.one = false
-        this.two = false
-        this.three = true
-        this.eight = false
-        this.twelve = false
-      } else if (count == 7 || count == 8) {
-        this.one = false
-        this.two = false
-        this.three = false
-        this.eight = true
-        this.twelve = false
-      } else {
-        this.one = false
-        this.two = false
-        this.three = false
-        this.eight = false
-        this.twelve = true
-      }
+    subscribers: {
+      handler() {
+        let count = this.subscribers.length + 1
+        console.log("COUNT", count)
+        // console.log(subscribers)
+        // let videos =  document.querySelectorAll("video");
+        // console.log("videos", videos)
+        if (count == 1) {
+          this.one = true
+          this.two = false
+          this.three = false
+          this.eight = false
+          this.twelve = false
+          this.$nextTick(function() {
+            let videos =  document.querySelectorAll("video");
+            for (let i = 0, len = videos.length; i < len; i++ ) {
+              videos[i].classList.add("height70")
+              videos[i].classList.remove("height30")
+              videos[i].classList.remove("height15")
+            }
+          })
+        } else if (count == 2 || count == 4) {
+          this.one = false
+          this.two = true
+          this.three = false
+          this.eight = false
+          this.twelve = false
+          if (count == 2) {
+            this.$nextTick(function() {
+              let videos =  document.querySelectorAll("video");
+              for (let i = 0, len = videos.length; i < len; i++ ) {
+                videos[i].classList.add("height70")
+                videos[i].classList.remove("height30")
+                videos[i].classList.remove("height15")
+              }
+            })
+          } else {
+            this.$nextTick(function() {
+              let videos =  document.querySelectorAll("video");
+              for (let i = 0, len = videos.length; i < len; i++ ) {
+                videos[i].classList.add("height30")
+                videos[i].classList.remove("height70")
+                videos[i].classList.remove("height15")
+              }
+            })
+          }
+        } else if (count == 3 || count == 5 || count == 6) {
+          this.one = false
+          this.two = false
+          this.three = true
+          this.eight = false
+          this.twelve = false
+          if (count == 3) {
+            this.$nextTick(function() {
+              let videos =  document.querySelectorAll("video");
+              for (let i = 0, len = videos.length; i < len; i++ ) {
+                videos[i].classList.add("height70")
+                videos[i].classList.remove("height30")
+                videos[i].classList.remove("height15")
+              }
+            })
+          } else {
+            this.$nextTick(function() {
+              let videos =  document.querySelectorAll("video");
+              for (let i = 0, len = videos.length; i < len; i++ ) {
+                videos[i].classList.add("height30")
+                videos[i].classList.remove("height70")
+                videos[i].classList.remove("height15")
+              }
+            })
+          }
+        } else if (count == 7 || count == 8) {
+          this.one = false
+          this.two = false
+          this.three = false
+          this.eight = true
+          this.twelve = false
+          this.$nextTick(function() {
+            let videos =  document.querySelectorAll("video");
+            for (let i = 0, len = videos.length; i < len; i++ ) {
+              videos[i].classList.add("height30")
+              videos[i].classList.remove("height70")
+              videos[i].classList.remove("height15")
+            }
+          })
+        } else {
+          this.one = false
+          this.two = false
+          this.three = false
+          this.eight = false
+          this.twelve = true
+          if (count <= 12) {
+            this.$nextTick(function() {
+              let videos =  document.querySelectorAll("video");
+              for (let i = 0, len = videos.length; i < len; i++ ) {
+                videos[i].classList.add("height30")
+                videos[i].classList.remove("height70")
+                videos[i].classList.remove("height15")
+              }
+            })
+          } else {
+            this.$nextTick(function() {
+              let videos =  document.querySelectorAll("video");
+              for (let i = 0, len = videos.length; i < len; i++ ) {
+                videos[i].classList.add("height15")
+                videos[i].classList.remove("height70")
+                videos[i].classList.remove("height30")
+              }
+            })
+          }
+          
+        }
+      } 
+
+    },
+  },
+  mounted() {
+    if (this.one === true){
+      this.$nextTick(function () {
+        // 모든 화면이 렌더링된 후 실행합니다.
+        let video = document.querySelector("video")
+        video.classList.add("height70")
+      })
     }
   }
 }
@@ -116,4 +206,5 @@ export default {
   background-color: yellow;
   margin-top: 10vh;
 }
+
 </style>
