@@ -42,6 +42,7 @@ public class ApiRestPathRewriteFilter implements Filter {
 			put("/layouts/custom/", RequestMappings.CUSTOM_LAYOUTS + "/");
 
 			put("/accept-certificate", RequestMappings.ACCEPT_CERTIFICATE); // ??
+			
 		}
 	};
 	protected String[] PATH_REDIRECTIONS_ARRAY;

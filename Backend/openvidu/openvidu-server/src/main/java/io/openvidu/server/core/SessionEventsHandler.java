@@ -359,9 +359,34 @@ public class SessionEventsHandler {
 		}
 
 		if (toSet.isEmpty()) {
-			for (Participant p : participants) {
-				rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
-						ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+			// 타입이 게임일 때
+			if (message.get("type").getAsString().equals("signal:game")) {
+				// 단어 정하기
+				String word = "사과";
+				
+				// 참여자 전부 확인
+				for (Participant pp : participants) {
+					// pp -> 이번에 게임할 플레이어
+					params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_DATA_PARAM,
+							word + " " + pp.getParticipantPublicId());
+					// 브로드 캐스팅
+					for (Participant p : participants) {
+						System.out.println("data : " +params.get("data").getAsString());
+						rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+								ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+					}
+					// 게임시간 3초씩 주기
+					try {
+						Thread.sleep(3000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			} else {
+				for (Participant p : participants) {
+					rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+							ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+				}
 			}
 		} else {
 			Set<String> participantPublicIds = participants.stream().map(Participant::getParticipantPublicId)
