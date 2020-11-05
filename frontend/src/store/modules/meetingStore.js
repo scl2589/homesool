@@ -42,6 +42,9 @@ const meetingStore = {
     
     //chatting
     messages: [],
+
+    currentSongTime: null,
+    singingHost: null
   },
   getters: {
   },
@@ -129,6 +132,12 @@ const meetingStore = {
     },
     SET_MEETING_DIALOG(state, value) {
       state.meetingDialog = value;
+    },
+    SET_CURRENT_SONGTIME(state, currentSongTime) {
+      state.currentSongTime = currentSongTime
+    },
+    SET_SINGING_HOST(state, singingHost) {
+      state.singingHost = singingHost
     }
   },
   actions: {
@@ -199,6 +208,10 @@ const meetingStore = {
     },
     selectSong({ state, commit }, song) {
       commit('SET_SELECTED_SONG', song);
+      commit('SET_SONGS', null);
+      if (song) {
+        commit('SET_SINGING_HOST', state.publisher.stream.connection.connectionId);
+      }
       state.session.signal({
         type: 'song',
         data: JSON.stringify(song),
@@ -211,9 +224,25 @@ const meetingStore = {
           console.log(err)
         })
     },
-    closeSingingPanel({ commit }) {
-      commit('SET_SONGS', null);
-      commit('SET_SELECTED_SONG', null);
+    checkSongSync({ state }, currentSongTime) {
+      state.session.signal({
+        type: 'songsync',
+        data: currentSongTime,
+        to: [],
+      })
+        .then(() => {
+          console.log("songsync");
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    closeSingingPanel({ state, commit, dispatch }) {
+      if (state.publisher.stream.connection.connectionId === state.singingHost) {
+        dispatch('selectSong', null);
+      } else {
+        commit('SET_SELECTED_SONG', null);
+      }
     },
     changeTheme({ state, commit }, theme) {
       commit('SET_THEME', theme);
@@ -433,13 +462,20 @@ const meetingStore = {
             state.session.on('signal:theme', (event) => {
               commit('SET_THEME', event.data)
             });
+            state.session.on('signal:songsync', (event) => {
+              commit('SET_CURRENT_SONGTIME', event.data);
+            });
             state.session.on('signal:song', (event) => {
               const song = JSON.parse(event.data);
+              if (song) {
+                commit('SET_SINGING_HOST', event.from.connectionId);
+              }
               commit('SET_ISANONYMOUS_MODE', false);
               commit('SET_ISSNAPSHOT_MODE', false);
               commit('SET_ISGAME_MODE', false);
               commit('SET_ISSINGING_MODE', true);
               commit('SET_SELECTED_SONG', song);
+              commit('SET_SONGS', []);
             });
             state.session.on('signal:game', (event) => {
               console.log('여기')
