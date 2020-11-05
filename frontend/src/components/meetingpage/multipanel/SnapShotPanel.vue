@@ -96,23 +96,60 @@ export default {
           let ctx = canvas.getContext('2d');
           let videos = document.querySelectorAll('video');
           let w, h;
-
-          for (let i = 0, len = videos.length; i < len; i++ ) {
-            const v = videos[i]
-            try {
-              w = v.videoWidth
-              h = v.videoHeight
-              canvas.width = w * 2
-              canvas.height = h * 2
-              ctx.fillRect(0, 0, w, h) 
-              ctx.drawImage(v, 0, 0, w, h)
-              v.style.backgroundImage = `url(${canvas.toDataURL()})`
-              v.style.backgroundSize = 'cover'
-              ctx.clearRect(0, 0, w, h);
-            } catch(e) {
-              continue
+          if (videos.length == 1) {
+            for (let i = 0, len = videos.length; i < len; i++ ) {
+              const v = videos[i]
+              try {
+                w = v.videoWidth
+                h = v.videoHeight
+                canvas.width = w * 2
+                canvas.height = h * 2
+                ctx.fillRect(w/2, 0, w, h) 
+                ctx.drawImage(v, w/2, 0, w, h)
+                v.style.backgroundImage = `url(${canvas.toDataURL()})`
+                v.style.backgroundSize = 'cover'
+                ctx.clearRect(0, 0, w, h);
+              } catch(e) {
+                continue
+              }
             }
           }
+          else if (videos.length <= 3) {
+            for (let i = 0, len = videos.length; i < len; i++ ) {
+              const v = videos[i]
+              try {
+                w = v.videoWidth
+                h = v.videoHeight
+                canvas.width = w * 2
+                canvas.height = h * 2
+                ctx.fillRect(0, h/2, w, h) 
+                ctx.drawImage(v, 0, h/2, w, h)
+                v.style.backgroundImage = `url(${canvas.toDataURL()})`
+                v.style.backgroundSize = 'cover'
+                ctx.clearRect(0, 0, w, h);
+              } catch(e) {
+                continue
+              }
+            }
+          } else {
+            for (let i = 0, len = videos.length; i < len; i++ ) {
+              const v = videos[i]
+              try {
+                w = v.videoWidth
+                h = v.videoHeight
+                canvas.width = w * 2
+                canvas.height = h * 2
+                ctx.fillRect(w/2, h/2, w, h) 
+                ctx.drawImage(v, w/2, h/2, w, h)
+                v.style.backgroundImage = `url(${canvas.toDataURL()})`
+                v.style.backgroundSize = 'cover'
+                ctx.clearRect(0, 0, w, h);
+              } catch(e) {
+                continue
+              }
+            }
+          }
+
           html2canvas(document.querySelector('#capture'), {
             userCORS:true,
           }).then(canvas => {
@@ -122,10 +159,6 @@ export default {
             canvas.style.marginRight="auto"
             this.captured = canvas
             document.getElementById('preview').appendChild(canvas)  
-            // canvas.addEventListener("click", () => {
-            //   this.dialog = true
-            //   document.getElementById('attach').appendChild(canvas)
-            // } )
             for (let i = 0, len = videos.length; i < len; i++ ) {
               videos[i].style.background='none'
             }

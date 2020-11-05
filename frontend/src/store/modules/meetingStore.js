@@ -15,6 +15,7 @@ const meetingStore = {
     isAnonymousMode: false,
     isSnapshotMode: false,
     isChatPanel: false,
+    isSharingMode: false,
     selectedSong: null,
     songs: null,
     theme: 'basic',
@@ -43,8 +44,9 @@ const meetingStore = {
     //chatting
     messages: [],
 
+    // singing
     currentSongTime: null,
-    singingHost: null
+    singingHost: null,
   },
   getters: {
   },
