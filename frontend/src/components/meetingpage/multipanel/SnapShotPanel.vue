@@ -92,18 +92,18 @@ export default {
             this.remain--;
           }, 1000)
         } else {
-          let canvas = document.getElementById('canvas')
+          let canvas = document.getElementById('canvas');
           let ctx = canvas.getContext('2d');
-          let videos = document.querySelectorAll('video')
-          let w, h
+          let videos = document.querySelectorAll('video');
+          let w, h;
+
           for (let i = 0, len = videos.length; i < len; i++ ) {
             const v = videos[i]
-            if (!v.src) continue //no video here
             try {
               w = v.videoWidth
-              h = v.videoHeight 
-              canvas.width = w
-              canvas.height = h 
+              h = v.videoHeight
+              canvas.width = w * 2
+              canvas.height = h * 2
               ctx.fillRect(0, 0, w, h) 
               ctx.drawImage(v, 0, 0, w, h)
               v.style.backgroundImage = `url(${canvas.toDataURL()})`
@@ -113,7 +113,7 @@ export default {
               continue
             }
           }
-          html2canvas(document.getElementById('snapshot'), {
+          html2canvas(document.querySelector('#capture'), {
             userCORS:true,
           }).then(canvas => {
             canvas.style.maxWidth="80%"
@@ -126,6 +126,9 @@ export default {
             //   this.dialog = true
             //   document.getElementById('attach').appendChild(canvas)
             // } )
+            for (let i = 0, len = videos.length; i < len; i++ ) {
+              videos[i].style.background='none'
+            }
             
         });
           this.expired = true;
@@ -146,7 +149,7 @@ export default {
       // html2canvas(document.querySelector("#capture")).then(canvas => {
       //     document.getElementById('preview').appendChild(canvas)
       // });
-      this.captured
+      // this.captured
       var a = document.createElement('a');
     // toDataURL defaults to png, so we need to request a jpeg, then convert for file download.
     a.href = this.captured.toDataURL("image/jpeg").replace("image/jpeg", "image/octet-stream");
