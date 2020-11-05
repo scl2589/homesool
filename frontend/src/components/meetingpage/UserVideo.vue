@@ -1,7 +1,10 @@
 <template>
 <div v-if="streamManager">
 	<ov-video :stream-manager="streamManager"/>
-	<div v-if="!$route.name==='HomePage'"><p>{{ clientData }}</p></div>
+	<div>
+		<p>{{clientData}}</p>
+	</div>
+
 </div>
 </template>
 
@@ -29,3 +32,8 @@ export default {
 	},
 };
 </script>
+<style scoped>
+p {
+	color: white !important;
+}
+</style>
