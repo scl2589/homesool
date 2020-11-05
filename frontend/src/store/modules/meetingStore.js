@@ -533,12 +533,9 @@ const meetingStore = {
       commit('SET_PUBLISHER2', undefined);
       commit('SET_OVTOKEN2', null);
     },
-    sendGameRequest({ state }, gameId, penaltyId, gameStatus){
+    sendGameRequest({ state }, request){
       state.session.signal({
-        data:"",
-        gameId:gameId,
-        paneltyId:penaltyId,
-        gameStatus:gameStatus,
+        data: request,
         to: [],
         type: 'game'
       })

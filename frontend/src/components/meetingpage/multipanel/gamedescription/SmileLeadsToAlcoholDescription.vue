@@ -113,7 +113,14 @@ export default {
     ]),
      clickStartGame() {
      alert("게임시작");
-      this.sendGameRequest(0,0,1);
+     var request = new Object();
+     request.gameId=0;
+     request.paneltyId=0;
+     request.gameStatus=1;
+
+     var jsonRequest = JSON.stringify(request);
+     console.log(jsonRequest);
+     this.sendGameRequest(jsonRequest);
     }
   }
 }
