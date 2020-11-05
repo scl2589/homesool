@@ -1,11 +1,13 @@
 <template>
   <div class="d-flex flex-column justify-content-between p-2 px-5 w-100">
     <h3>노래방</h3>
+    <!-- <div id="player"></div> -->
     <div class="song-screen" v-if="selectedSong">
       <div class="embed-responsive embed-responsive-16by9">
         <iframe
           class="embed-responsive-item"
-          :src="`https://www.youtube.com/embed/${selectedSong.id.videoId}?autoplay=1`"
+          id="player"
+          :src="`https://www.youtube.com/embed/${selectedSong.id.videoId}?rel=0&amp;autoplay=1&amp;enablejsapi=1&amp;version=3&amp;playerapiid=ytplayer`"
           frameborder="0"
           allow="autoplay; encrypted-media"
         ></iframe>
@@ -46,14 +48,49 @@ export default {
   name: 'SingingPanel',
   data() {
     return {
-      songKeyword: null
+      songKeyword: null,
+      ytPlayer: null,
+      timerId: null,
+      checksync: null
     }
   },
   computed: {
-    ...mapState('meetingStore', ['selectedSong', 'songs'])
+    ...mapState('meetingStore', ['selectedSong', 'songs', 'currentSongTime', 'singingHost', 'publisher'])
+  },
+  watch: {
+    selectedSong(value) {
+      if (value) {
+        this.ytPlayer = new window.YT.Player('player', {});
+      }
+    },
+    ytPlayer() {
+      if (this.publisher.stream.connection.connectionId === this.singingHost) {
+        this.checksync = setInterval(() => {
+          if (!this.selectedSong) {
+            clearInterval(this.checksync);
+          }
+          if (this.ytPlayer.getPlayerState() === 1) {
+            let currentSongTime = this.ytPlayer.getCurrentTime();
+            this.checkSongSync(currentSongTime);
+          } else if (this.ytPlayer.getPlayerState() === 0) {
+            this.selectSong(null);
+            clearInterval(this.checksync);
+          }
+        }, 1000);
+      }
+    },
+    currentSongTime(value) {
+      if (this.selectedSong && !this.ytPlayer) {
+        this.ytPlayer = new window.YT.Player('player', {});
+      }
+      console.log(Math.abs(value - this.ytPlayer.getCurrentTime()))
+      if (Math.abs(value - this.ytPlayer.getCurrentTime()) > 1) {
+        this.ytPlayer.seekTo(value);
+      }
+    }
   },
   methods: {
-    ...mapActions('meetingStore', ['searchSong', 'selectSong', 'closeSingingPanel']),
+    ...mapActions('meetingStore', ['searchSong', 'selectSong', 'closeSingingPanel', 'checkSongSync']),
     isGumyoung(song) {
       if (song.snippet.channelTitle === '금영 노래방 공식 유튜브 채널') {
         return true
