@@ -208,12 +208,7 @@ const meetingStore = {
           commit('SET_SONGS', res.data.items);
         });
     },
-    selectSong({ state, commit }, song) {
-      commit('SET_SELECTED_SONG', song);
-      commit('SET_SONGS', null);
-      if (song) {
-        commit('SET_SINGING_HOST', state.publisher.stream.connection.connectionId);
-      }
+    selectSong({ state }, song) {
       state.session.signal({
         type: 'song',
         data: JSON.stringify(song),
@@ -243,7 +238,8 @@ const meetingStore = {
       if (state.publisher.stream.connection.connectionId === state.singingHost) {
         dispatch('selectSong', null);
       } else {
-        commit('SET_SELECTED_SONG', null);
+        commit('SET_SINGING_HOST', null);
+        commit('SET_CURRENT_SONGTIME', null);
       }
     },
     changeTheme({ state, commit }, theme) {
@@ -471,13 +467,16 @@ const meetingStore = {
               const song = JSON.parse(event.data);
               if (song) {
                 commit('SET_SINGING_HOST', event.from.connectionId);
+              } else {
+                commit('SET_SINGING_HOST', null);
+                commit('SET_CURRENT_SONGTIME', null);
               }
               commit('SET_ISANONYMOUS_MODE', false);
               commit('SET_ISSNAPSHOT_MODE', false);
               commit('SET_ISGAME_MODE', false);
               commit('SET_ISSINGING_MODE', true);
               commit('SET_SELECTED_SONG', song);
-              commit('SET_SONGS', []);
+              commit('SET_SONGS', null);
             });
             state.session.on('signal:game', (event) => {
               console.log('여기')
@@ -539,7 +538,7 @@ const meetingStore = {
           insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
           mirror: false,       	// Whether to mirror your local video or not
         });
-        session2.connect(token2, { clientData: state.nickName + '화면' })
+        session2.connect(token2, { clientData: state.nickName + 'screen' })
         .then(() => {
           publisher2.once('accessAllowed', () => {
             publisher2.stream.getMediaStream().getVideoTracks()[0].addEventListener('ended', () => {
