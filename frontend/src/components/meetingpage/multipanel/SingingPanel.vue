@@ -60,32 +60,42 @@ export default {
   watch: {
     selectedSong(value) {
       if (value) {
-        this.ytPlayer = new window.YT.Player('player', {});
+        setTimeout(() => {
+          this.ytPlayer = new window.YT.Player('player', {});
+        }, 0.5);
+      } else {
+        this.ytPlayer = null;
+        this.checksync = null;
+        console.log('노래 끝')
       }
     },
     ytPlayer() {
-      if (this.publisher.stream.connection.connectionId === this.singingHost) {
-        this.checksync = setInterval(() => {
-          if (!this.selectedSong) {
-            clearInterval(this.checksync);
-          }
-          if (this.ytPlayer.getPlayerState() === 1) {
-            let currentSongTime = this.ytPlayer.getCurrentTime();
-            this.checkSongSync(currentSongTime);
-          } else if (this.ytPlayer.getPlayerState() === 0) {
-            this.selectSong(null);
-            clearInterval(this.checksync);
-          }
-        }, 1000);
+      if (this.ytPlayer) {
+        if (this.publisher.stream.connection.connectionId === this.singingHost) {
+          this.checksync = setInterval(() => {
+            if (!this.selectedSong) {
+              this.ytPlayer = null;
+              clearInterval(this.checksync);
+            } else {
+              if (this.ytPlayer.getPlayerState() === 1) {
+                this.checkSongSync(this.ytPlayer.getCurrentTime());
+              } else if (this.ytPlayer.getPlayerState() === 0) {
+                this.selectSong(null);
+                clearInterval(this.checksync);
+              }
+            }
+          }, 1000);
+        }
       }
     },
     currentSongTime(value) {
-      if (this.selectedSong && !this.ytPlayer) {
+      if (!this.ytPlayer) {
         this.ytPlayer = new window.YT.Player('player', {});
       }
-      console.log(Math.abs(value - this.ytPlayer.getCurrentTime()))
-      if (Math.abs(value - this.ytPlayer.getCurrentTime()) > 1) {
-        this.ytPlayer.seekTo(value);
+      if (this.selectedSong) {
+        if (Math.abs(value - this.ytPlayer.getCurrentTime()) > 0.5) {
+          this.ytPlayer.seekTo(value);
+        }
       }
     }
   },
@@ -104,6 +114,7 @@ export default {
     }
   },
   beforeDestroy() {
+    clearInterval(this.checksync);
     this.closeSingingPanel()
   }
 }
