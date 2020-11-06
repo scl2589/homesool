@@ -63,6 +63,9 @@ const meetingStore = {
     SET_ISSNAPSHOT_MODE(state, value) {
       state.isSnapshotMode = value;
     },
+    SET_ISSHARING_MODE(state, value) {
+      state.isSharingMode = value;
+    },
     SET_CHATPANEL(state, value) {
       state.isChatPanel = value;
     },
@@ -484,6 +487,14 @@ const meetingStore = {
               console.log(event.type)
               console.log(event.penaltyId)
             });
+            state.session.on('signal:share', (event) => {
+              console.log("EVENT.DATA", event.data)
+              if ( event.data === "F") {
+                commit('SET_ISSHARING_MODE', false)
+              } else {
+                commit('SET_ISSHARING_MODE', true)
+              }
+            })
             return true;
 					})
 					.catch(error => {
@@ -510,6 +521,9 @@ const meetingStore = {
         })
     },
     startShareScreen({ state, commit, dispatch }) {
+      if (state.isSharingMode) {
+        return
+      } 
       // --- Get an OpenVidu object ---
 			const OV2 = new OpenVidu();
 			// --- Init a session ---
@@ -539,7 +553,7 @@ const meetingStore = {
           insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
           mirror: false,       	// Whether to mirror your local video or not
         });
-        session2.connect(token2, { clientData: state.nickName + '화면' })
+        session2.connect(token2, { clientData: state.nickName + 'screen' })
         .then(() => {
           publisher2.once('accessAllowed', () => {
             publisher2.stream.getMediaStream().getVideoTracks()[0].addEventListener('ended', () => {
@@ -552,6 +566,11 @@ const meetingStore = {
             commit('SET_SESSION2', session2);
             commit('SET_SUBSCRIBERS2', subscribers2);
             commit('SET_OVTOKEN2', token2);
+            state.session.signal({
+              data: 'T',
+              to: [],
+              type: 'share' 
+            })
           });
           publisher2.once('accessDenied', () => {
             console.warn('ScreenShare: Access Denied');
@@ -570,6 +589,11 @@ const meetingStore = {
       commit('SET_MAINSTREAMMANAGER2', undefined);
       commit('SET_PUBLISHER2', undefined);
       commit('SET_OVTOKEN2', null);
+      state.session.signal({
+        data: 'F',
+        to: [],
+        type: 'share' 
+      })
     },
     sendGameRequest({ state }, request){
       state.session.signal({
