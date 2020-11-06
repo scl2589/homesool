@@ -19,23 +19,21 @@ package io.openvidu.server.game;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
-import org.kurento.jsonrpc.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import io.openvidu.client.internal.ProtocolElements;
 import io.openvidu.server.core.IdentifierPrefixes;
 import io.openvidu.server.core.Participant;
-import io.openvidu.server.rpc.RpcConnection;
+import io.openvidu.server.rpc.RpcNotificationService;
 
 public class GameService {
 
@@ -53,10 +51,11 @@ public class GameService {
 
 	private static final Logger log = LoggerFactory.getLogger(GameService.class);
 
-	private ConcurrentMap<String, RpcConnection> rpcConnections = new ConcurrentHashMap<>();
+	static RpcNotificationService rpcNotificationService;
 
-	public void controlGame(Participant participant, JsonObject message, Set<Participant> participants) {
-
+	public void controlGame(Participant participant, JsonObject message, Set<Participant> participants,
+			RpcNotificationService rnfs) {
+		rpcNotificationService = rnfs;
 		JsonObject params = new JsonObject();
 
 		// 요청 보낸 사람 ID 저장
@@ -64,63 +63,73 @@ public class GameService {
 			params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_FROM_PARAM,
 					participant.getParticipantPublicId());
 		}
+		// 타입 저장
+		if (message.has("type")) {
+			params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_TYPE_PARAM, message.get("type").getAsString());
+		}
+		// data 파싱
+		String dataString = message.get("data").getAsString();
+		JsonObject data = (JsonObject) JsonParser.parseString(dataString);
 
 		// 게임 상태에 따라 분기
-		int gameStatus = message.get("gameStatus").getAsInt();
-		
+		int gameStatus = data.get("gameStatus").getAsInt();
+
 		// 게임 상태 추가, 벌칙 완료일때만 4 -> 0 으로
-		params.addProperty("gameStatus", Integer.toString(gameStatus));
+		data.addProperty("gameStatus", Integer.toString(gameStatus));
 
 		switch (gameStatus) {
 		case PREPAREGAME: // 게임 준비
-			prepareGame(participant, message, participants, params);
+			prepareGame(participant, message, participants, params, data);
 			return;
 		case SELECTGAME: // 게임 선택
-			selectGame(participant, message, participants, params);
+			selectGame(participant, message, participants, params, data);
 			return;
 		case STARTGAME: // 게임 진행
-			startGame(participant, message, participants, params);
+			startGame(participant, message, participants, params, data);
 			return;
 		case FINISHGAME: // 게임 종료
-			finishGame(participant, message, participants, params);
+			finishGame(participant, message, participants, params, data);
 			return;
 		case COMPLETEPENALTY: // 벌칙 종료
-			completePenalty(participant, message, participants, params);
+			completePenalty(participant, message, participants, params, data);
 			return;
 		}
 	}
 
 	// 게임 준비
+	// 특정 사용자가 게임을 고르는 동안 다른 사용자들은 '게임을 선택중입니다' 화면이 보여야 함
 	private void prepareGame(Participant participant, JsonObject message, Set<Participant> participants,
-			JsonObject params) {
-		// 특정 사용자가 게임을 고르는 동안 다른 사용자들은 '게임을 선택중입니다' 화면이 보여야 함
-		params.addProperty("gameStatus", message.get("gameStatus").toString());
-
+			JsonObject params, JsonObject data) {
+		log.info("PrepareGame is called by {}", participant.getParticipantPublicId());
+		
+		params.add("data", data);
 		// 브로드 캐스팅
 		for (Participant p : participants) {
-			sendNotification(p.getParticipantPrivateId(), ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+			rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+					ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
 		}
 	}
 
 	// 게임 선택
 	private void selectGame(Participant participant, JsonObject message, Set<Participant> participants,
-			JsonObject params) {
-		params.addProperty("gameId", message.get("gameId").toString());
-		params.addProperty("paneltyId", message.get("paneltyId").toString());
-
+			JsonObject params, JsonObject data) {
+		log.info("selectGame is called by {}", participant.getParticipantPublicId());
+		
+		params.add("data", data);
 		// 브로드 캐스팅
 		for (Participant p : participants) {
-			sendNotification(p.getParticipantPrivateId(), ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+			rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+					ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
 		}
 	}
 
 	// 게임 시작
 	private void startGame(Participant participant, JsonObject message, Set<Participant> participants,
-			JsonObject params) {
-		int gameId = message.get("gameId").getAsInt();
+			JsonObject params, JsonObject data) {
+		log.info("startGame is called by {}", participant.getParticipantPublicId());
+		int gameId = data.get("gameId").getAsInt();
 		switch (gameId) {
 		case SMILE: // 웃으면 술이와요
-			params.addProperty("theme", message.get("theme").getAsString());
 
 			// 랜덤 단어 선택
 			ArrayList<String> randomWords = new ArrayList<>(Arrays.asList(smileWords));
@@ -139,12 +148,12 @@ public class GameService {
 					wIdx -= wMax;
 				if (pIdx >= pMax)
 					pIdx -= pMax;
-				params.addProperty("word", randomWords.get(wIdx));
-				params.addProperty("player", randomParticipants.get(pIdx).getParticipantPublicId());
-
+				data.addProperty("word", randomWords.get(wIdx));
+				data.addProperty("player", randomParticipants.get(pIdx).getParticipantPublicId());
+				params.add("data", data);
 				for (Participant p : participants) {
-					sendNotification(p.getParticipantPrivateId(), ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD,
-							params);
+					rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+							ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
 				}
 				wIdx++;
 				pIdx++;
@@ -156,7 +165,7 @@ public class GameService {
 					e.printStackTrace();
 				}
 				if (tIdx == 10) {
-//					finishGame(participant, message, participants, params);
+					finishGame(participant, message, participants, params, data);
 					break;
 				}
 			}
@@ -172,39 +181,27 @@ public class GameService {
 	}
 
 	private void finishGame(Participant participant, JsonObject message, Set<Participant> participants,
-			JsonObject params) {
+			JsonObject params, JsonObject data) {
+		log.info("finishGame is called by {}", participant.getParticipantPublicId());
+		
+		data.addProperty("gameStatus", 3);
+		params.add("data", data);
+		for (Participant p : participants) {
+			rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+					ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+		}
 	}
 
 	private void completePenalty(Participant participant, JsonObject message, Set<Participant> participants,
-			JsonObject params) {
-		params.addProperty("gameStatus", "0");
+			JsonObject params, JsonObject data) {
+		log.info("completePenalty is called by {}", participant.getParticipantPublicId());
+		
+		data.addProperty("gameStatus", 0);
+		params.add("data", data);
 		for (Participant p : participants) {
-			sendNotification(p.getParticipantPrivateId(), ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD,
-					params);
+			rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+					ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
 		}
-	}
-
-	public void sendNotification(final String participantPrivateId, final String method, final Object params) {
-		RpcConnection rpcSession = rpcConnections.get(participantPrivateId);
-		if (rpcSession == null || rpcSession.getSession() == null) {
-			if (!isIpcamParticipant(participantPrivateId)) {
-				log.error("No rpc session found for private id {}, unable to send notification {}: {}",
-						participantPrivateId, method, params);
-			}
-			return;
-		}
-		Session s = rpcSession.getSession();
-
-		try {
-			s.sendNotification(method, params);
-		} catch (Exception e) {
-			log.error("Exception sending notification '{}': {} to participant with private id {}", method, params,
-					participantPrivateId, e);
-		}
-	}
-
-	private boolean isIpcamParticipant(String participantPrivateId) {
-		return participantPrivateId.startsWith(IdentifierPrefixes.IPCAM_ID);
 	}
 
 }

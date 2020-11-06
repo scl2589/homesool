@@ -336,87 +336,59 @@ public class SessionEventsHandler {
 			}
 		}
 
-		if (message.has("gameStatus")) {
-			gameService.controlGame(participant, message, participants);
-			return;
-		}
-		JsonObject params = new JsonObject();
-		if (message.has("data")) {
-			params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_DATA_PARAM, message.get("data").getAsString());
-		}
-		if (message.has("type")) {
-			params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_TYPE_PARAM, message.get("type").getAsString());
-		}
-		if (participant != null) {
-			params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_FROM_PARAM,
-					participant.getParticipantPublicId());
-		}
+		if (message.has("type") && message.get("type").getAsString().equals("signal:game")) {
+			System.out.println("=============GAMESTART=============");
+			gameService.controlGame(participant, message, participants, rpcNotificationService);
+		} else {
+			JsonObject params = new JsonObject();
+			if (message.has("data")) {
+				params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_DATA_PARAM,
+						message.get("data").getAsString());
+			}
+			if (message.has("type")) {
+				params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_TYPE_PARAM,
+						message.get("type").getAsString());
+			}
+			if (participant != null) {
+				params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_FROM_PARAM,
+						participant.getParticipantPublicId());
+			}
 
-		Set<String> toSet = new HashSet<String>();
+			Set<String> toSet = new HashSet<String>();
 
-		if (message.has("to")) {
-			JsonArray toJson = message.get("to").getAsJsonArray();
-			for (int i = 0; i < toJson.size(); i++) {
-				JsonElement el = toJson.get(i);
-				if (el.isJsonNull()) {
-					throw new OpenViduException(Code.SIGNAL_TO_INVALID_ERROR_CODE,
-							"Signal \"to\" field invalid format: null");
+			if (message.has("to")) {
+				JsonArray toJson = message.get("to").getAsJsonArray();
+				for (int i = 0; i < toJson.size(); i++) {
+					JsonElement el = toJson.get(i);
+					if (el.isJsonNull()) {
+						throw new OpenViduException(Code.SIGNAL_TO_INVALID_ERROR_CODE,
+								"Signal \"to\" field invalid format: null");
+					}
+					toSet.add(el.getAsString());
 				}
-				toSet.add(el.getAsString());
 			}
-		}
 
-		if (toSet.isEmpty()) {
-			// 타입이 게임일 때
-//			if (message.get("type").getAsString().equals("signal:game")) {
-//				// 단어 정하기
-//				String word = "사과";
-//				
-//				// 참여자 전부 확인
-//				for (Participant pp : participants) {
-//					// pp -> 이번에 게임할 플레이어
-//					params.addProperty(ProtocolElements.PARTICIPANTSENDMESSAGE_DATA_PARAM,
-//							word + " " + pp.getParticipantPublicId());
-//					// 브로드 캐스팅
-//					for (Participant p : participants) {
-//						System.out.println("data : " +params.get("data").getAsString());
-//						rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
-//								ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
-//					}
-//					// 게임시간 3초씩 주기
-//					try {
-//						Thread.sleep(3000);
-//					} catch (InterruptedException e) {
-//						e.printStackTrace();
-//					}
-//				}
-//			} else {
-//				for (Participant p : participants) {
-//					rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
-//							ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
-//				}
-			for (Participant p : participants) {
-				rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
-						ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
-			}
-		} else
-
-		{
-			Set<String> participantPublicIds = participants.stream().map(Participant::getParticipantPublicId)
-					.collect(Collectors.toSet());
-			if (participantPublicIds.containsAll(toSet)) {
-				for (String to : toSet) {
-					Optional<Participant> p = participants.stream().filter(x -> to.equals(x.getParticipantPublicId()))
-							.findFirst();
-					rpcNotificationService.sendNotification(p.get().getParticipantPrivateId(),
+			if (toSet.isEmpty()) {
+				for (Participant p : participants) {
+					rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
 							ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
 				}
 			} else {
-				throw new OpenViduException(Code.SIGNAL_TO_INVALID_ERROR_CODE,
-						"Signal \"to\" field invalid format: some connectionId does not exist in this session");
+				Set<String> participantPublicIds = participants.stream().map(Participant::getParticipantPublicId)
+						.collect(Collectors.toSet());
+				if (participantPublicIds.containsAll(toSet)) {
+					for (String to : toSet) {
+						Optional<Participant> p = participants.stream()
+								.filter(x -> to.equals(x.getParticipantPublicId())).findFirst();
+						rpcNotificationService.sendNotification(p.get().getParticipantPrivateId(),
+								ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+					}
+				} else {
+					throw new OpenViduException(Code.SIGNAL_TO_INVALID_ERROR_CODE,
+							"Signal \"to\" field invalid format: some connectionId does not exist in this session");
+				}
 			}
 		}
-
 		if (isRpcCall) {
 			rpcNotificationService.sendResponse(participant.getParticipantPrivateId(), transactionId, new JsonObject());
 		}
