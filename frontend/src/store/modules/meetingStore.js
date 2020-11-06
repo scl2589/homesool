@@ -407,7 +407,10 @@ const meetingStore = {
 			return new Promise((resolve, reject) => {
 				axios
 					.post(`${SERVER.OPENVIDU_URL}/api/tokens`, JSON.stringify({
-						session: sessionId,
+            "session": sessionId,
+            "kurentoOptions": {
+              "allowedFilters": ["GStreamerFilter", "FaceOverlayFilter"]
+            }
 					}), {
             headers: {
               'Content-Type': 'application/json'
@@ -467,9 +470,11 @@ const meetingStore = {
               const song = JSON.parse(event.data);
               if (song) {
                 commit('SET_SINGING_HOST', event.from.connectionId);
+                state.publisher.stream.applyFilter("GStreamerFilter", {"command": "audioecho delay=75000000 intensity=0.3 feedback=0.4"});
               } else {
                 commit('SET_SINGING_HOST', null);
                 commit('SET_CURRENT_SONGTIME', null);
+                state.publisher.stream.removeFilter("GStreamerFilter");
               }
               commit('SET_ISANONYMOUS_MODE', false);
               commit('SET_ISSNAPSHOT_MODE', false);
