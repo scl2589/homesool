@@ -47,6 +47,8 @@ const meetingStore = {
     // singing
     currentSongTime: null,
     singingHost: null,
+
+    anonymousHost: null
   },
   getters: {
   },
@@ -140,6 +142,9 @@ const meetingStore = {
     },
     SET_SINGING_HOST(state, singingHost) {
       state.singingHost = singingHost
+    },
+    SET_ANONYMOUS_HOST(state, anonymousHost) {
+      state.anonymousHost = anonymousHost
     }
   },
   actions: {
@@ -158,14 +163,40 @@ const meetingStore = {
       commit('SET_ISGAME_MODE', false);
       commit('SET_ISSINGING_MODE', true);
     },
-    startAnonymousMode({ commit }) {
-      if (router.name !== 'MeetingPage') {
-        router.push({ name : 'MeetingPage' });
+    startAnonymousMode({ state, commit }) {
+      if (state.anonymousHost) {
+        commit('SET_ISSNAPSHOT_MODE', false);
+        commit('SET_ISGAME_MODE', false);
+        commit('SET_ISSINGING_MODE', false);
+        commit('SET_ISANONYMOUS_MODE', true);
+      } else {
+        state.session.signal({
+          type: 'anonymous',
+          data: 'T',
+          to: [],
+        })
+          .then(() => {
+            console.log("start anonymous mode");
+          })
+          .catch((err) => {
+            console.log(err)
+          })
       }
-      commit('SET_ISGAME_MODE', false);
-      commit('SET_ISSNAPSHOT_MODE', false);
-      commit('SET_ISSINGING_MODE', false);
-      commit('SET_ISANONYMOUS_MODE', true);
+    },
+    endAnonymousMode({ state }) {
+      if (state.publisher.stream.connection.connectionId === state.anonymousHost) {
+        state.session.signal({
+          type: 'anonymous',
+          data: 'F',
+          to: [],
+        })
+          .then(() => {
+            console.log("end anonymous mode");
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+      }
     },
     startSnapshotMode({ commit }) {
       if (router.name !== 'MeetingPage') {
@@ -456,7 +487,11 @@ const meetingStore = {
               let data = new Object()
               let time = new Date()
               data.message = event.data
-              data.sender = event.from.data.slice(15,-2)
+              if (state.isAnonymousMode) {
+                data.sender = 'Anonymous_' + btoa(event.from.connectionId).slice(-5, )
+              } else {
+                data.sender = event.from.data.slice(15,-2)
+              }
               data.time = moment(time).format('HH:mm')
               commit('SET_MESSAGES', data)
             });
@@ -488,6 +523,22 @@ const meetingStore = {
               console.log(event.type)
               console.log(event.penaltyId)
             });
+            state.session.on('signal:anonymous', (event) => {
+              if (event.data === 'T') {
+                commit('SET_ANONYMOUS_HOST', event.from.connectionId);
+                commit('SET_ISGAME_MODE', false);
+                commit('SET_ISSNAPSHOT_MODE', false);
+                commit('SET_ISSINGING_MODE', false);
+                commit('SET_ISANONYMOUS_MODE', true);
+                let pitchs = ['0.7', '0.8', '1.3', '1.5', '1.7', '2']
+                let pitch = pitchs[Math.floor(Math.random() * pitchs.length)]
+                state.publisher.stream.applyFilter("GStreamerFilter", {"command": `pitch pitch=${pitch}`});
+              } else {
+                commit('SET_ANONYMOUS_HOST', null);
+                commit('SET_ISANONYMOUS_MODE', false);
+                state.publisher.stream.removeFilter("GStreamerFilter");
+              }
+            })
             return true;
 					})
 					.catch(error => {
