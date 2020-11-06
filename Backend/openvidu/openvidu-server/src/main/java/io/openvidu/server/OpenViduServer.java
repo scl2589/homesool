@@ -54,6 +54,7 @@ import io.openvidu.server.core.SessionManager;
 import io.openvidu.server.core.TokenGenerator;
 import io.openvidu.server.coturn.CoturnCredentialsService;
 import io.openvidu.server.coturn.CoturnCredentialsServiceFactory;
+import io.openvidu.server.game.GameService;
 import io.openvidu.server.kurento.core.KurentoParticipantEndpointConfig;
 import io.openvidu.server.kurento.core.KurentoSessionEventsHandler;
 import io.openvidu.server.kurento.core.KurentoSessionManager;
@@ -178,6 +179,12 @@ public class OpenViduServer implements JsonRpcConfigurer {
 		return new DummyLoadManager();
 	}
 
+	@Bean
+	@ConditionalOnMissingBean
+	public GameService gameService() {
+		return new GameService();
+	}
+	
 	@Bean
 	@ConditionalOnMissingBean
 	public RpcNotificationService notificationService() {
