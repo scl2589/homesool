@@ -41,9 +41,15 @@
           <div class="carousel-item">
             <button
             class="btn-yellow rounded"
-            @click="clickSendTheme()"
+            @click="clickSendTheme('열대과일')"
           >
-            주제선택
+            열대과일
+          </button>
+          <button
+            class="btn-yellow rounded"
+            @click="clickSendTheme('야채')"
+          >
+            야채
           </button>
           <button
             class="btn-yellow rounded"
@@ -136,11 +142,11 @@ export default {
      console.log(jsonRequest);
      this.sendGameRequest(jsonRequest);
     },
-    clickSendTheme(){
+    clickSendTheme(theme){
       alert("주제선택");
       var request = new Object();
       request.gameId=0;
-      request.theme="열대과일";
+      request.theme=theme;
       request.gameStatus=2;
 
       var jsonRequest = JSON.stringify(request);
