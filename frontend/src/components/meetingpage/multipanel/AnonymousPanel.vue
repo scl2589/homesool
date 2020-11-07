@@ -14,8 +14,15 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 export default {
-  name: 'AnonymousPanel'
+  name: 'AnonymousPanel',
+  methods: {
+    ...mapActions('meetingStore', ['endAnonymousMode'])
+  },
+  beforeDestroy() {
+    this.endAnonymousMode();
+  }
 }
 </script>
 
