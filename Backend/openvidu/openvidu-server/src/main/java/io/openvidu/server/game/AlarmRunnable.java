@@ -25,6 +25,15 @@ public class AlarmRunnable implements Runnable{
 			"캐슈","커피","코코넛","쿠미니자두","큰귤","큰꽃카란다","큰빵나무","큰사포테","큰시계초","타마린",
 			"털감나무","토마토","파나마사과","파인애플","파파야","페루꽈리","페타이콩","페피노","피스타치오","황피"};
 	
+	static String[] vegi = {"스타후르츠","블림빙","잠부","오미자","끌렝깽","사워","감자","고구마","깻잎","당근",
+			"도라지","대파","마늘","무","미나리","버섯","배추","부추","고추","브로콜리",
+			"생강","시금치","연근","우엉","양파","양배추","호박","깻잎","옥수수","청경채",
+			"배추","시금치","부추","가지","파란고추","실파","대파","미나리","애호박","단호박",
+			"오이","당근","감자","고구마","버섯","양송이","느타리버섯","표고버섯","말린버섯","무",
+			"단무지","피클","무청","상추","양배추","양상추","바질","마늘","생강","순무",
+			"브로콜리","인삼","쑥갓","피망"
+	};
+	
 	private String theme;
 	private Set<Participant> participants;
 	
@@ -51,17 +60,14 @@ public class AlarmRunnable implements Runnable{
 			randomParticipants = new ArrayList<>(participants);
 			Collections.shuffle(randomParticipants);
 		}
+		else if(theme.equals("야채")) {
+			randomWords = new ArrayList<>(Arrays.asList(vegi));
+			Collections.shuffle(randomWords);
+			randomParticipants = new ArrayList<>(participants);
+			Collections.shuffle(randomParticipants);
+		}
 		else {
-			while(running) {
-				try {
-					for(int i=0; i<30; i++) {
-						System.out.println(name+": "+i);
-						Thread.sleep(5000);
-					}
-				}catch(InterruptedException e) {
-					running = false;
-				}
-			}
+			
 		}
 		
 		//공통부분 시작
