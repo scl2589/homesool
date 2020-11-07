@@ -60,6 +60,7 @@ public class GameService {
 	
 	//Thread는 ConcurrentHashMap으로 관리
 	private AlarmRunnable alarmRunnable = null;
+	private Thread alarmThread = null;
 	protected ConcurrentHashMap<String, Thread> WordThread = new ConcurrentHashMap<>();
 
 	public void controlGame(Participant participant, JsonObject message, Set<Participant> participants,
@@ -94,7 +95,7 @@ public class GameService {
 			selectGame(participant, message, participants, params, data);
 			return;
 		case STARTGAME: // 게임 진행
-			startGame(participant, message, participants, params, data);
+			startGame(participant, message, participants, params, data, rnfs);
 			return;
 		case FINISHGAME: // 게임 종료
 			finishGame(participant, message, participants, params, data);
@@ -134,61 +135,23 @@ public class GameService {
 
 	// 게임 시작
 	private void startGame(Participant participant, JsonObject message, Set<Participant> participants,
-			JsonObject params, JsonObject data) {
+			JsonObject params, JsonObject data, RpcNotificationService rnfs) {
 		log.info("startGame is called by {}", participant.getParticipantPublicId());
 		int gameId = data.get("gameId").getAsInt();
 		String sessionId = message.get("sessionId").getAsString();
+		//테마 가져오기
+		String theme = null;
+		if(data.has("theme"))
+			theme = data.get("theme").getAsString();
+		
 		switch (gameId) {
 		case SMILE: // 웃으면 술이와요
-			
-			System.out.println("message :" + message);
-			
-			alarmRunnable = new AlarmRunnable();
+			//스레드 시작
+			alarmRunnable = new AlarmRunnable(theme, participants, rnfs);
 			alarmThread = new Thread(alarmRunnable);
 			WordThread.putIfAbsent(sessionId, alarmThread);
 			alarmThread.start();
-			//asyncTaskService.SendGameMessgage();
-			//새로운 Service를 사용하는 것이 아니라 현 시점에서 새로운 스레드 생성??
 			
-			/*
-			// 랜덤 단어 선택
-			ArrayList<String> randomWords = new ArrayList<>(Arrays.asList(smileWords));
-			Collections.shuffle(randomWords);
-			// 게임 진행할 플레이어
-			ArrayList<Participant> randomParticipants = new ArrayList<>(participants);
-			Collections.shuffle(randomParticipants);
- 
-			int wIdx = 0;
-			int pIdx = 0;
-			int wMax = randomWords.size();
-			int pMax = randomParticipants.size();
-			int tIdx = 0;
-			while (true) {
-				if (wIdx >= wMax)
-					wIdx -= wMax;
-				if (pIdx >= pMax)
-					pIdx -= pMax;
-				data.addProperty("word", randomWords.get(wIdx));
-				data.addProperty("player", randomParticipants.get(pIdx).getParticipantPublicId());
-				params.add("data", data);
-				for (Participant p : participants) {
-					rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
-							ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
-				}
-				wIdx++;
-				pIdx++;
-				tIdx++;
-				// 게임시간 3초씩 주기
-				try {
-					Thread.sleep(3000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				if (tIdx == 10) {
-					//finishGame(participant, message, participants, params, data);
-					//break;
-				}
-			}*/
 		case UPDOWN: // UP & DOWN
 			break;
 		case INITIAL: // 자음 퀴즈

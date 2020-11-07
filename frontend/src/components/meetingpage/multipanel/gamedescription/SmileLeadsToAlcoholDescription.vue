@@ -140,7 +140,7 @@ export default {
       alert("주제선택");
       var request = new Object();
       request.gameId=0;
-      request.theme=0;
+      request.theme="열대과일";
       request.gameStatus=2;
 
       var jsonRequest = JSON.stringify(request);
