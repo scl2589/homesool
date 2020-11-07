@@ -38,6 +38,26 @@
               3. 이 과정에서 이를 보인다면<br> 당신은...벌칙 당첨!
             </p>
           </div>
+          <div class="carousel-item">
+            <button
+            class="btn-yellow rounded"
+            @click="clickSendTheme('열대과일')"
+          >
+            열대과일
+          </button>
+          <button
+            class="btn-yellow rounded"
+            @click="clickSendTheme('야채')"
+          >
+            야채
+          </button>
+          <button
+            class="btn-yellow rounded"
+            @click="clickStopGame()"
+          >
+            게임종료
+          </button>
+          </div>
         </div>
         <button class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -111,7 +131,7 @@ export default {
       "clickChatPanel",
       "sendGameRequest",
     ]),
-     clickStartGame() {
+    clickStartGame() {
      alert("게임시작");
      var request = new Object();
      request.gameId=0;
@@ -121,7 +141,29 @@ export default {
      var jsonRequest = JSON.stringify(request);
      console.log(jsonRequest);
      this.sendGameRequest(jsonRequest);
-    }
+    },
+    clickSendTheme(theme){
+      alert("주제선택");
+      var request = new Object();
+      request.gameId=0;
+      request.theme=theme;
+      request.gameStatus=2;
+
+      var jsonRequest = JSON.stringify(request);
+      console.log(jsonRequest);
+      this.sendGameRequest(jsonRequest);
+    },
+    clickStopGame() {
+     alert("게임종료");
+     var request = new Object();
+     request.gameId=0;
+     request.paneltyId=0;
+     request.gameStatus=3;
+
+     var jsonRequest = JSON.stringify(request);
+     console.log(jsonRequest);
+     this.sendGameRequest(jsonRequest);
+    },
   }
 }
 </script>
