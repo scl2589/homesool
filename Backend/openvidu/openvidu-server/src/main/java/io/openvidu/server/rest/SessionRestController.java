@@ -690,6 +690,12 @@ public class SessionRestController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 
+		//sessionId를 따로 message에 추가
+		log.info("message Received");
+		log.info("sessionId : {}", session.getSessionId());
+		if(sessionId != null) {
+			completeMessage.addProperty("sessionId",sessionId);
+		}
 		if (type != null) {
 			completeMessage.addProperty("type", type);
 		}

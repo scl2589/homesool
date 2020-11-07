@@ -138,6 +138,9 @@ public class GameService {
 		switch (gameId) {
 		case SMILE: // 웃으면 술이와요
 			
+			System.out.println("message :" + message);
+			System.out.println("params :" + params);
+			System.out.println("data :" + data);
 			alarmRunnable = new AlarmRunnable();
 			alarmThread = new Thread(alarmRunnable);
 			alarmThread.start();
