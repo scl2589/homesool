@@ -22,8 +22,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -48,10 +51,14 @@ public class GameService {
 	static final int LIAR = 3;
 	static final int STRAWBERRY = 4;
 	static String[] smileWords = { "a", "b", "c", "d", "e", "f", "g", "h", "i" };
+	static int TESTVALUE = 1;
 
 	private static final Logger log = LoggerFactory.getLogger(GameService.class);
 
 	static RpcNotificationService rpcNotificationService;
+	
+	private Thread alarmThread = null;
+	private AlarmRunnable alarmRunnable = null;
 
 	public void controlGame(Participant participant, JsonObject message, Set<Participant> participants,
 			RpcNotificationService rnfs) {
@@ -130,14 +137,20 @@ public class GameService {
 		int gameId = data.get("gameId").getAsInt();
 		switch (gameId) {
 		case SMILE: // 웃으면 술이와요
-
+			
+			alarmRunnable = new AlarmRunnable();
+			alarmThread = new Thread(alarmRunnable);
+			alarmThread.start();
+			//asyncTaskService.SendGameMessgage();
+			//새로운 Service를 사용하는 것이 아니라 현 시점에서 새로운 스레드 생성??
+			
 			// 랜덤 단어 선택
 			ArrayList<String> randomWords = new ArrayList<>(Arrays.asList(smileWords));
 			Collections.shuffle(randomWords);
 			// 게임 진행할 플레이어
 			ArrayList<Participant> randomParticipants = new ArrayList<>(participants);
 			Collections.shuffle(randomParticipants);
-
+ 
 			int wIdx = 0;
 			int pIdx = 0;
 			int wMax = randomWords.size();
@@ -184,6 +197,9 @@ public class GameService {
 			JsonObject params, JsonObject data) {
 		log.info("finishGame is called by {}", participant.getParticipantPublicId());
 		
+		if(alarmThread != null) {
+			alarmThread.interrupt();
+		}
 		data.addProperty("gameStatus", 3);
 		params.add("data", data);
 		for (Participant p : participants) {

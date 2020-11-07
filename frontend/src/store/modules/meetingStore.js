@@ -479,7 +479,6 @@ const meetingStore = {
               commit('SET_SONGS', null);
             });
             state.session.on('signal:game', (event) => {
-              console.log('여기')
               console.log(event.type)
               console.log(event.penaltyId)
             });
