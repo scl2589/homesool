@@ -138,7 +138,7 @@ public abstract class SessionManager {
 	public void sendMessage(Participant participant, String message, Integer transactionId, String sessionId) {
 		try {
 			JsonObject messageJson = JsonParser.parseString(message).getAsJsonObject();
-			System.out.println("JSON 추가 : " + sessionId);
+			//message에 JSON 추가
 			messageJson.add("sessionId", JsonParser.parseString(sessionId));
 			sessionEventsHandler.onSendMessage(participant, messageJson, getParticipants(participant.getSessionId()),
 					transactionId, null);

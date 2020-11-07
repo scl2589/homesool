@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Resource;
 
@@ -57,8 +58,9 @@ public class GameService {
 
 	static RpcNotificationService rpcNotificationService;
 	
-	private Thread alarmThread = null;
+	//Thread는 ConcurrentHashMap으로 관리
 	private AlarmRunnable alarmRunnable = null;
+	protected ConcurrentHashMap<String, Thread> WordThread = new ConcurrentHashMap<>();
 
 	public void controlGame(Participant participant, JsonObject message, Set<Participant> participants,
 			RpcNotificationService rnfs) {
@@ -135,18 +137,20 @@ public class GameService {
 			JsonObject params, JsonObject data) {
 		log.info("startGame is called by {}", participant.getParticipantPublicId());
 		int gameId = data.get("gameId").getAsInt();
+		String sessionId = message.get("sessionId").getAsString();
 		switch (gameId) {
 		case SMILE: // 웃으면 술이와요
 			
 			System.out.println("message :" + message);
-			System.out.println("params :" + params);
-			System.out.println("data :" + data);
+			
 			alarmRunnable = new AlarmRunnable();
 			alarmThread = new Thread(alarmRunnable);
+			WordThread.putIfAbsent(sessionId, alarmThread);
 			alarmThread.start();
 			//asyncTaskService.SendGameMessgage();
 			//새로운 Service를 사용하는 것이 아니라 현 시점에서 새로운 스레드 생성??
 			
+			/*
 			// 랜덤 단어 선택
 			ArrayList<String> randomWords = new ArrayList<>(Arrays.asList(smileWords));
 			Collections.shuffle(randomWords);
@@ -181,10 +185,10 @@ public class GameService {
 					e.printStackTrace();
 				}
 				if (tIdx == 10) {
-					finishGame(participant, message, participants, params, data);
-					break;
+					//finishGame(participant, message, participants, params, data);
+					//break;
 				}
-			}
+			}*/
 		case UPDOWN: // UP & DOWN
 			break;
 		case INITIAL: // 자음 퀴즈
@@ -199,9 +203,13 @@ public class GameService {
 	private void finishGame(Participant participant, JsonObject message, Set<Participant> participants,
 			JsonObject params, JsonObject data) {
 		log.info("finishGame is called by {}", participant.getParticipantPublicId());
+		//sessionId
+		String sessionId = message.get("sessionId").getAsString();
+		Thread now = WordThread.get(sessionId);
+		WordThread.remove(sessionId);
 		
-		if(alarmThread != null) {
-			alarmThread.interrupt();
+		if(now != null) {
+			now.interrupt();
 		}
 		data.addProperty("gameStatus", 3);
 		params.add("data", data);
