@@ -48,7 +48,10 @@ const meetingStore = {
     currentSongTime: null,
     singingHost: null,
 
-    anonymousHost: null
+    anonymousHost: null,
+
+    // game
+    isGameStart: false,
   },
   getters: {
   },
@@ -148,6 +151,9 @@ const meetingStore = {
     },
     SET_ANONYMOUS_HOST(state, anonymousHost) {
       state.anonymousHost = anonymousHost
+    },
+    SET_ISGAME_START(state, value) {
+      state.isGameStart = value
     }
   },
   actions: {
@@ -219,6 +225,7 @@ const meetingStore = {
       commit('SET_ISGAME_MODE', false);
       commit('SET_ISSINGING_MODE', false);
       commit('SET_ISANONYMOUS_MODE', false);
+      commit('SET_ISGAME_START', false);
     },
     clickChatPanel({ commit }, value) {
       commit('SET_CHATPANEL', value);
@@ -524,6 +531,14 @@ const meetingStore = {
             state.session.on('signal:game', (event) => {
               console.log(event.type)
               console.log(event.penaltyId)
+              console.log(event.data)
+              if(event.data.gameStatus == "1"){
+                //게임 시작
+                  commit('SET_ISGAME_MODE', false);
+                  commit('SET_ISGAME_START', true);
+                  console.log("isGameStart :")
+                  console.log(state.isGameStart)
+              }
             });
             state.session.on('signal:share', (event) => {
               console.log("EVENT.DATA", event.data)
