@@ -177,13 +177,14 @@ export default {
       'isAnonymousMode',
       'isSnapshotMode',
       'isChatPanel',
+      'isGameStart',
       'theme',
       'mySessionId',
       'publisher',
       'publisher2'
     ]),
     isMultiPanel() {
-      if (this.isGameMode || this.isSingingMode || this.isAnonymousMode || this.isSnapshotMode) {
+      if (this.isGameMode || this.isSingingMode || this.isAnonymousMode || this.isSnapshotMode || this.isGameStart) {
         return true
       } else {
         return false
