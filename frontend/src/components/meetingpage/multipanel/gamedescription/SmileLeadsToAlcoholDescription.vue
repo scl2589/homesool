@@ -49,7 +49,7 @@
             class="btn-yellow rounded"
             @click="clickSendTheme('야채')"
           >
-            야채
+            야 채
           </button>
           <button
             class="btn-yellow rounded"
