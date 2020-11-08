@@ -196,7 +196,7 @@
 		<dependency>
 			<groupId>io.openvidu</groupId>
 			<artifactId>openvidu-client</artifactId>
-			<version>${version.openvidu.client}</version>
+			<version>2.15.1</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
