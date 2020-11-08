@@ -161,6 +161,7 @@ const meetingStore = {
       commit('SET_ISANONYMOUS_MODE', false);
       commit('SET_ISSNAPSHOT_MODE', false);
       commit('SET_ISSINGING_MODE', false);
+      commit('SET_ISGAME_START', false);
       commit('SET_ISGAME_MODE', true);
     },
     startSingingMode({ commit }) {
@@ -170,6 +171,7 @@ const meetingStore = {
       commit('SET_ISANONYMOUS_MODE', false);
       commit('SET_ISSNAPSHOT_MODE', false);
       commit('SET_ISGAME_MODE', false);
+      commit('SET_ISGAME_START', false);
       commit('SET_ISSINGING_MODE', true);
     },
     startAnonymousMode({ state, commit }) {
@@ -177,6 +179,7 @@ const meetingStore = {
         commit('SET_ISSNAPSHOT_MODE', false);
         commit('SET_ISGAME_MODE', false);
         commit('SET_ISSINGING_MODE', false);
+        commit('SET_ISGAME_START', false);
         commit('SET_ISANONYMOUS_MODE', true);
       } else {
         state.session.signal({
@@ -214,6 +217,7 @@ const meetingStore = {
       commit('SET_ISGAME_MODE', false);
       commit('SET_ISSINGING_MODE', false);
       commit('SET_ISANONYMOUS_MODE', false);
+      commit('SET_ISGAME_START', false);
       commit('SET_ISSNAPSHOT_MODE', true);
       
     },
@@ -534,10 +538,11 @@ const meetingStore = {
               console.log(event.data)
               if(event.data.gameStatus == "1"){
                 //게임 시작
-                  commit('SET_ISGAME_MODE', false);
-                  commit('SET_ISGAME_START', true);
-                  console.log("isGameStart :")
-                  console.log(state.isGameStart)
+                commit('SET_ISANONYMOUS_MODE', false);
+                commit('SET_ISSNAPSHOT_MODE', false);
+                commit('SET_ISGAME_MODE', false);
+                commit('SET_ISSINGING_MODE', false);
+                commit('SET_ISGAME_START', true);
               }
             });
             state.session.on('signal:share', (event) => {
@@ -672,7 +677,6 @@ const meetingStore = {
       })
         .then(() => {
           console.log("Message successfully sent");
-          console.log(this.data);
         })
         .catch((err) => {
           console.log(err)

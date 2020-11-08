@@ -29,7 +29,7 @@
     </SingingPanel>
     <GameSelectionPanel v-if="isGameMode">
     </GameSelectionPanel>
-    <GamePanel v-if="isGameStart">
+    <GamePanel class="THISISGAMEPANEL" v-if="isGameStart">
     </GamePanel>
   </div>
 </template>
