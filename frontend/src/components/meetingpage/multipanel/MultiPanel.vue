@@ -29,6 +29,8 @@
     </SingingPanel>
     <GameSelectionPanel v-if="isGameMode">
     </GameSelectionPanel>
+    <GamePanel v-if="isGameStart">
+    </GamePanel>
   </div>
 </template>
 
@@ -39,6 +41,7 @@ import AnonymousPanel from '@/components/meetingpage/multipanel/AnonymousPanel'
 import SnapShotPanel from '@/components/meetingpage/multipanel/SnapShotPanel'
 import SingingPanel from '@/components/meetingpage/multipanel/SingingPanel'
 import GameSelectionPanel from '@/components/meetingpage/multipanel/GameSelectionPanel'
+import GamePanel from '@/components/meetingpage/multipanel/gamepanel/GamePanel'
 
 export default {
   name: 'MultiPanel',
@@ -46,10 +49,11 @@ export default {
     AnonymousPanel,
     SnapShotPanel,
     SingingPanel,
-    GameSelectionPanel
+    GameSelectionPanel,
+    GamePanel
   },
   computed: {
-    ...mapState('meetingStore', ['isGameMode', 'isSingingMode', 'isAnonymousMode', 'isSnapshotMode', 'selectedSong']),
+    ...mapState('meetingStore', ['isGameMode', 'isSingingMode', 'isAnonymousMode', 'isSnapshotMode', 'selectedSong','isGameStart']),
   },
   methods: {
     ...mapActions('meetingStore', ['closeMultiPanel', 'closeSingingPanel']),
