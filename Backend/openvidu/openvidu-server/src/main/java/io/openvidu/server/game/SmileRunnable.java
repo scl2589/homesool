@@ -11,7 +11,7 @@ import io.openvidu.client.internal.ProtocolElements;
 import io.openvidu.server.core.Participant;
 import io.openvidu.server.rpc.RpcNotificationService;
 
-public class AlarmRunnable implements Runnable{
+public class SmileRunnable implements Runnable{
 	public boolean running = true;
 	
 	static String[] hotfruits = { "가시아노나","감나무","거버너자두","검은감나무","구아바","귤","그물아노나","금귤","기적의열매","나무토마토",
@@ -39,7 +39,7 @@ public class AlarmRunnable implements Runnable{
 	
 	static RpcNotificationService rpcNotificationService;
 	
-	public AlarmRunnable(String theme, Set<Participant> participants, RpcNotificationService rnfs) {
+	public SmileRunnable(String theme, Set<Participant> participants, RpcNotificationService rnfs) {
 		this.theme = theme;
 		this.participants = participants;
 		this.rpcNotificationService = rnfs;
@@ -48,7 +48,9 @@ public class AlarmRunnable implements Runnable{
 	public void terminate() {
 		running = false;
 	}
-	
+	public String getTheme() {
+		return this.theme;
+	}
 	@Override
 	public void run() {
 		String name = Thread.currentThread().getName();
