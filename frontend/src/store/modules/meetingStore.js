@@ -272,10 +272,9 @@ const meetingStore = {
         })
     },
     checkSongSync({ state }, currentSongTime) {
-      let temp = Math.random() * 0.00001
       state.session.signal({
         type: 'songsync',
-        data: currentSongTime - temp,
+        data: currentSongTime + 0.05,
         to: [],
       })
         .then(() => {

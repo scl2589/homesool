@@ -91,12 +91,14 @@ export default {
       }
     },
     currentSongTime(value) {
-      if (!this.ytPlayer) {
-        this.ytPlayer = new window.YT.Player('player', {});
-      }
-      if (this.selectedSong) {
-        if (Math.abs(value - this.ytPlayer.getCurrentTime()) > 0.5) {
-          this.ytPlayer.seekTo(value);
+      if (this.publisher.stream.connection.connectionId !== this.singingHost) {
+        if (!this.ytPlayer) {
+          this.ytPlayer = new window.YT.Player('player', {});
+        }
+        if (this.selectedSong) {
+          if (Math.abs(value - this.ytPlayer.getCurrentTime()) > 0.3) {
+            this.ytPlayer.seekTo(value);
+          }
         }
       }
     }
