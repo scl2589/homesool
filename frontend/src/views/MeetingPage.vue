@@ -36,7 +36,7 @@
           <img v-if="playing" src="@/assets/images/bgm_on.png" alt="bgm_on">
           <img v-else src="@/assets/images/bgm_off.png" alt="bgm_off">
         </button>
-        <input id="vol-control" type="range" min="0" max="100" step="1" @input="setVolume">
+        <input id="vol-control" type="range" min="0" max="100" step="1" value="10" @input="setVolume">
       </div>
 
       <div>
@@ -142,6 +142,7 @@ let christmas = ['christmas_1.wav', 'O Holy Night.wav', 'Slient Night.mp3', 'Chr
 let playList = basic;
 let currentSong = 0;
 let song = new Audio(require('@/assets/musics/French Guitar Jazz V2.mp3'));
+song.volume = 0.1
 
 song.addEventListener("ended", function() {
   currentSong++;
@@ -236,6 +237,7 @@ export default {
     },
     setVolume(e) {
       song.volume = e.target.value / 100;
+      console.log(song.volume)
     },
     clickChangeTheme() {
       Swal.fire({
