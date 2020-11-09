@@ -32,6 +32,26 @@ Vue.use(VCalendar, {
 // kakao login
 window.Kakao.init(secrets['KAKAO']['CLIENT_ID']);
 
+// Firebase
+
+// const firebase = require("firebase");
+// // Required for side-effects
+// require("firebase/firestore");
+import firebase from 'firebase'
+var firebaseConfig = {
+  apiKey: secrets['FIREBASE']['SECRET_KEY'],
+  authDomain: "homesuli.firebaseapp.com",
+  databaseURL: "https://homesuli.firebaseio.com",
+  projectId: "homesuli",
+  storageBucket: "homesuli.appspot.com",
+  messagingSenderId: "650609487122",
+  appId: "1:650609487122:web:37764da60a551d5e2317cb",
+  measurementId: "G-0S8YBKTQBW"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+firebase.analytics();
+
 Vue.config.productionTip = false
 
 new Vue({

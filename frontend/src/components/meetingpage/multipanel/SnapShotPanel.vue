@@ -158,7 +158,11 @@ export default {
             canvas.style.marginLeft="auto"
             canvas.style.marginRight="auto"
             this.captured = canvas
-            document.getElementById('preview').appendChild(canvas)  
+            
+            // var data = this.captured.toDataURL("image/jpeg")
+            // this.attachImage(data)
+
+            // document.getElementById('preview').appendChild(canvas)  
             for (let i = 0, len = videos.length; i < len; i++ ) {
               videos[i].style.background='none'
             }
@@ -179,15 +183,16 @@ export default {
       }, 100);
     },
     savePhoto() {
-      // html2canvas(document.querySelector("#capture")).then(canvas => {
-      //     document.getElementById('preview').appendChild(canvas)
-      // });
-      // this.captured
       var a = document.createElement('a');
-    // toDataURL defaults to png, so we need to request a jpeg, then convert for file download.
-    a.href = this.captured.toDataURL("image/jpeg").replace("image/jpeg", "image/octet-stream");
-    a.download = 'file.jpg';
-    a.click();
+      // toDataURL defaults to png, so we need to request a jpeg, then convert for file download.
+      a.href = this.captured.toDataURL("image/jpeg").replace("image/jpeg", "image/octet-stream");
+      // console.log("IMAGEEEEEEEEEEE", this.captured.toDataURL("image/jpeg"))
+      // console.log("IMAGEEEEEEE", JSON.parse(this.captured.toDataURL("image/jpeg")))
+      // var save = JSON.parse(atob(this.captured))
+      // console.log("SAVEEEEEEEEEEEEEEEEEEEE", save)
+
+      a.download = 'file.jpg';
+      a.click();
     }
   }
 }

@@ -600,8 +600,11 @@ const meetingStore = {
                 commit('SET_ISSINGING_MODE', false);
                 commit('SET_ISANONYMOUS_MODE', false);
               }, 100);
-              
             });
+            state.session.on('signal:attachImage', (event) => {
+              console.log("EVENT.DATA", event.data)
+              document.getElementById('preview').appendChild(event.data)  
+            })
             return true;
 					})
 					.catch(error => {
@@ -713,6 +716,13 @@ const meetingStore = {
         })
         .catch((err) => {
           console.log(err)
+      })
+    },
+    attachImage({ state }, data) {
+      state.session.signal({
+        data: data,
+        to: [],
+        type: 'attachImage'
       })
     }
   }
