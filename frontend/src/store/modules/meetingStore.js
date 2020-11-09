@@ -267,9 +267,10 @@ const meetingStore = {
         })
     },
     checkSongSync({ state }, currentSongTime) {
+      let temp = Math.random() * 0.00001
       state.session.signal({
         type: 'songsync',
-        data: currentSongTime,
+        data: currentSongTime - temp,
         to: [],
       })
         .then(() => {
@@ -502,7 +503,22 @@ const meetingStore = {
               let time = new Date()
               data.message = event.data
               if (state.isAnonymousMode) {
-                data.sender = 'Anonymous_' + btoa(event.from.connectionId).slice(-5, )
+                // data.sender = 'Anonymous_' + btoa(event.from.connectionId).slice(-5, )
+                const animals = [
+                  '코끼리', '사자', '하마', '표범', '가젤',
+                  '개미핥기', '치타', '기린', '얼룩말', '코뿔소',
+                  '호랑이', '늑대', '판다', '코알라', '다람쥐',
+                  '곰', '사슴', '원숭이', '너구리', '침팬지',
+                  '미어캣', '낙타', '목도리도마뱀', '타조', '사막여우',
+                  '전갈', '순록', '북극곰', '흰올빼미', '팽귄',
+                  '북극여우', '바다코끼리', '돌고래', '가오리', '나비고기',
+                  '상어', '문어', '오징어', '바다거북', '흰동가리',
+                  '고래', '불가사리', '해마', '게', '독수리',
+                  '갈매기', '큰부리새', '원앙', '부엉이', '홍학',
+                  '두루미', '비둘기', '벌새', '사다새', '공작',
+                  '참새', '고양이', '개', '푸들나방', '별코두더지'
+                ]
+                data.sender = animals[event.from.connectionId.slice(-10, ).charCodeAt(0) % 60];
               } else {
                 data.sender = event.from.data.slice(15,-2)
               }
@@ -560,7 +576,7 @@ const meetingStore = {
                 commit('SET_ISSNAPSHOT_MODE', false);
                 commit('SET_ISSINGING_MODE', false);
                 commit('SET_ISANONYMOUS_MODE', true);
-                let pitchs = ['0.7', '0.8', '1.3', '1.5', '1.7', '2']
+                let pitchs = ['0.76', '0.77', '0.78', '0.79', '0.80', '0.81', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7']
                 let pitch = pitchs[Math.floor(Math.random() * pitchs.length)]
                 state.publisher.stream.applyFilter("GStreamerFilter", {"command": `pitch pitch=${pitch}`});
               } else {
