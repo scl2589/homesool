@@ -210,7 +210,7 @@ const meetingStore = {
           })
       }
     },
-    startSnapshotMode({ commit }) {
+    startSnapshotMode({ state, commit }) {
       if (router.name !== 'MeetingPage') {
         router.push({ name : 'MeetingPage' });
       }
@@ -219,6 +219,11 @@ const meetingStore = {
       commit('SET_ISANONYMOUS_MODE', false);
       commit('SET_ISGAME_START', false);
       commit('SET_ISSNAPSHOT_MODE', true);
+      state.session.signal({
+        type: 'snapshot',
+        data: 'T',
+        to: [],
+      })
       
     },
     closeMultiPanel({ commit }) {
@@ -484,7 +489,7 @@ const meetingStore = {
         state.publisher.publishAudio(true) 
       }
     },
-    enterSession({ state, rootGetters, commit }, enterData) {
+    enterSession({ state, rootGetters, commit, dispatch }, enterData) {
       commit('SET_CURRENT_DRINK', enterData.currentDrink);
       const drinkData = {
         "liquorLimit": 0,
@@ -568,6 +573,18 @@ const meetingStore = {
                 commit('SET_ISANONYMOUS_MODE', false);
                 state.publisher.stream.removeFilter("GStreamerFilter");
               }
+            });
+            state.session.on('signal:snapshot', () => {
+              if (state.isSnapshotMode === true) {
+                dispatch('closeMultiPanel')
+              }
+              setTimeout(() => {
+                commit('SET_ISSNAPSHOT_MODE', true)
+                commit('SET_ISGAME_MODE', false);
+                commit('SET_ISSINGING_MODE', false);
+                commit('SET_ISANONYMOUS_MODE', false);
+              }, 100);
+              
             });
             return true;
 					})
