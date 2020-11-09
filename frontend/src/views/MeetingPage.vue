@@ -136,23 +136,6 @@
 </template>
 
 <script>
-// Background Music
-let basic = ['French Guitar Jazz V2.mp3', 'Jazz.mp3', 'jazz_20160226.mp3', 'Easy Jazz.mp3', 'The Jazz.mp3'];
-let christmas = ['christmas_1.wav', 'O Holy Night.wav', 'Slient Night.mp3', 'Christmas Tale.mp3', 'Christmas Jazz.mp3'];
-let playList = basic;
-let currentSong = 0;
-let song = new Audio(require('@/assets/musics/French Guitar Jazz V2.mp3'));
-song.volume = 0.1
-
-song.addEventListener("ended", function() {
-  currentSong++;
-  if (currentSong >= playList.length) {
-    currentSong = 0;
-  }
-  song.src = require('@/assets/musics/' + playList[currentSong]);
-  song.play();
-})
-
 import Swal from 'sweetalert2'
 import { mapState, mapActions } from 'vuex' 
 import MultiPanel from '@/components/meetingpage/multipanel/MultiPanel'
@@ -163,6 +146,12 @@ export default {
   name: 'MeetingPage',
   data() {
     return {
+      basic: ['French Guitar Jazz V2.mp3', 'Jazz.mp3', 'jazz_20160226.mp3', 'Easy Jazz.mp3', 'The Jazz.mp3'],
+      christmas: ['christmas_1.wav', 'O Holy Night.wav', 'Slient Night.mp3', 'Christmas Tale.mp3', 'Christmas Jazz.mp3'],
+      playList: this.basic,
+      currentSong: 0,
+      song : new Audio(require('@/assets/musics/French Guitar Jazz V2.mp3')),
+
       playing: false
     }
   },
@@ -195,8 +184,8 @@ export default {
   watch: {
     isSingingMode(value) {
       if (value) {
-        if (!song.paused) {
-          song.pause();
+        if (!this.song.paused) {
+          this.song.pause();
           this.playing = false;
         }
       }
@@ -227,17 +216,16 @@ export default {
       }
     },
     clickBGM() {
-      if (song.paused) {
-        song.play()
+      if (this.song.paused) {
+        this.song.play()
         this.playing = true;
       } else {          
-        song.pause()
+        this.song.pause()
         this.playing = false;
       }
     },
     setVolume(e) {
-      song.volume = e.target.value / 100;
-      console.log(song.volume)
+      this.song.volume = e.target.value / 100;
     },
     clickChangeTheme() {
       Swal.fire({
@@ -267,21 +255,21 @@ export default {
       })
     },
     changeThemeBGM(theme) {
-      if (song) {
-        song.pause();
+      if (this.song) {
+        this.song.pause();
       }
-      currentSong = 0;
+      this.currentSong = 0;
       if (theme == 'christmas') {
-        playList = christmas;
-        song.src = require('@/assets/musics/' + playList[currentSong]);
+        this.playList = this.christmas;
+        this.song.src = require('@/assets/musics/' + this.playList[this.currentSong]);
         if (this.playing) {
-          song.play();
+          this.song.play();
         }
       } else if (theme == 'basic') {
-        playList = basic;
-        song.src = require('@/assets/musics/' + playList[currentSong]);
+        this.playList = this.basic;
+        this.song.src = require('@/assets/musics/' + this.playList[this.currentSong]);
         if (this.playing) {
-          song.play();
+          this.song.play();
         }
       }
     },
@@ -344,8 +332,20 @@ export default {
   beforeMount() {
     window.addEventListener('beforeunload', this.leaveSession);
   },
+  mounted() {
+    this.song.volume = 0.1
+    this.song.addEventListener("ended", function() {
+      this.currentSong++;
+      if (this.currentSong >= this.playList.length) {
+        this.currentSong = 0;
+      }
+      this.song.src = require('@/assets/musics/' + this.playList[this.currentSong]);
+      this.song.play();
+    })
+  },
   beforeDestroy() {
     window.removeEventListener('beforeunload', this.leaveSession);
+    this.song.pause();
   },
 }
 </script>
