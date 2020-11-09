@@ -66,7 +66,6 @@ export default {
       } else {
         this.ytPlayer = null;
         this.checksync = null;
-        console.log('노래 끝')
       }
     },
     ytPlayer() {
@@ -77,14 +76,17 @@ export default {
               this.ytPlayer = null;
               clearInterval(this.checksync);
             } else {
-              if (this.ytPlayer.getPlayerState() === 1) {
-                this.checkSongSync(this.ytPlayer.getCurrentTime());
-              } else if (this.ytPlayer.getPlayerState() === 0) {
+              if (this.ytPlayer.getPlayerState() === 0) {
                 this.selectSong(null);
                 clearInterval(this.checksync);
+              } else if (this.ytPlayer.getPlayerState() === 1) {
+                this.checkSongSync(this.ytPlayer.getCurrentTime());
+              } else if (this.ytPlayer.getPlayerState() === 2) {
+                console.log(this.ytPlayer.getPlayerState())
+                this.checkSongSync(this.ytPlayer.getCurrentTime());
               }
             }
-          }, 1000);
+          }, 500);
         }
       }
     },
