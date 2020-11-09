@@ -247,7 +247,7 @@ public class GameService {
 					}
 				}
 			}
-			data.addProperty("isAnswer", isCorrect);
+			data.addProperty("isCorrect", isCorrect);
 			if (initialAnswerUserMap.get(sessionId).size() > 1) {
 				params.add("data", data);
 				for (Participant p : participants) {
