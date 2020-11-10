@@ -39,13 +39,13 @@
         <div id="session" v-if="session">
           <user-video 
             class="my-2 px-2 publisher-width" 
-            v-show="publisher2"
-            :stream-manager="publisher2" 
-            @click.native="updateMainVideoStreamManager(publisher2)"
+            v-show="screenPublisher"
+            :stream-manager="screenPublisher" 
+            @click.native="updateMainVideoStreamManager(screenPublisher)"
           />
           <user-video
             class="my-2 px-2 publisher-width"
-            v-show="!publisher2"
+            v-show="!screenPublisher"
             :stream-manager="sharer"
             @click.native="updateMainVideoStreamManager(sharer)"
           />
@@ -98,7 +98,7 @@ export default {
       'mySessionId', 
       'mainStreamManager', 
       'publisher', 
-      'publisher2',
+      'screenPublisher',
       'subscribers', 
       'isSharingMode'
       ]

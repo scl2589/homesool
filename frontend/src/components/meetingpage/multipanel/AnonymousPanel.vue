@@ -3,13 +3,19 @@
     <h3>진실의 방</h3>
     <img
       class="my-3"
-      src="../../../assets/images/freedom.png" 
+      :src="require('@/assets/images/freedom.png')" 
       alt="heart unlocked"
     >
     <p>
       속에 있는 이야기를 마음껏 해보세요.<br>
       홈술이가 화면, 목소리, 채팅 다 가려 드립니다.
     </p>
+    <button
+      class="btn btn-yellow"
+      @click="clickEndAnonymousMode"
+    >
+      진실의 방 끝내기
+    </button>
   </div>
 </template>
 
@@ -17,9 +23,16 @@
 import { mapActions } from 'vuex';
 export default {
   name: 'AnonymousPanel',
+  
   methods: {
-    ...mapActions('meetingStore', ['endAnonymousMode'])
+    ...mapActions('meetingStore', ['changeMode', 'endAnonymousMode']),
+    clickEndAnonymousMode() {
+      if (confirm('진실의 방을 끝내시겠습니까?')) {
+        this.changeMode(null);
+      }
+    }
   },
+
   beforeDestroy() {
     this.endAnonymousMode();
   }

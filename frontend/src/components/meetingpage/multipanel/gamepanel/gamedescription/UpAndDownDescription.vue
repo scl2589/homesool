@@ -10,7 +10,7 @@
         <div class="carousel-inner">
           <div class="carousel-item active">
             <img 
-              src="../../../../assets/images/sample.png" 
+              :src="require('@/assets/images/sample.png')" 
               class="d-block w-100" 
               alt="sample image"
             >
@@ -20,7 +20,7 @@
           </div>
           <div class="carousel-item">
             <img 
-              src="../../../../assets/images/sample.png" 
+              :src="require('@/assets/images/sample.png')" 
               class="d-block w-100" 
               alt="sample image"
             >
@@ -30,7 +30,7 @@
           </div>
           <div class="carousel-item">
             <img 
-              src="../../../../assets/images/sample.png" 
+              :src="require('@/assets/images/sample.png')" 
               class="d-block w-100" 
               alt="sample image"
             >
