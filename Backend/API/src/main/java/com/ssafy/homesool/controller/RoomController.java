@@ -28,6 +28,7 @@ import io.swagger.annotations.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+import com.ssafy.homesool.dto.PhotoDto;
 import com.ssafy.homesool.dto.RoomDto;
 import com.ssafy.homesool.entity.Room;
 import com.ssafy.homesool.entity.Member;
@@ -105,9 +106,10 @@ public class RoomController {
 		@ApiResponse(code = 404, message = "Not Found")
 	})
 	private ResponseEntity<String> UploadFile(
-			@ApiParam(value = "업로드할 사진 정보") @RequestPart("img") MultipartFile uploadfile,
-			@ApiParam(value = "해당 미팅의 id") @RequestParam long roomId) {
+			@ApiParam(value = "업로드할 사진 정보와 해당 미팅의 id") @RequestBody PhotoDto.PhotoRequest photoRequest
+			) {
 			logger.debug("사진 업로드 시작\n");
+			/*
 			String filename = "";
 			String access_path="";
 			try {
@@ -146,13 +148,13 @@ public class RoomController {
 			} catch (Exception ex) {
 				throw new RuntimeException("file Save Error");
 			}
-			
+			*/
 			try {
-				photoService.add(roomId,access_path + filename );
+				photoService.add(photoRequest.getRoomId(),photoRequest.getImg());
 			} catch (Exception ex) {
 				return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-			return new ResponseEntity<>(access_path + filename, HttpStatus.OK);
+			return new ResponseEntity<>(photoRequest.getImg(), HttpStatus.OK);
 	}
 	
 }
