@@ -66,7 +66,11 @@ public class LiarGameRunnable implements Runnable {
 		try {
 			JsonObject data = new JsonObject();
 			JsonObject params = new JsonObject();
-
+			
+			//signal:game parameter 추가
+			String temp = "signal:game";
+	        params.addProperty("type", temp);
+	         
 			data.addProperty("gameStatus", 2);
 
 			data.addProperty("word", randomWords.get(0));
