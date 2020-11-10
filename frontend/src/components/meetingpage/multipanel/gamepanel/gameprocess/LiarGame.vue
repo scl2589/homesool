@@ -51,10 +51,18 @@
                  @click="voteForLiar()"
                   >
                   투표하기
-                  {{picked}}
                   </button>
                 </div>
             </div>
+        </div>
+        <div class="endgame" v-if="gameStatus==3">
+          <h5> 게임이 종료되었습니다 </h5>
+          <h5> 당첨자 : {{this.gameVoteData}} </h5>
+          <h5> 라이어 : {{this.gameLiarData}} </h5>
+          <h5> 벌칙자 : {{this.gameParticipantData}} </h5>
+        </div>
+        <div class="paneltygame" v-if="gameStatus==4">
+          <h5> 벌칙화면 </h5>
         </div>
     </div>
 </template>
@@ -65,7 +73,8 @@ import { mapState, mapActions, mapGetters } from 'vuex'
 export default {
  name: "GamePanel",
   computed: {
-    ...mapState('meetingStore', ['gameStatus', 'selectedGame', 'gameTurn', 'gameWord', 'subscribers','gameLiar','myself','publisher']),
+    ...mapState('meetingStore', ['gameStatus', 'selectedGame', 'gameTurn', 'gameWord', 
+                                'subscribers','gameLiar','myself','publisher','gameVoteData','gameParticipantData']),
     ...mapGetters('meetingStore', ['notModeHost'])
   },
   data(){
@@ -86,6 +95,17 @@ export default {
 
       var jsonRequest = JSON.stringify(request);
       console.log(jsonRequest);
+      this.sendGameRequest(jsonRequest);
+    },
+    voteForLiar(){
+      var request = new Object();
+      request.gameId=this.selectedGame;
+      request.liarId=this.picked;
+      request.gameStatus=5;
+      request.voteId=this.publisher.session.connection.connectionId;
+
+      var jsonRequest = JSON.stringify(request);
+      console.log("투표"+jsonRequest);
       this.sendGameRequest(jsonRequest);
     },
   }

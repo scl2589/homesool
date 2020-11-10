@@ -46,6 +46,11 @@ const meetingStore = {
     gameTurn: 0,
     gameWord: '',
     gameLiar:'',
+    gameLiarData:'',
+    gameVoteId:'',
+    gameVoteData:'',  //걸린사람 이름
+    gameParticipantId:'', //벌칙자
+    gameParticipantData:'', //벌칙자이름
 
     // theme
     theme: 'basic',
@@ -157,6 +162,21 @@ const meetingStore = {
     },
     SET_GAME_LIAR(state, value){
       state.gameLiar = value
+    },
+    SET_GAME_LIAR_DATA(state, value){
+      state.gameLiarData = value
+    },
+    SET_GAME_VOTE_ID(state, value){
+      state.gameVoteId = value
+    },
+    SET_GAME_PARTICIPANT_ID(state, value){
+      state.gameParticipantId = value
+    },
+    SET_GAME_PARTICIPANT_DATA(state, value){
+      state.gameParticipantData = value
+    },
+    SET_GAME_VOTE_DATA(state, value){
+      state.gameVoteData = value
     },
 
     // theme
@@ -601,7 +621,41 @@ const meetingStore = {
                 commit('SET_GAME_WORD',event.data.word);
               }
               if(event.data.liar){
+                //commit('SET_GAME_LIAR',event.data.liarId);
                 commit('SET_GAME_LIAR',event.data.liar);
+                //라이어의 닉네임
+                for(let i=0; i<state.subscribers.length; i++){
+                  if(state.subscribers[i].stream.connection.connectionId == event.data.voteId){
+                    commit('SET_GAME_LIAR_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
+                  }
+                }
+                if(state.myself == event.data.liar){ //본인체크
+                  commit('SET_GAME_LIAR_DATA',state.nickName);
+                }
+              }
+              if(event.data.voteId){
+                commit('SET_GAME_VOTE_ID',event.data.voteId);
+                //당선자??의 닉네임도 찾아서 넣어줘야함
+                for(let i=0; i<state.subscribers.length; i++){
+                  if(state.subscribers[i].stream.connection.connectionId == event.data.voteId){
+                    commit('SET_GAME_VOTE_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
+                  }
+                }
+                if(state.myself == event.data.liar){ //본인체크
+                  commit('SET_GAME_VOTE_DATA',state.nickName);
+                }
+              }
+              if(event.data.participantId){
+                commit('SET_GAME_PARTICIPANT_ID',event.data.participantId);
+                //벌칙자의 닉네임도 찾아서 넣어줘야함
+                for(let i=0; i<state.subscribers.length; i++){
+                  if(state.subscribers[i].stream.connection.connectionId == event.data.participantId){
+                    commit('SET_GAME_PARTICIPANT_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
+                  }
+                }
+                if(state.myself == event.data.liar){ //본인체크
+                  commit('SET_GAME_PARTICIPANT_DATA',state.nickName);
+                }
               }
             });
 
