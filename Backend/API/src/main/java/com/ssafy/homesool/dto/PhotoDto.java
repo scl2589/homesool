@@ -1,5 +1,10 @@
 package com.ssafy.homesool.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.ssafy.homesool.entity.UserDrink;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,8 +15,10 @@ public class PhotoDto {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	public static class PhotoRequest {
-		@ApiModelProperty(value = "room_id")
-		private String roomId;
-	}
+		@ApiModelProperty(value = "room Id")
+		private Long roomId;
 
+		@ApiModelProperty(value = "Image Url")
+		private String img;
+	}
 }
