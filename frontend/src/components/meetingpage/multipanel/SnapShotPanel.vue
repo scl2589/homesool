@@ -53,6 +53,9 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import html2canvas from 'html2canvas'
+import firebase from 'firebase'
+import moment from 'moment';
+// import { image } from 'html2canvas/dist/types/css/types/image'
 
 export default {
   name: 'SnapShotPanel',
@@ -64,7 +67,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('meetingStore', ['isSnapshotMode']),
+    ...mapState('meetingStore', ['isSnapshotMode', 'mySessionId', 'roomId']),
   },
   watch: {
     remain: {
@@ -141,13 +144,27 @@ export default {
             canvas.style.marginRight="auto"
             this.captured = canvas
             
-            // var data = this.captured.toDataURL("image/jpeg")
-            // this.attachImage(data)
-
-            // document.getElementById('preview').appendChild(canvas)  
             for (let i = 0, len = videos.length; i < len; i++ ) {
               videos[i].style.background='none'
             }
+
+            const promises = []
+            var storageRef = firebase.storage().ref() 
+
+            var converting = canvas.toDataURL("image/jpeg")
+            var ct = new Date()
+            var file_name =  moment(ct).format('YYYY-MM-DDTHH-mm-ss')
+            var file = this.dataURLtoFile(converting, file_name + '.jpg')
+            storageRef.child('snapshot_' + this.mySessionId).child(file.name).put(file)
+            Promise.all(promises).then(() => {
+              // this.attachImage(file_name)
+              this.attachImage(file_name)
+              // var imageInfo = {
+              //   "img" : image_url,
+              //   "roomId": this.roomId,
+              // }
+              // let url = "https://firebasestorage.googleapis.com/v0/b/homesuli.appspot.com/o/" + image_url + "?alt=media&token=8ec754d3-c76c-4adf-9bef-abbe41171c81"
+            })
             
         });
           this.expired = true;
@@ -157,13 +174,26 @@ export default {
     }
   },
   methods: {
-    ...mapActions('meetingStore', ['changeMode']),
+    ...mapActions('meetingStore', ['changeMode', 'attachImage']),
     savePhoto() {
       var a = document.createElement('a');
       // toDataURL defaults to png, so we need to request a jpeg, then convert for file download.
       a.href = this.captured.toDataURL("image/jpeg").replace("image/jpeg", "image/octet-stream");
       a.download = 'file.jpg';
       a.click();
+    },
+    dataURLtoFile(dataURL, fileName) {
+      var arr = dataURL.split(','),
+        mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]), 
+        n = bstr.length, 
+        u8arr = new Uint8Array(n);
+            
+        while(n--){
+          u8arr[n] = bstr.charCodeAt(n);
+        }
+        
+        return new File([u8arr], fileName, {type:mime});
     }
   }
 }
