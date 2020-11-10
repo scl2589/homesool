@@ -140,7 +140,11 @@ export default {
             canvas.style.marginLeft="auto"
             canvas.style.marginRight="auto"
             this.captured = canvas
-            document.getElementById('preview').appendChild(canvas)  
+            
+            // var data = this.captured.toDataURL("image/jpeg")
+            // this.attachImage(data)
+
+            // document.getElementById('preview').appendChild(canvas)  
             for (let i = 0, len = videos.length; i < len; i++ ) {
               videos[i].style.background='none'
             }

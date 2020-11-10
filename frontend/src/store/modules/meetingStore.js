@@ -749,6 +749,13 @@ const meetingStore = {
         .catch((err) => {
           console.log(err)
       })
+    },
+    attachImage({ state }, data) {
+      state.session.signal({
+        data: data,
+        to: [],
+        type: 'attachImage'
+      })
     }
   }
 }
