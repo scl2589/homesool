@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="d-flex justify-content-between">
-      <button
+      <!-- <button
         class="btn goback-btn"
         v-if="selectedSong"
         @click="closeSingingPanel"
@@ -10,10 +10,10 @@
           class="fas fa-arrow-left"
           style="color:white;"
         ></i>
-      </button>
+      </button> -->
       <button
         class="btn close-btn"
-        @click="closeMultiPanel"
+        @click="changeMode(null)"
       >
         <i 
           class="fas fa-times"
@@ -21,24 +21,38 @@
         ></i>
       </button>
     </div>
-    <AnonymousPanel v-if="isAnonymousMode">
+    <AnonymousPanel
+      class="w-100"
+      v-if="currentMode === 'anonymous'"
+    >
     </AnonymousPanel>
-    <SnapShotPanel v-if="isSnapshotMode">
+
+    <SnapShotPanel
+      class="w-100"
+      v-if="currentMode === 'snapshot'"
+    >
     </SnapShotPanel>
-    <SingingPanel v-if="isSingingMode">
+
+    <SingingPanel
+      class="w-100"
+      v-if="currentMode === 'singing'"
+    >
     </SingingPanel>
-    <GameSelectionPanel v-if="isGameMode">
-    </GameSelectionPanel>
+    
+    <GamePanel
+      class="w-100"
+      v-if="currentMode === 'game'"
+    >
+    </GamePanel>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex'
-
 import AnonymousPanel from '@/components/meetingpage/multipanel/AnonymousPanel'
 import SnapShotPanel from '@/components/meetingpage/multipanel/SnapShotPanel'
 import SingingPanel from '@/components/meetingpage/multipanel/SingingPanel'
-import GameSelectionPanel from '@/components/meetingpage/multipanel/GameSelectionPanel'
+import GamePanel from '@/components/meetingpage/multipanel/GamePanel'
 
 export default {
   name: 'MultiPanel',
@@ -46,13 +60,18 @@ export default {
     AnonymousPanel,
     SnapShotPanel,
     SingingPanel,
-    GameSelectionPanel
+    GamePanel
   },
   computed: {
-    ...mapState('meetingStore', ['isGameMode', 'isSingingMode', 'isAnonymousMode', 'isSnapshotMode', 'selectedSong']),
+    ...mapState('meetingStore', [
+      'isGameStart',
+      'currentMode'
+    ]),
   },
   methods: {
-    ...mapActions('meetingStore', ['closeMultiPanel', 'closeSingingPanel']),
+    ...mapActions('meetingStore', [
+      'changeMode'
+    ]),
   }
 }
 </script>
@@ -69,5 +88,4 @@ export default {
   top: 10px;
   left: 10px;
 }
-
 </style>

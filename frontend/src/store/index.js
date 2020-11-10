@@ -81,12 +81,13 @@ export default new Vuex.Store({
           console.error(err);
         });
     },
-    getMyInfo({ commit, getters }) {
+    getMyInfo({ commit, getters, dispatch }) {
       axios.get(SERVER.URL + SERVER.ROUTES.user + '/' + getters.getId, getters.config)
         .then((res) => {
           commit('setUser', res.data);
         })
         .catch((err) => {
+          dispatch('kakaoLogout');
           console.error(err.response.data);
         })
     },

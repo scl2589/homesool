@@ -1,4 +1,4 @@
-import router from "../../router";
+// import router from "../../router";
 import SERVER from '@/api/api';
 import secrets from '@/secrets';
 import axios from 'axios';
@@ -10,111 +10,67 @@ const OPENVIDU_SERVER_SECRET = "MY_SECRET";
 const meetingStore = {
   namespaced: true,
   state: {
-    isGameMode: false,
-    isSingingMode: false,
-    isAnonymousMode: false,
-    isSnapshotMode: false,
-    isChatPanel: false,
-    isSharingMode: false,
-    selectedSong: null,
-    songs: null,
-    theme: 'basic',
-
-    currentDrink: null,
+    // pre meeting 
     meetingDialog: false,
-
-    // openvidu
-    OV: undefined,
-    OV2: undefined,
-    session: undefined,
-    session2: undefined,
-    mainStreamManager: undefined,
-    mainStreamManager2: undefined,
-    publisher: undefined,
-    publisher2: undefined,
-    subscribers: [],
-    subscribers2: [],
+    currentDrink: null,
     nickName: null,
     mySessionId: null,
     roomId: null,
     myself: null,
+
+    // openvidu
+    OV: undefined,
     ovToken: null,
-    ovToken2: null,
+    session: undefined,
+    mainStreamManager: undefined,
+    publisher: undefined,
+    subscribers: [],
     
+    // mode
+    currentMode: null,
+    modeHost: null,
+
     //chatting
     messages: [],
+    isChatPanel: false,
 
     // singing
+    songs: null,
+    selectedSong: null,
     currentSongTime: null,
-    singingHost: null,
+    isSongEnded: false,
 
-    anonymousHost: null
+    // game
+    selectedGame: null,
+    gameStatus: 0,
+    gameTurn: 0,
+    gameWord: '',
+
+    // theme
+    theme: 'basic',
+
+    // screen share
+    screenOV: undefined,
+    screenSession: undefined,
+    screenMainStreamManager: undefined,
+    screenPublisher: undefined,
+    screenSubscribers: [],
+    screenOvToken: null,
+    isSharingMode: false,
   },
   getters: {
+    notModeHost(state) {
+      if (state.publisher.stream.connection.connectionId !== state.modeHost.id) {
+        return state.modeHost;
+      } else {
+        return false;
+      }
+    }
   },
   mutations: {
-    SET_ISGAME_MODE(state, value) {
-      state.isGameMode = value;
-    },
-    SET_ISSINGING_MODE(state, value) {
-      state.isSingingMode = value;
-    },
-    SET_ISANONYMOUS_MODE(state, value) {
-      state.isAnonymousMode = value;
-    },
-    SET_ISSNAPSHOT_MODE(state, value) {
-      state.isSnapshotMode = value;
-    },
-    SET_ISSHARING_MODE(state, value) {
-      state.isSharingMode = value;
-    },
-    SET_CHATPANEL(state, value) {
-      state.isChatPanel = value;
-    },
-    SET_SELECTED_SONG(state, song) {
-      state.selectedSong = song;
-    },
-    SET_SONGS(state, songs) {
-      state.songs = songs;
-    },
-    SET_THEME(state, theme) {
-      state.theme = theme;
-    },
-    SET_MYSESSIONID(state, sessionId) {
-      state.mySessionId = sessionId;
-    },
-    SET_ROOMID(state, roomId) {
-      state.roomId = roomId;
-    },
-    SET_OV(state, OV) {
-      state.OV = OV;
-    },
-    SET_OV2(state, OV) {
-      state.OV2 = OV;
-    },
-    SET_SESSION(state, session) {
-      state.session = session;
-    },
-    SET_SESSION2(state, session) {
-      state.session2 = session;
-    },
-    SET_MAINSTREAMMANAGER(state, mainStreamManager) {
-      state.mainStreamManager = mainStreamManager;
-    },
-    SET_MAINSTREAMMANAGER2(state, mainStreamManager) {
-      state.mainStreamManager2 = mainStreamManager;
-    },
-    SET_PUBLISHER(state, publisher) {
-      state.publisher = publisher;
-    },
-    SET_PUBLISHER2(state, publisher) {
-      state.publisher2 = publisher;
-    },
-    SET_SUBSCRIBERS(state, subscribers) {
-      state.subscribers = subscribers;
-    },
-    SET_SUBSCRIBERS2(state, subscribers) {
-      state.subscribers2 = subscribers;
+    // pre meeting
+    SET_MEETING_DIALOG(state, value) {
+      state.meetingDialog = value;
     },
     SET_CURRENT_DRINK(state, drinkId) {
       state.currentDrink = drinkId;
@@ -125,103 +81,164 @@ const meetingStore = {
     SET_MYSELF(state, subscriber) {
       state.myself = subscriber;
     },
+    SET_MYSESSIONID(state, sessionId) {
+      state.mySessionId = sessionId;
+    },
+    SET_ROOMID(state, roomId) {
+      state.roomId = roomId;
+    },
+
+    // Openvidu
+    SET_OV(state, OV) {
+      state.OV = OV;
+    },
+    SET_SESSION(state, session) {
+      state.session = session;
+    },
+    SET_MAINSTREAMMANAGER(state, mainStreamManager) {
+      state.mainStreamManager = mainStreamManager;
+    },
+    SET_PUBLISHER(state, publisher) {
+      state.publisher = publisher;
+    },
+    SET_SUBSCRIBERS(state, subscribers) {
+      state.subscribers = subscribers;
+    },
+    SET_OVTOKEN(state, token) {
+      state.ovToken = token;
+    },
+
+    // mode
+    SET_CURRENT_MODE(state, mode) {
+      state.currentMode = mode
+    },
+    SET_MODE_HOST(state, host) {
+      state.modeHost = host
+    },
+
+    // chatting
+    SET_IS_CHATPANEL(state, value) {
+      state.isChatPanel = value;
+    },
     SET_MESSAGES(state, data) {
       state.messages.push(data);
     },
     SET_CLEARMESSAGES(state) {
       state.messages = [];
     },
-    SET_OVTOKEN(state, token) {
-      state.ovToken = token;
+
+    // singing
+    SET_SELECTED_SONG(state, song) {
+      state.selectedSong = song;
     },
-    SET_OVTOKEN2(state, token) {
-      state.ovToken2 = token;
-    },
-    SET_MEETING_DIALOG(state, value) {
-      state.meetingDialog = value;
+    SET_SONGS(state, songs) {
+      state.songs = songs;
     },
     SET_CURRENT_SONGTIME(state, currentSongTime) {
       state.currentSongTime = currentSongTime
     },
-    SET_SINGING_HOST(state, singingHost) {
-      state.singingHost = singingHost
+    SET_IS_SONG_ENDED(state, value) {
+      state.isSongEnded = value
     },
-    SET_ANONYMOUS_HOST(state, anonymousHost) {
-      state.anonymousHost = anonymousHost
+
+    // game
+    SET_SELECTED_GAME(state, value) {
+      state.selectedGame = value
+    },
+    SET_GAME_STATUS(state, value){
+      state.gameStatus = value
+    },
+    SET_GAME_TURN(state, value){
+      state.gameTurn = value
+    },
+    SET_GAME_WORD(state, value){
+      state.gameWord = value
+    },
+
+    // theme
+    SET_THEME(state, theme) {
+      state.theme = theme;
+    },
+
+    // screen share
+    SET_SCREEN_OV(state, OV) {
+      state.screenOV = OV;
+    },
+    SET_SCREEN_SESSION(state, session) {
+      state.screenSession = session;
+    },
+    SET_SCREEN_MAINSTREAMMANAGER(state, mainStreamManager) {
+      state.screenMainStreamManager = mainStreamManager;
+    },
+    SET_SCREEN_PUBLISHER(state, publisher) {
+      state.screenPublisher = publisher;
+    },
+    SET_SCREEN_SUBSCRIBERS(state, subscribers) {
+      state.screenSubscribers = subscribers;
+    },
+    SET_SCREEN_OVTOKEN(state, token) {
+      state.screenOvToken = token;
+    },
+    SET_IS_SHARING_MODE(state, value) {
+      state.isSharingMode = value;
     }
   },
   actions: {
-    startGameMode({ commit }) {
-      commit('SET_ISANONYMOUS_MODE', false);
-      commit('SET_ISSNAPSHOT_MODE', false);
-      commit('SET_ISSINGING_MODE', false);
-      commit('SET_ISGAME_MODE', true);
-    },
-    startSingingMode({ commit }) {
-      if (router.name !== 'MeetingPage') {
-        router.push({ name : 'MeetingPage' });
-      }
-      commit('SET_ISANONYMOUS_MODE', false);
-      commit('SET_ISSNAPSHOT_MODE', false);
-      commit('SET_ISGAME_MODE', false);
-      commit('SET_ISSINGING_MODE', true);
-    },
-    startAnonymousMode({ state, commit }) {
-      if (state.anonymousHost) {
-        commit('SET_ISSNAPSHOT_MODE', false);
-        commit('SET_ISGAME_MODE', false);
-        commit('SET_ISSINGING_MODE', false);
-        commit('SET_ISANONYMOUS_MODE', true);
+    changeMode({ state, getters }, mode) {
+      // 진행 중인 노래가 있거나, 게임이 있거나, 스냅샷이 있거나 할 경우 여기서 막아줌
+      if (state.selectedSong || state.selectedGame || (state.currentMode === 'snapshot')) {
+        if (getters.notModeHost) {
+          alert('지금은 다른 모드로 전환할 수 없습니다.');
+          return
+        } else {
+          if (!confirm('현재 모드를 중단하시겠습니까?')) {
+            return
+          }
+        }
       } else {
-        state.session.signal({
-          type: 'anonymous',
-          data: 'T',
-          to: [],
-        })
-          .then(() => {
-            console.log("start anonymous mode");
-          })
-          .catch((err) => {
-            console.log(err)
-          })
+        // 만약 현재 모드가 켜져있는 상태에서 특정 모드로 전환하고자 할 시 한 번 확인
+        if (mode && state.currentMode && mode !== state.currentMode) {
+          if (!confirm('현재 모드를 중단하시겠습니까?')) {
+            return
+          }
+        }
       }
+
+      state.session.signal({
+        type: 'mode',
+        data: mode,
+        to: [],
+      })
+        .then(() => {
+          console.log(`init ${mode} mode`);
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     },
     endAnonymousMode({ state }) {
-      if (state.publisher.stream.connection.connectionId === state.anonymousHost) {
-        state.session.signal({
-          type: 'anonymous',
-          data: 'F',
-          to: [],
-        })
-          .then(() => {
-            console.log("end anonymous mode");
-          })
-          .catch((err) => {
-            console.log(err)
-          })
-      }
+      state.publisher.stream.removeFilter("GStreamerFilter");
     },
-    startSnapshotMode({ commit }) {
-      if (router.name !== 'MeetingPage') {
-        router.push({ name : 'MeetingPage' });
+    endSingingMode({ state, commit }) {
+      if (state.selectedSong) {
+        state.publisher.stream.removeFilter("GStreamerFilter");
+        commit('SET_SELECTED_SONG', null);
+        commit('SET_CURRENT_SONGTIME', null);
       }
-      commit('SET_ISGAME_MODE', false);
-      commit('SET_ISSINGING_MODE', false);
-      commit('SET_ISANONYMOUS_MODE', false);
-      commit('SET_ISSNAPSHOT_MODE', true);
-      
+      commit('SET_SONGS', null);
+      commit('SET_IS_SONG_ENDED', false);
     },
-    closeMultiPanel({ commit }) {
-      if (router.name !== 'MeetingPage') {
-        router.push({ name : 'MeetingPage' });
-      }
-      commit('SET_ISSNAPSHOT_MODE', false);
-      commit('SET_ISGAME_MODE', false);
-      commit('SET_ISSINGING_MODE', false);
-      commit('SET_ISANONYMOUS_MODE', false);
+    endGameProcess({ commit }) {
+      commit('SET_SELECTED_GAME', null);
+      commit('SET_GAME_STATUS', 0);
+      commit('SET_GAME_TURN', 0);
+      commit('SET_GAME_WORD', '');
     },
-    clickChatPanel({ commit }, value) {
-      commit('SET_CHATPANEL', value);
+    endSnapshotMode() {
+      // 스냅샷 모드가 꺼졌을 경우 후처리해야할 부분
+    },
+    toggleChatPanel({ state, commit }) {
+      commit('SET_IS_CHATPANEL', !state.isChatPanel);
     },
     searchSong({ commit }, keyword) {
       axios.get(SERVER.YOUTUBE_URL, {
@@ -258,7 +275,7 @@ const meetingStore = {
     checkSongSync({ state }, currentSongTime) {
       state.session.signal({
         type: 'songsync',
-        data: currentSongTime,
+        data: currentSongTime + 0.05,
         to: [],
       })
         .then(() => {
@@ -268,16 +285,7 @@ const meetingStore = {
           console.log(err)
         })
     },
-    closeSingingPanel({ state, commit, dispatch }) {
-      if (state.publisher.stream.connection.connectionId === state.singingHost) {
-        dispatch('selectSong', null);
-      } else {
-        commit('SET_SINGING_HOST', null);
-        commit('SET_CURRENT_SONGTIME', null);
-      }
-    },
-    changeTheme({ state, commit }, theme) {
-      commit('SET_THEME', theme);
+    changeTheme({ state }, theme) {
       state.session.signal({
         type: 'theme',
         data: theme,
@@ -290,11 +298,9 @@ const meetingStore = {
           console.log(err)
         })
     },
-
     changeMeetingDialog({ commit }, value) {
       commit('SET_MEETING_DIALOG', value);
     },
-
     createSessionId({ rootGetters, commit, dispatch }) {
       const ct = new Date();
       const createData = {
@@ -378,13 +384,13 @@ const meetingStore = {
       commit('SET_MYSESSIONID', null);
       commit('SET_CLEARMESSAGES');
       commit('SET_OVTOKEN', null);
-      if (state.session2) state.session2.disconnect();
-      commit('SET_OV2', undefined);
-      commit('SET_SESSION2', undefined);
-      commit('SET_SUBSCRIBERS2', []);
-      commit('SET_MAINSTREAMMANAGER2', undefined);
-      commit('SET_PUBLISHER2', undefined);
-      commit('SET_OVTOKEN2', null);
+      if (state.screenSession) state.screenSession.disconnect();
+      commit('SET_SCREEN_OV', undefined);
+      commit('SET_SCREEN_SESSION', undefined);
+      commit('SET_SCREEN_SUBSCRIBERS', []);
+      commit('SET_SCREEN_MAINSTREAMMANAGER', undefined);
+      commit('SET_SCREEN_PUBLISHER', undefined);
+      commit('SET_SCREEN_OVTOKEN', null);
 		},
 		updateMainVideoStreamManager ({ state, commit }, stream) {
 			if (state.mainStreamManager === stream) return;
@@ -486,69 +492,122 @@ const meetingStore = {
 					.then(() => {
             commit('SET_NICKNAME', enterData.nickName);
             state.session.publish(state.publisher);
+
+            state.session.on('signal:mode', (event) => {
+              let mode = event.data
+              
+              if (mode) {
+                let modeHost = {
+                  'id': event.from.connectionId,
+                  'name': event.from.data.slice(15,-2)
+                }
+                commit('SET_MODE_HOST', modeHost);
+              } else {
+                commit('SET_MODE_HOST', null);
+              }
+
+              if (mode === 'anonymous') {
+                let pitchs = ['0.76', '0.77', '0.78', '0.79', '0.80', '1.3', '1.4', '1.5', '1.6', '1.7']
+                let pitch = pitchs[Math.floor(Math.random() * pitchs.length)]
+                state.publisher.stream.applyFilter("GStreamerFilter", {"command": `pitch pitch=${pitch}`});
+                alert('진실의 방 모드가 켜졌습니다!');
+                commit('SET_CURRENT_MODE', mode);
+              } else if (mode === 'singing') {
+                commit('SET_IS_SONG_ENDED', false);
+                commit('SET_CURRENT_MODE', mode);
+              } else if (mode === 'snapshot') {
+                if (state.currentMode === 'snapshot') {
+                  commit('SET_CURRENT_MODE', null);
+                  setTimeout(() => {
+                    commit('SET_CURRENT_MODE', mode);
+                  }, 100);
+                } else {
+                  commit('SET_CURRENT_MODE', mode);
+                }
+              } else {
+                commit('SET_CURRENT_MODE', mode);
+              }
+
+            });
+
             state.session.on('signal:chat', (event) => {
               let data = new Object()
               let time = new Date()
               data.message = event.data
-              if (state.isAnonymousMode) {
-                data.sender = 'Anonymous_' + btoa(event.from.connectionId).slice(-5, )
+              if (state.currentMode === 'anonymous') {
+                const animals = [
+                  '코끼리', '사자', '하마', '표범', '가젤',
+                  '개미핥기', '치타', '기린', '얼룩말', '코뿔소',
+                  '호랑이', '늑대', '판다', '코알라', '다람쥐',
+                  '곰', '사슴', '원숭이', '너구리', '침팬지',
+                  '미어캣', '낙타', '목도리도마뱀', '타조', '사막여우',
+                  '전갈', '순록', '북극곰', '흰올빼미', '팽귄',
+                  '북극여우', '바다코끼리', '돌고래', '가오리', '나비고기',
+                  '상어', '문어', '오징어', '바다거북', '흰동가리',
+                  '고래', '불가사리', '해마', '게', '독수리',
+                  '갈매기', '큰부리새', '원앙', '부엉이', '홍학',
+                  '두루미', '비둘기', '벌새', '사다새', '공작',
+                  '참새', '고양이', '개', '푸들나방', '별코두더지'
+                ]
+                data.sender = animals[event.from.connectionId.slice(-10, ).charCodeAt(0) % 60];
               } else {
                 data.sender = event.from.data.slice(15,-2)
               }
               data.time = moment(time).format('HH:mm')
               commit('SET_MESSAGES', data)
             });
+
             state.session.on('signal:theme', (event) => {
               commit('SET_THEME', event.data)
             });
+
             state.session.on('signal:songsync', (event) => {
               commit('SET_CURRENT_SONGTIME', event.data);
             });
+
             state.session.on('signal:song', (event) => {
               const song = JSON.parse(event.data);
               if (song) {
-                commit('SET_SINGING_HOST', event.from.connectionId);
                 state.publisher.stream.applyFilter("GStreamerFilter", {"command": "audioecho delay=75000000 intensity=0.3 feedback=0.4"});
               } else {
-                commit('SET_SINGING_HOST', null);
                 commit('SET_CURRENT_SONGTIME', null);
+                commit('SET_IS_SONG_ENDED', true);
                 state.publisher.stream.removeFilter("GStreamerFilter");
               }
-              commit('SET_ISANONYMOUS_MODE', false);
-              commit('SET_ISSNAPSHOT_MODE', false);
-              commit('SET_ISGAME_MODE', false);
-              commit('SET_ISSINGING_MODE', true);
               commit('SET_SELECTED_SONG', song);
               commit('SET_SONGS', null);
             });
+            
             state.session.on('signal:game', (event) => {
               console.log(event.type)
               console.log(event.penaltyId)
+              console.log(event.data)
+              if(event.data.gameStatus == "1"){
+                //게임 시작
+                commit('SET_SELECTED_GAME', event.data.gameId);
+                commit('SET_GAME_STATUS', event.data.gameStatus);
+              }
+
+              if(event.data.gameStatus > 0){
+                commit('SET_GAME_STATUS',event.data.gameStatus);
+              }
+              if(event.data.turn >= 0){
+                commit('SET_GAME_TURN',event.data.turn);
+              }
+              if(event.data.word){
+                commit('SET_GAME_WORD',event.data.word);
+              }
             });
+
             state.session.on('signal:share', (event) => {
               console.log("EVENT.DATA", event.data)
               if ( event.data === "F") {
-                commit('SET_ISSHARING_MODE', false)
+                commit('SET_IS_SHARING_MODE', false)
               } else {
-                commit('SET_ISSHARING_MODE', true)
+                commit('SET_IS_SHARING_MODE', true)
               }
             });
-            state.session.on('signal:anonymous', (event) => {
-              if (event.data === 'T') {
-                commit('SET_ANONYMOUS_HOST', event.from.connectionId);
-                commit('SET_ISGAME_MODE', false);
-                commit('SET_ISSNAPSHOT_MODE', false);
-                commit('SET_ISSINGING_MODE', false);
-                commit('SET_ISANONYMOUS_MODE', true);
-                let pitchs = ['0.7', '0.8', '1.3', '1.5', '1.7', '2']
-                let pitch = pitchs[Math.floor(Math.random() * pitchs.length)]
-                state.publisher.stream.applyFilter("GStreamerFilter", {"command": `pitch pitch=${pitch}`});
-              } else {
-                commit('SET_ANONYMOUS_HOST', null);
-                commit('SET_ISANONYMOUS_MODE', false);
-                state.publisher.stream.removeFilter("GStreamerFilter");
-              }
-            });
+          
             return true;
 					})
 					.catch(error => {
@@ -579,25 +638,25 @@ const meetingStore = {
         return
       } 
       // --- Get an OpenVidu object ---
-			const OV2 = new OpenVidu();
+			const screenOV = new OpenVidu();
 			// --- Init a session ---
-			const session2 = OV2.initSession();
+			const screenSession = screenOV.initSession();
 			// --- Specify the actions when events take place in the session ---
 			// On every new Stream received...
-      const subscribers2 = [];
-			session2.on('streamCreated', ({ stream }) => {
-        const subscriber2 = session2.subscribe(stream);
-				subscribers2.push(subscriber2);
+      const screenSubscribers = [];
+			screenSession.on('streamCreated', ({ stream }) => {
+        const subscriber2 = screenSession.subscribe(stream);
+				screenSubscribers.push(subscriber2);
 			});
 			// On every Stream destroyed...
-			session2.on('streamDestroyed', ({ stream }) => {
-				const index2 = subscribers2.indexOf(stream.streamManager, 0);
+			screenSession.on('streamDestroyed', ({ stream }) => {
+				const index2 = screenSubscribers.indexOf(stream.streamManager, 0);
 				if (index2 >= 0) {
-					subscribers2.splice(index2, 1);
+					screenSubscribers.splice(index2, 1);
 				}
 			});
       dispatch('getToken', state.mySessionId).then(token2 => {
-        let publisher2 = OV2.initPublisher(undefined, {
+        let screenPublisher = screenOV.initPublisher(undefined, {
           audioSource: false, // The source of audio. If undefined default microphone
           videoSource: 'screen', // The source of video. If undefined default webcam
           publishAudio: true,  	// Whether you want to start publishing with your audio unmuted or not
@@ -607,26 +666,26 @@ const meetingStore = {
           insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
           mirror: false,       	// Whether to mirror your local video or not
         });
-        session2.connect(token2, { clientData: state.nickName + 'screen' })
+        screenSession.connect(token2, { clientData: state.nickName + 'screen' })
         .then(() => {
-          publisher2.once('accessAllowed', () => {
-            publisher2.stream.getMediaStream().getVideoTracks()[0].addEventListener('ended', () => {
+          screenPublisher.once('accessAllowed', () => {
+            screenPublisher.stream.getMediaStream().getVideoTracks()[0].addEventListener('ended', () => {
               dispatch('stopShareScreen');
             });
-            session2.publish(publisher2);
-            commit('SET_OV2', OV2);
-            commit('SET_MAINSTREAMMANAGER2', publisher2);
-            commit('SET_PUBLISHER2', publisher2);
-            commit('SET_SESSION2', session2);
-            commit('SET_SUBSCRIBERS2', subscribers2);
-            commit('SET_OVTOKEN2', token2);
+            screenSession.publish(screenPublisher);
+            commit('SET_SCREEN_OV', screenOV);
+            commit('SET_SCREEN_MAINSTREAMMANAGER', screenPublisher);
+            commit('SET_SCREEN_PUBLISHER', screenPublisher);
+            commit('SET_SCREEN_SESSION', screenSession);
+            commit('SET_SCREEN_SUBSCRIBERS', screenSubscribers);
+            commit('SET_SCREEN_OVTOKEN', token2);
             state.session.signal({
               data: 'T',
               to: [],
               type: 'share' 
             })
           });
-          publisher2.once('accessDenied', () => {
+          screenPublisher.once('accessDenied', () => {
             console.warn('ScreenShare: Access Denied');
           });
         })
@@ -636,13 +695,13 @@ const meetingStore = {
 			});
     },
     stopShareScreen({ state, commit }) {
-      if (state.session2) state.session2.disconnect();
-      commit('SET_OV2', undefined);
-      commit('SET_SESSION2', undefined);
-      commit('SET_SUBSCRIBERS2', []);
-      commit('SET_MAINSTREAMMANAGER2', undefined);
-      commit('SET_PUBLISHER2', undefined);
-      commit('SET_OVTOKEN2', null);
+      if (state.screenSession) state.screenSession.disconnect();
+      commit('SET_SCREEN_OV', undefined);
+      commit('SET_SCREEN_SESSION', undefined);
+      commit('SET_SCREEN_SUBSCRIBERS', []);
+      commit('SET_SCREEN_MAINSTREAMMANAGER', undefined);
+      commit('SET_SCREEN_PUBLISHER', undefined);
+      commit('SET_SCREEN_OVTOKEN', null);
       state.session.signal({
         data: 'F',
         to: [],
@@ -657,10 +716,16 @@ const meetingStore = {
       })
         .then(() => {
           console.log("Message successfully sent");
-          console.log(this.data);
         })
         .catch((err) => {
           console.log(err)
+      })
+    },
+    attachImage({ state }, data) {
+      state.session.signal({
+        data: data,
+        to: [],
+        type: 'attachImage'
       })
     }
   }

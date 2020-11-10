@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex flex-column justify-content-between p-2 px-5 w-100">
-    <h3>노래방</h3>
-    <!-- <div id="player"></div> -->
+    <h3>홈술이 노래방</h3>
+    <!-- 노래 중 -->
     <div class="song-screen" v-if="selectedSong">
       <div class="embed-responsive embed-responsive-16by9">
         <iframe
@@ -13,28 +13,59 @@
         ></iframe>
       </div>
     </div>
-    <div class="song-select" v-else>
-      <v-text-field
-        v-model="songKeyword"
-        label="노래를 검색하세요 :)"
-        color="#BDBDBD"
-        dark
-        @keyup.enter="searchSong(songKeyword)"
-      ></v-text-field>
-      <div class="row">
-        <div
-          class="my-1"
-          :class="{'col-6' : isGumyoung(song), 'col-0' : !isGumyoung(song) }"
-          v-for="song in songs"
-          :key="song.etag"
-          v-show="isGumyoung(song)"
-        >
-          <img
-            class="song-thumbnail"
-            :src="song.snippet.thumbnails.medium.url"
-            :alt="song.snippet.title"
-            @click="clickSelectSong(song)"
+
+    <!-- 노래 없음 -->
+    <div v-else>
+      <!-- 노래가 막 끝났을 경우 -->
+      <div v-if="isSongEnded">
+        <p>노래가 끝났습니다.</p>
+        <div class="d-flex justify-content-around">
+          <button
+            class="btn btn-yellow"
+            @click="changeMode(null)"
           >
+            노래방 끝내기
+          </button>
+          <button
+            class="btn btn-yellow"
+            @click="changeMode('singing')"
+          >
+            노래 고르기
+          </button>
+        </div>
+      </div>
+      
+      <div v-else>
+        <!-- 선곡 중(!modeHost) -->
+        <div v-if="notModeHost">
+          <p>{{ notModeHost.name }} 님이 선곡 중입니다 :)</p>
+        </div>
+
+        <!-- 선곡 중(modeHost) -->
+        <div class="song-select" v-else>
+          <v-text-field
+            v-model="songKeyword"
+            label="노래를 검색하세요 :)"
+            color="#BDBDBD"
+            dark
+            @keyup.enter="searchSong(songKeyword)"
+          ></v-text-field>
+          <div class="row">
+            <div
+              class="my-1"
+              :class="{'col-6' : isGumyoung(song), 'col-0' : !isGumyoung(song) }"
+              v-for="song in songs"
+              :key="song.etag"
+              v-show="isGumyoung(song)"
+            >
+              <img
+                class="song-thumbnail"
+                :src="song.snippet.thumbnails.medium.url"
+                :alt="song.snippet.title"
+                @click="clickSelectSong(song)"
+              >
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -43,9 +74,10 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 export default {
   name: 'SingingPanel',
+
   data() {
     return {
       songKeyword: null,
@@ -54,9 +86,18 @@ export default {
       checksync: null
     }
   },
+
   computed: {
-    ...mapState('meetingStore', ['selectedSong', 'songs', 'currentSongTime', 'singingHost', 'publisher'])
+    ...mapState('meetingStore', [
+      'selectedSong',
+      'songs',
+      'currentSongTime',
+      'isSongEnded',
+      'publisher'
+    ]),
+    ...mapGetters('meetingStore', ['notModeHost'])
   },
+
   watch: {
     selectedSong(value) {
       if (value) {
@@ -66,41 +107,47 @@ export default {
       } else {
         this.ytPlayer = null;
         this.checksync = null;
-        console.log('노래 끝')
       }
     },
     ytPlayer() {
-      if (this.ytPlayer) {
-        if (this.publisher.stream.connection.connectionId === this.singingHost) {
-          this.checksync = setInterval(() => {
-            if (!this.selectedSong) {
-              this.ytPlayer = null;
+      if (this.ytPlayer && !this.notModeHost) {
+        this.checksync = setInterval(() => {
+          if (!this.selectedSong) {
+            this.ytPlayer = null;
+            clearInterval(this.checksync);
+          } else {
+            if (this.ytPlayer.getPlayerState() === 0) {
+              this.selectSong(null);
               clearInterval(this.checksync);
-            } else {
-              if (this.ytPlayer.getPlayerState() === 1) {
-                this.checkSongSync(this.ytPlayer.getCurrentTime());
-              } else if (this.ytPlayer.getPlayerState() === 0) {
-                this.selectSong(null);
-                clearInterval(this.checksync);
-              }
+            } else if (this.ytPlayer.getPlayerState() === 1) {
+              this.checkSongSync(this.ytPlayer.getCurrentTime());
             }
-          }, 1000);
-        }
+          }
+        }, 500);
       }
     },
     currentSongTime(value) {
-      if (!this.ytPlayer) {
-        this.ytPlayer = new window.YT.Player('player', {});
-      }
-      if (this.selectedSong) {
-        if (Math.abs(value - this.ytPlayer.getCurrentTime()) > 0.5) {
-          this.ytPlayer.seekTo(value);
+      if (this.notModeHost) {
+        if (!this.ytPlayer) {
+          this.ytPlayer = new window.YT.Player('player', {});
+        }
+        if (this.selectedSong) {
+          if (Math.abs(value - this.ytPlayer.getCurrentTime()) > 0.5) {
+            this.ytPlayer.seekTo(value);
+          }
         }
       }
     }
   },
+
   methods: {
-    ...mapActions('meetingStore', ['searchSong', 'selectSong', 'closeSingingPanel', 'checkSongSync']),
+    ...mapActions('meetingStore', [
+      'searchSong',
+      'selectSong',
+      'checkSongSync',
+      'changeMode',
+      'endSingingMode'
+    ]),
     isGumyoung(song) {
       if (song.snippet.channelTitle === '금영 노래방 공식 유튜브 채널') {
         return true
@@ -113,9 +160,10 @@ export default {
       this.songKeyword = null;
     }
   },
+
   beforeDestroy() {
     clearInterval(this.checksync);
-    this.closeSingingPanel()
+    this.endSingingMode();
   }
 }
 </script>
