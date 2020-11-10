@@ -5,7 +5,7 @@
         <span class="title">
           채팅
         </span>
-        <button class="btn close-btn" @click="closeChatPanel">
+        <button class="btn close-btn" @click="toggleChatPanel">
           <i class="fas fa-times"></i>
         </button>
       </div>
@@ -67,16 +67,13 @@ export default {
     }
   },
   computed: {
-    ...mapState("meetingStore", ["isChatPanel", "messages"]),
+    ...mapState("meetingStore", ["messages"]),
   },
   methods: {
     ...mapActions("meetingStore", [
-      "clickChatPanel",
+      "toggleChatPanel",
       "sendMessage",
     ]),
-    closeChatPanel() {
-      this.clickChatPanel(false);
-    },
     clickSendMessage() {
       this.sendMessage(this.message)
       this.message = ""

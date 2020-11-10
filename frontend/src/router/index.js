@@ -11,11 +11,11 @@ import Analysis from '@/components/mypage/Analysis'
 import Calendar from '@/components/mypage/Calendar'
 
 // Game Selection
-import SmileLeadsToAlcoholDescription from '@/components/meetingpage/multipanel/gamedescription/SmileLeadsToAlcoholDescription';
-import UpAndDownDescription from '@/components/meetingpage/multipanel/gamedescription/UpAndDownDescription';
-import StrawberryGameDescription from '@/components/meetingpage/multipanel/gamedescription/StrawberryGameDescription';
-import LiarGameDescription from '@/components/meetingpage/multipanel/gamedescription/LiarGameDescription';
-import ConsonantQuizDescription from '@/components/meetingpage/multipanel/gamedescription/ConsonantQuizDescription';
+import SmileLeadsToAlcoholDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/SmileLeadsToAlcoholDescription';
+import UpAndDownDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/UpAndDownDescription';
+import StrawberryGameDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/StrawberryGameDescription';
+import LiarGameDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/LiarGameDescription';
+import ConsonantQuizDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/ConsonantQuizDescription';
 
 Vue.use(VueRouter);
 

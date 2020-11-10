@@ -1,6 +1,12 @@
 <template>
-  <div class="w-100 panel">
-    <div class="d-flex row no-gutters">
+  <div class="panel">
+    <!-- !modeHost -->
+    <div v-if="notModeHost">
+      <p>{{ notModeHost.name }}님이 게임을 고르는 중입니다 :)</p>
+    </div>
+
+    <!-- modeHost -->
+    <div class="d-flex row no-gutters" v-else>
       <div class="col-4 game-selection my-1">
         <div class="top">
           <h6 class="mt-5">술게임을 골라주세요!</h6>
@@ -20,12 +26,17 @@
         </transition>
       </div>
     </div>
+
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 export default {
   name: "GameSelectionPanel",
+  computed: {
+    ...mapGetters('meetingStore', ['notModeHost'])
+  }
 };
 </script>
 

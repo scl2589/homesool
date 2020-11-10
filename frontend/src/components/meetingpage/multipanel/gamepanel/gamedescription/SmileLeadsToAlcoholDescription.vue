@@ -1,6 +1,6 @@
 <template>
-  <div class="liar" data-app>
-    <h5 class="pt-3">라이어 게임🙄 </h5>
+  <div class="smile" data-app>
+    <h5 class="pt-3">웃으면 술이와요😉 </h5>
     <div class="area d-flex flex-column justify-content-between">
       <div 
         id="carouselExampleControls" 
@@ -10,7 +10,7 @@
         <div class="carousel-inner">
           <div class="carousel-item active">
             <img 
-              src="../../../../assets/images/sample.png" 
+              :src="require('@/assets/images/sample.png')" 
               class="d-block w-100" 
               alt="sample image"
             >
@@ -20,53 +20,43 @@
           </div>
           <div class="carousel-item">
             <img 
-              src="../../../../assets/images/sample.png" 
+              src="require('@/assets/images/sample.png')" 
               class="d-block w-100" 
               alt="sample image"
             >
             <p class="description">
-              2. 각 참여자에게 제시어가 주어집니다.<br>라이어에게는 빈 화면이 보여집니다.
+              2. 각 참여자들은 이를 가리고 <br>주어진 단어를 읽습니다.
             </p>
           </div>
           <div class="carousel-item">
             <img 
-              src="../../../../assets/images/sample.png" 
+              src="require('@/assets/images/sample.png')" 
               class="d-block w-100" 
               alt="sample image"
             >
             <p class="description">
-              3. 참여자들은 한 번씩 돌아가면서 <br>해당 제시어에 대해 설명합니다.
+              3. 이 과정에서 이를 보인다면<br> 당신은...벌칙 당첨!
             </p>
           </div>
           <div class="carousel-item">
-            <img 
-              src="../../../../assets/images/sample.png" 
-              class="d-block w-100" 
-              alt="sample image"
-            >
-            <p class="description">
-              4. 라이어일 경우 제시어를 추측해<br>아는 척 합니다😉.
-            </p>
-          </div>
-          <div class="carousel-item">
-            <img 
-              src="../../../../assets/images/sample.png" 
-              class="d-block w-100" 
-              alt="sample image"
-            >
-            <p class="description">
-              5. 참여자들은 라이어 같은 사람을 <br>투표합니다.
-            </p>
-          </div>
-          <div class="carousel-item">
-            <img 
-              src="../../../../assets/images/sample.png" 
-              class="d-block w-100" 
-              alt="sample image"
-            >
-            <p class="description">
-              6. 라이어를 맞히지 못한 시민들 중 <br> 한 명만 벌칙 당첨!!
-            </p>
+            <button
+            class="btn-yellow rounded"
+            @click="clickSendTheme('열대과일')"
+          >
+            열대과일
+          </button>
+          <button
+            class="btn-yellow rounded"
+            @click="clickSendTheme('야채')"
+          >
+            야 채
+          </button>
+          <button
+            class="btn-yellow rounded"
+            @click="clickStopGame()"
+          >
+            게임종료
+          </button>
           </div>
         </div>
         <button class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
@@ -111,6 +101,7 @@
         <div>
           <button
             class="btn-yellow rounded"
+            @click="clickStartGame()"
           >
             시작하기
           </button>
@@ -122,6 +113,7 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   name: 'SmileLeadsToAlcoholDescritpion',
   data() {
@@ -133,6 +125,45 @@ export default {
         '5분동안 카메라 정지'
       ],
     }
+  },
+   methods:{
+     ...mapActions("meetingStore", [
+      "clickChatPanel",
+      "sendGameRequest",
+    ]),
+    clickStartGame() {
+     alert("게임시작");
+     var request = new Object();
+     request.gameId=0;
+     request.paneltyId=0;
+     request.gameStatus=1;
+
+     var jsonRequest = JSON.stringify(request);
+     console.log(jsonRequest);
+     this.sendGameRequest(jsonRequest);
+    },
+    clickSendTheme(theme){
+      alert("주제선택");
+      var request = new Object();
+      request.gameId=0;
+      request.theme=theme;
+      request.gameStatus=2;
+
+      var jsonRequest = JSON.stringify(request);
+      console.log(jsonRequest);
+      this.sendGameRequest(jsonRequest);
+    },
+    clickStopGame() {
+     alert("게임종료");
+     var request = new Object();
+     request.gameId=0;
+     request.paneltyId=0;
+     request.gameStatus=3;
+
+     var jsonRequest = JSON.stringify(request);
+     console.log(jsonRequest);
+     this.sendGameRequest(jsonRequest);
+    },
   }
 }
 </script>
@@ -142,7 +173,7 @@ p, h1, h2, h3, h4, h5, h6, button {
   color: white;
 }
 
-.liar {
+.smile {
   height: 100%;
   max-height: 45vh;
   background-color: black;

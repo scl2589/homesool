@@ -1,6 +1,7 @@
 <template>
   <div>
     <div class="row no-gutters theme-background" style="height:91vh;">
+      <!-- LeftPanel -->
       <div 
         id="capture"
         :class="{'col-8' : (isMultiPanel || isChatPanel), 'col-12' : !isMultiPanel && !isChatPanel, 'basic-theme' : theme === 'basic', 'christmas-theme' : theme === 'christmas'}"
@@ -8,6 +9,7 @@
         <LeftPanel></LeftPanel>
       </div>
 
+      <!-- RightPanel -->
       <div 
         class="right-panel"
         :class="{ 'col-4' : (isMultiPanel || isChatPanel), 'col-0' : !isMultiPanel && !isChatPanel }"
@@ -25,20 +27,40 @@
             v-if="isChatPanel"
           >
           </ChatPanel>
-
       </div>
     </div>
 
-
+    <!-- Footer -->
     <div class="footer d-flex justify-content-between align-items-center w-100 px-2" style="height:9vh;">
+      <!-- Theme BGM -->
       <div class="d-flex align-items-center">
-        <button class="btn mr-1" @click="clickBGM">
-          <img v-if="playing" src="@/assets/images/bgm_on.png" alt="bgm_on">
-          <img v-else src="@/assets/images/bgm_off.png" alt="bgm_off">
+        <button
+          class="btn mr-1"
+          @click="toggleBGM"
+        >
+          <img
+            src="@/assets/images/bgm_on.png"
+            alt="bgm_on"
+            v-if="isPlaying"
+          >
+          <img
+            src="@/assets/images/bgm_off.png"
+            alt="bgm_off"
+            v-else
+          >
         </button>
-        <input id="vol-control" type="range" min="0" max="100" step="1" value="10" @input="setVolume">
+        <input
+          id="vol-control"
+          type="range"
+          min="0"
+          max="100"
+          step="1"
+          value="10"
+          @input="setVolume"
+        >
       </div>
 
+      <!-- Toggle Video -->
       <div>
         <button 
           class="btn mr-2"
@@ -55,6 +77,8 @@
             v-else
           >
         </button>
+
+        <!-- Toggle Audio -->
         <button 
           class="btn mr-2"
           @click="clickMuteAudio"
@@ -70,14 +94,16 @@
             v-else
           >
         </button>
+
+        <!-- ScreenShare -->
         <button 
           class="btn mr-2"
-          @click="clickShareScreen"
+          @click="toggleShareScreen"
         >
           <img 
             src="@/assets/images/screenshare.png" 
             alt="screenshare"
-            v-if="publisher2"
+            v-if="screenPublisher"
           >
           <img 
             src="@/assets/images/screenshare_off.png" 
@@ -85,28 +111,80 @@
             v-else
           >
         </button>
-        <button class="btn mr-2" @click="startSnapshotMode">
-          <img src="@/assets/images/snapshot.png" alt="snapshot">
+
+        <!-- Snapshot -->
+        <button
+          class="btn mr-2"
+          @click="changeMode('snapshot')"
+        >
+          <img
+            src="@/assets/images/snapshot.png"
+            alt="snapshot"
+          >
         </button>
+
+        <!-- Fun Mode -->
         <div class="btn-group dropup">
-          <button type="button" class="btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <img src="@/assets/images/funmode.png" alt="funmode">
+          <button
+            class="btn"
+            type="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            <img
+              src="@/assets/images/funmode.png"
+              alt="funmode"
+            >
           </button>
           <div class="dropdown-menu text-center">
-            <li class="dropdown-item" @click="startGameMode">술게임 모드</li>
-            <li class="dropdown-item" @click="startSingingMode">노래방 모드</li>
-            <li class="dropdown-item" @click="startAnonymousMode">진실의 방 모드</li>
+            <li
+              class="dropdown-item"
+              @click="changeMode('game')"
+            >
+              술게임 모드
+            </li>
+            <li
+              class="dropdown-item"
+              @click="changeMode('singing')"
+            >
+              노래방 모드
+            </li>
+            <li
+              class="dropdown-item"
+              @click="changeMode('anonymous')"
+            >
+              진실의 방 모드
+            </li>
           </div>
         </div>
       </div>
 
+      <!-- Toggle Chat -->
       <div>
-        <button class="btn mr-2" @click="clickChatMode">
-          <img src="@/assets/images/chat.png" alt="chat">
+        <button
+          class="btn mr-2"
+          @click="toggleChatPanel"
+        >
+          <img
+            src="@/assets/images/chat.png"
+            alt="chat"
+          >
         </button>
+        
+        <!-- meeting setting -->
         <div class="btn-group dropup">
-          <button type="button" class="btn mr-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <img src="@/assets/images/setting.png" alt="setting">
+          <button
+            class="btn mr-2"
+            type="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            <img
+              src="@/assets/images/setting.png"
+              alt="setting"
+            >
           </button>
           <div class="dropdown-menu dropdown-menu-right text-center">
             <li 
@@ -130,102 +208,116 @@
           </div>
         </div>
       </div>
-      
+
     </div>
   </div>
 </template>
 
 <script>
-import Swal from 'sweetalert2'
 import { mapState, mapActions } from 'vuex' 
+import Swal from 'sweetalert2'
 import MultiPanel from '@/components/meetingpage/multipanel/MultiPanel'
 import ChatPanel from '@/components/meetingpage/ChatPanel'
 import LeftPanel from '@/components/meetingpage/LeftPanel'
 
 export default {
   name: 'MeetingPage',
-  data() {
-    return {
-      basic: ['French Guitar Jazz V2.mp3', 'Jazz.mp3', 'jazz_20160226.mp3', 'Easy Jazz.mp3', 'The Jazz.mp3'],
-      christmas: ['christmas_1.wav', 'O Holy Night.wav', 'Slient Night.mp3', 'Christmas Tale.mp3', 'Christmas Jazz.mp3'],
-      playList: this.basic,
-      currentSong: 0,
-      song : new Audio(require('@/assets/musics/French Guitar Jazz V2.mp3')),
 
-      playing: false
-    }
-  },
   components: {
     MultiPanel,
     ChatPanel,
     LeftPanel
   },
+
+  data() {
+    return {
+      themeBGM: {
+        basic: [
+          'French Guitar Jazz V2.mp3',
+          'Jazz.mp3',
+          'jazz_20160226.mp3',
+          'Easy Jazz.mp3',
+          'The Jazz.mp3'
+        ],
+        christmas: [
+          'christmas_1.wav',
+          'O Holy Night.wav',
+          'Slient Night.mp3',
+          'Christmas Tale.mp3',
+          'Christmas Jazz.mp3'
+        ],
+      },
+      bgmIndex: 0,
+      currentBGM: new Audio(require('@/assets/musics/French Guitar Jazz V2.mp3')),
+      isPlaying: false
+    }
+  },
+
   computed: {
     ...mapState('meetingStore', [
-      'isGameMode',
-      'isSingingMode',
-      'isAnonymousMode',
-      'isSnapshotMode',
       'isChatPanel',
-      'isGameStart',
       'theme',
       'mySessionId',
       'publisher',
-      'publisher2'
+      'screenPublisher',
+      'currentMode',
+      'modeHost'
     ]),
     isMultiPanel() {
-      if (this.isGameMode || this.isSingingMode || this.isAnonymousMode || this.isSnapshotMode || this.isGameStart) {
-        return true
+      if (this.currentMode) {
+        return true;
       } else {
-        return false
+        return false;
       }
-    }
+    },
+    playList() {
+      return this.themeBGM[this.theme]
+    } 
   },
+
   watch: {
-    isSingingMode(value) {
-      if (value) {
-        if (!this.song.paused) {
-          this.song.pause();
-          this.playing = false;
+    currentMode(value) {
+      if (value === 'singing') {
+        if (!this.currentBGM.paused) {
+          this.currentBGM.pause();
+          this.isPlaying = false;
         }
       }
     },
     theme() {
-      this.changeThemeBGM(this.theme);
+      if (this.currentBGM) {
+        this.currentBGM.pause();
+      }
+      this.bgmIndex = 0;
+      this.currentBGM.src = require('@/assets/musics/' + this.playList[this.bgmIndex]);
+      if (this.isPlaying) {
+        this.currentBGM.play();
+      }
     }
   },
+
   methods: {
     ...mapActions('meetingStore', [
-      'startGameMode',
-      'startSingingMode',
-      'startAnonymousMode',
-      'startSnapshotMode',
-      'clickChatPanel',
+      'toggleChatPanel',
       'changeTheme',
       'leaveSession',
       'clickMuteVideo',
       'clickMuteAudio',
       'startShareScreen',
-      'stopShareScreen'
+      'stopShareScreen',
+      'changeMode'
     ]),
-    clickChatMode() {
-      if (this.isChatPanel === true) {
-        this.clickChatPanel(false)
-      } else {
-        this.clickChatPanel(true)
-      }
-    },
-    clickBGM() {
-      if (this.song.paused) {
-        this.song.play()
-        this.playing = true;
+    toggleBGM() {
+      if (this.currentBGM.paused) {
+        this.currentBGM.play()
+        this.isPlaying = true;
       } else {          
-        this.song.pause()
-        this.playing = false;
+        this.currentBGM.pause()
+        this.isPlaying = false;
       }
     },
     setVolume(e) {
-      this.song.volume = e.target.value / 100;
+      this.currentBGM.volume = e.target.value / 100;
     },
     clickChangeTheme() {
       Swal.fire({
@@ -254,47 +346,6 @@ export default {
         }
       })
     },
-    changeThemeBGM(theme) {
-      if (this.song) {
-        this.song.pause();
-      }
-      this.currentSong = 0;
-      if (theme == 'christmas') {
-        this.playList = this.christmas;
-        this.song.src = require('@/assets/musics/' + this.playList[this.currentSong]);
-        if (this.playing) {
-          this.song.play();
-        }
-      } else if (theme == 'basic') {
-        this.playList = this.basic;
-        this.song.src = require('@/assets/musics/' + this.playList[this.currentSong]);
-        if (this.playing) {
-          this.song.play();
-        }
-      }
-    },
-    clickExitMeeting() {
-      var swal = Swal.mixin({
-        customClass: {
-          confirmButton: 'btn btn-success mr-2',
-          cancelButton: 'btn btn-danger'
-        },
-        buttonsStyling: false
-      })
-
-      swal.fire({
-        text: "정말 현재 술자리에서 나가시겠습니까?",
-        showCancelButton: true,
-        confirmButtonText: '네',
-        cancelButtonText: '아니요',
-        icon: "warning",
-      })
-      .then((result) => {
-        if (result.value) {
-          window.close()
-        } 
-      })
-    },
     leaveRoom() {
       this.$router.push({ name: 'HomePage' });
     },
@@ -302,7 +353,6 @@ export default {
       const copyText = document.createElement("input");
       copyText.value = `https://k3a503.p.ssafy.io/meet/${this.mySessionId}`
       document.body.appendChild(copyText)
-      
       copyText.select();
       document.execCommand("copy");
       document.body.removeChild(copyText)
@@ -311,8 +361,8 @@ export default {
           html: `<p>https://k3a503.p.ssafy.io/meet/${this.mySessionId}</p><h5>주소가 복사되었습니다</h5>`
         })
     },
-    clickShareScreen() {
-      if (this.publisher2) {
+    toggleShareScreen() {
+      if (this.screenPublisher) {
         if (confirm('화면 공유를 중단 하시겠습니까?')) {
           this.stopShareScreen();
         }
@@ -323,30 +373,37 @@ export default {
       }
     }
   },
+
+  beforeMount() {
+    window.addEventListener('beforeunload', this.leaveSession);
+  },
+
+  mounted() {
+    this.currentBGM.volume = 0.1
+    this.currentBGM.addEventListener("ended", function() {
+      this.bgmIndex++;
+      if (this.bgmIndex >= this.playList.length) {
+        this.bgmIndex = 0;
+      }
+      this.currentBGM.src = require('@/assets/musics/' + this.playList[this.bgmIndex]);
+      this.currentBGM.play();
+    })
+  },
+
   beforeRouteLeave (to, from, next) {
     if (confirm('술자리에서 나가시겠습니까?')) {
       this.leaveSession();
       next();
     }
   },
-  beforeMount() {
-    window.addEventListener('beforeunload', this.leaveSession);
-  },
-  mounted() {
-    this.song.volume = 0.1
-    this.song.addEventListener("ended", function() {
-      this.currentSong++;
-      if (this.currentSong >= this.playList.length) {
-        this.currentSong = 0;
-      }
-      this.song.src = require('@/assets/musics/' + this.playList[this.currentSong]);
-      this.song.play();
-    })
-  },
+
   beforeDestroy() {
+    this.currentBGM.pause();
+    if (this.isChatPanel) {
+      this.toggleChatPanel();
+    }
     window.removeEventListener('beforeunload', this.leaveSession);
-    this.song.pause();
-  },
+  }
 }
 </script>
 
@@ -413,9 +470,11 @@ input[type=range] {
   margin: 10px 0;
   width: 100%;
 }
+
 input[type=range]:focus {
   outline: none;
 }
+
 input[type=range]::-webkit-slider-runnable-track {
   width: 100%;
   height: 12px;
@@ -426,6 +485,7 @@ input[type=range]::-webkit-slider-runnable-track {
   border-radius: 25px;
   border: 1px solid #8A8A8A;
 }
+
 input[type=range]::-webkit-slider-thumb {
   box-shadow: 1px 1px 1px #828282;
   border: 1px solid #8A8A8A;
@@ -437,9 +497,11 @@ input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none;
   margin-top: -5px;
 }
+
 input[type=range]:focus::-webkit-slider-runnable-track {
   background: #FCFFD6;
 }
+
 input[type=range]::-moz-range-track {
   width: 100%;
   height: 12px;
@@ -450,6 +512,7 @@ input[type=range]::-moz-range-track {
   border-radius: 25px;
   border: 1px solid #8A8A8A;
 }
+
 input[type=range]::-moz-range-thumb {
   box-shadow: 1px 1px 1px #828282;
   border: 1px solid #8A8A8A;
@@ -459,6 +522,7 @@ input[type=range]::-moz-range-thumb {
   background: #F6C863;
   cursor: pointer;
 }
+
 input[type=range]::-ms-track {
   width: 100%;
   height: 12px;
@@ -468,18 +532,21 @@ input[type=range]::-ms-track {
   border-color: transparent;
   color: transparent;
 }
+
 input[type=range]::-ms-fill-lower {
   background: #FFCF67;
   border: 1px solid #8A8A8A;
   border-radius: 50px;
   box-shadow: 0px 0px 0px #000000;
 }
+
 input[type=range]::-ms-fill-upper {
   background: #FFCF67;
   border: 1px solid #8A8A8A;
   border-radius: 50px;
   box-shadow: 0px 0px 0px #000000;
 }
+
 input[type=range]::-ms-thumb {
   margin-top: 1px;
   box-shadow: 1px 1px 1px #828282;
@@ -490,9 +557,11 @@ input[type=range]::-ms-thumb {
   background: #F6C863;
   cursor: pointer;
 }
+
 input[type=range]:focus::-ms-fill-lower {
   background: #FFCF67;
 }
+
 input[type=range]:focus::-ms-fill-upper {
   background: #FFCF67;
 }
