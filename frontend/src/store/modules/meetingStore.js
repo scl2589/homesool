@@ -41,7 +41,7 @@ const meetingStore = {
     isSongEnded: false,
 
     // game
-    selectedGame: null, // gameId + isGameStart
+    selectedGame: null,
     gameStatus: 0,
     gameTurn: 0,
     gameWord: '',
@@ -185,30 +185,36 @@ const meetingStore = {
   },
   actions: {
     changeMode({ state, getters }, mode) {
-      if (state.selectedSong || state.selectedGame || (state.currentMode === 'snapshot' && getters.notModeHost)) {
-        // 진행 중인 노래가 있거나, 게임이 있거나, 스냅샷이 있거나 할 경우 여기서 막아줌
-        alert('지금은 다른 모드로 전환할 수 없습니다.');
-        return
-      } else {
-        if (mode && state.currentMode && mode !== state.currentMode) {
-          // 만약 현재 모드가 켜져있는 상태에서 특정 모드로 전환하고자 할 시 한 번 확인
-          if (!confirm('모드를 전환하시겠습니까?')) {
+      // 진행 중인 노래가 있거나, 게임이 있거나, 스냅샷이 있거나 할 경우 여기서 막아줌
+      if (state.selectedSong || state.selectedGame || (state.currentMode === 'snapshot')) {
+        if (getters.notModeHost) {
+          alert('지금은 다른 모드로 전환할 수 없습니다.');
+          return
+        } else {
+          if (!confirm('현재 모드를 중단하시겠습니까?')) {
             return
           }
         }
-
-        state.session.signal({
-          type: 'mode',
-          data: mode,
-          to: [],
-        })
-          .then(() => {
-            console.log(`init ${mode} mode`);
-          })
-          .catch((err) => {
-            console.log(err)
-          })
+      } else {
+        // 만약 현재 모드가 켜져있는 상태에서 특정 모드로 전환하고자 할 시 한 번 확인
+        if (mode && state.currentMode && mode !== state.currentMode) {
+          if (!confirm('현재 모드를 중단하시겠습니까?')) {
+            return
+          }
+        }
       }
+
+      state.session.signal({
+        type: 'mode',
+        data: mode,
+        to: [],
+      })
+        .then(() => {
+          console.log(`init ${mode} mode`);
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     },
     endAnonymousMode({ state }) {
       state.publisher.stream.removeFilter("GStreamerFilter");
@@ -231,32 +237,9 @@ const meetingStore = {
     endSnapshotMode() {
       // 스냅샷 모드가 꺼졌을 경우 후처리해야할 부분
     },
-
-    startSnapshotMode() {
-      // if (router.name !== 'MeetingPage') {
-      //   router.push({ name : 'MeetingPage' });
-      // }
-      // state.session.signal({
-      //   type: 'snapshot',
-      //   data: 'T',
-      //   to: [],
-      // })
-      
-    },
-    // closeMultiPanel({ commit }) {
-    //   if (router.name !== 'MeetingPage') {
-    //     router.push({ name : 'MeetingPage' });
-    //   }
-    //   commit('SET_ISSNAPSHOT_MODE', false);
-    //   commit('SET_ISGAME_MODE', false);
-    //   commit('SET_ISSINGING_MODE', false);
-    //   commit('SET_ISGAME_START', false);
-    // },
-
     toggleChatPanel({ state, commit }) {
       commit('SET_IS_CHATPANEL', !state.isChatPanel);
     },
-
     searchSong({ commit }, keyword) {
       axios.get(SERVER.YOUTUBE_URL, {
         params: {
@@ -545,7 +528,6 @@ const meetingStore = {
                 commit('SET_CURRENT_MODE', mode);
               }
 
-              
             });
 
             state.session.on('signal:chat', (event) => {
@@ -625,18 +607,7 @@ const meetingStore = {
                 commit('SET_IS_SHARING_MODE', true)
               }
             });
-
-            // state.session.on('signal:snapshot', () => {
-            //   if (state.isSnapshotMode === true) {
-            //     dispatch('closeMultiPanel')
-            //   }
-            //   setTimeout(() => {
-            //     commit('SET_ISSNAPSHOT_MODE', true)
-            //     commit('SET_ISGAME_MODE', false);
-            //     commit('SET_ISSINGING_MODE', false);
-            //   }, 100);
-              
-            // });
+          
             return true;
 					})
 					.catch(error => {

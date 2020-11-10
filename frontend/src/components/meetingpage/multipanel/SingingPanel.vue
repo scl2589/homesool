@@ -36,8 +36,13 @@
       </div>
       
       <div v-else>
+        <!-- 선곡 중(!modeHost) -->
+        <div v-if="notModeHost">
+          <p>{{ notModeHost.name }} 님이 선곡 중입니다 :)</p>
+        </div>
+
         <!-- 선곡 중(modeHost) -->
-        <div class="song-select" v-if="notModeHost">
+        <div class="song-select" v-else>
           <v-text-field
             v-model="songKeyword"
             label="노래를 검색하세요 :)"
@@ -62,11 +67,6 @@
             </div>
           </div>
         </div>
-
-        <!-- 선곡 중(!modeHost) -->
-        <div v-else>
-          <p>{{ modeHost.name }} 님이 선곡 중입니다 :)</p>
-        </div>
       </div>
     </div>
 
@@ -89,7 +89,6 @@ export default {
 
   computed: {
     ...mapState('meetingStore', [
-      'modeHost',
       'selectedSong',
       'songs',
       'currentSongTime',
@@ -111,7 +110,7 @@ export default {
       }
     },
     ytPlayer() {
-      if (this.ytPlayer && this.notModeHost) {
+      if (this.ytPlayer && !this.notModeHost) {
         this.checksync = setInterval(() => {
           if (!this.selectedSong) {
             this.ytPlayer = null;
@@ -128,7 +127,7 @@ export default {
       }
     },
     currentSongTime(value) {
-      if (!this.notModeHost) {
+      if (this.notModeHost) {
         if (!this.ytPlayer) {
           this.ytPlayer = new window.YT.Player('player', {});
         }
