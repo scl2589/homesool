@@ -7,5 +7,6 @@ export default {
     user: '/user',
     login: '/user/login',
     room: '/room',
+    photo: '/room/photo'
   }
 }

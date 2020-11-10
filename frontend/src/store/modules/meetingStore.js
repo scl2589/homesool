@@ -57,6 +57,9 @@ const meetingStore = {
     screenSubscribers: [],
     screenOvToken: null,
     isSharingMode: false,
+
+    //capture
+    screenshotInfo: null,
   },
   getters: {
     notModeHost(state) {
@@ -181,6 +184,11 @@ const meetingStore = {
     },
     SET_IS_SHARING_MODE(state, value) {
       state.isSharingMode = value;
+    },
+
+    //screenshot
+    SET_SCREENSHOT_INFO(state, data) {
+      state.screenshotInfo = data;
     }
   },
   actions: {
@@ -649,11 +657,11 @@ const meetingStore = {
             });
             state.session.on('signal:attachImage', (event) => {
               setTimeout(() => {
-                var image = document.createElement('img') 
+                var image = document.createElement('img')  
                 image.src = "https://firebasestorage.googleapis.com/v0/b/homesuli.appspot.com/o/snapshot_" + state.mySessionId + "%2F" + event.data + ".jpg?alt=media&token=942e1b59-2774-4d79-b0e7-098d76168b49"
                 image.style.maxWidth="90%"
                 document.getElementById('preview').appendChild(image)
-              }, 700);
+              }, 1500);
             })
             return true;
 					})
@@ -774,6 +782,18 @@ const meetingStore = {
         to: [],
         type: 'attachImage'
       })
+    },
+    saveScreenshotInfo({ commit }, data) {
+      commit('SET_SCREENSHOT_INFO', data)
+    },
+    saveScreenshot({ state, rootGetters }) {
+      axios.post(SERVER.URL + SERVER.ROUTES.photo, state.screenshotInfo, rootGetters.config)
+        .then(() => {
+          console.log("SUCCESSFUL - uploading screenshot")
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
   }
 }
