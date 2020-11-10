@@ -629,8 +629,8 @@ const meetingStore = {
                     commit('SET_GAME_LIAR_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
                   }
                 }
-                if(state.myself == event.data.liar){ //본인체크
-                  commit('SET_GAME_LIAR_DATA',state.nickName);
+                if(state.publisher.session.connection.connectionId == event.data.liar){ //본인체크
+                  commit('SET_GAME_LIAR_DATA',state.publisher.session.connection.data.slice(15,-2));
                 }
               }
               if(event.data.voteId){
@@ -641,8 +641,8 @@ const meetingStore = {
                     commit('SET_GAME_VOTE_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
                   }
                 }
-                if(state.myself == event.data.liar){ //본인체크
-                  commit('SET_GAME_VOTE_DATA',state.nickName);
+                if(state.publisher.session.connection.connectionId == event.data.liar){ //본인체크
+                  commit('SET_GAME_VOTE_DATA',state.publisher.session.connection.data.slice(15,-2));
                 }
               }
               if(event.data.participantId){
@@ -653,8 +653,10 @@ const meetingStore = {
                     commit('SET_GAME_PARTICIPANT_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
                   }
                 }
-                if(state.myself == event.data.liar){ //본인체크
-                  commit('SET_GAME_PARTICIPANT_DATA',state.nickName);
+                alert(state.myself);
+                alert(state.nickName);
+                if(state.publisher.session.connection.connectionId == event.data.liar){ //본인체크
+                  commit('SET_GAME_PARTICIPANT_DATA',state.publisher.session.connection.data.slice(15,-2));
                 }
               }
             });

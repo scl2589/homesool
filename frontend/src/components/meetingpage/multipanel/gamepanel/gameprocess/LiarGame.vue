@@ -33,10 +33,15 @@
                 <p>해당 단어는 {{this.gameWord}} 입니다 </p>
               </div>
             </div>
-            <div class="AboutWord" v-if="gameTurn==1">
+            <div class="aboutWord" v-if="gameTurn==1">
                 <p>단어에 대해<br>서로 얘기해 주세요 </p>
             </div>
-            <div class="VoteForLiar" v-if="gameTurn==2">
+            <div class="voteForLiar" v-if="gameTurn==2">
+              <div class="voteComplete" v-if="DidVote">
+                <p> 투표가 완료되었습니다 </p>
+                <h5> 결과 집계중 </h5>
+              </div>
+              <div class="voteProcess" v-else>
                 <p>라이어한테 투표하세요 </p>
                 <div class="list">
                   <div v-for="subscriber in subscribers" :key="subscriber.stream.connection.data">
@@ -53,6 +58,7 @@
                   투표하기
                   </button>
                 </div>
+              </div>
             </div>
         </div>
         <div class="endgame" v-if="gameStatus==3">
@@ -74,12 +80,13 @@ export default {
  name: "GamePanel",
   computed: {
     ...mapState('meetingStore', ['gameStatus', 'selectedGame', 'gameTurn', 'gameWord', 
-                                'subscribers','gameLiar','myself','publisher','gameVoteData','gameParticipantData']),
+                                'subscribers','gameLiar','myself','publisher','gameVoteData','gameParticipantData','gameLiarData']),
     ...mapGetters('meetingStore', ['notModeHost'])
   },
   data(){
     return{
       picked : null,
+      DidVote: false,
     }
   },
   methods:{
@@ -98,6 +105,7 @@ export default {
       this.sendGameRequest(jsonRequest);
     },
     voteForLiar(){
+      this.DidVote = true;
       var request = new Object();
       request.gameId=this.selectedGame;
       request.liarId=this.picked;
