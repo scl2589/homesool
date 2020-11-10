@@ -623,15 +623,14 @@ const meetingStore = {
               console.log(event.type)
               console.log(event.penaltyId)
               console.log(event.data)
-              if(event.data.gameStatus == "1"){
+              if(event.data.gameStatus == 1){
                 //게임 시작
                 commit('SET_SELECTED_GAME', event.data.gameId);
                 commit('SET_GAME_STATUS', event.data.gameStatus);
               }
 
-              if(event.data.gameStatus > 0){
-                commit('SET_GAME_STATUS',event.data.gameStatus);
-              }
+              commit('SET_GAME_STATUS',event.data.gameStatus);
+
               if(event.data.turn >= 0){
                 commit('SET_GAME_TURN',event.data.turn);
               }
