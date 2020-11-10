@@ -493,6 +493,47 @@ const meetingStore = {
             commit('SET_NICKNAME', enterData.nickName);
             state.session.publish(state.publisher);
 
+            state.session.signal({
+              type: 'firstenter',
+              data: null,
+              to: [],
+            })
+
+            state.session.on('signal:firstenter', (event) => {
+              if (state.publisher.stream.connection.connectionId !== event.from.connectionId) {
+                let status = {
+                  theme: state.theme,
+                  currentMode: state.currentMode,
+                  modeHost: state.modeHost,
+                  selectedSong: state.selectedSong,
+                  selectedGame: state.selectedGame,
+                  gameStatus: state.gameStatus
+                }
+                state.session.signal({
+                  type: 'status',
+                  data: JSON.stringify(status),
+                  to: [event.from],
+                })
+              }
+            })
+
+            state.session.on('signal:status', (event) => {
+              let status = JSON.parse(event.data);
+              commit('SET_THEME', status.theme);
+              commit('SET_CURRENT_MODE', status.currentMode);
+              commit('SET_MODE_HOST', status.modeHost);
+              commit('SET_SELECTED_SONG', status.selectedSong);
+              commit('SET_SELECTED_GAME', status.selectedGame);
+              commit('SET_GAME_STATUS', status.gameStatus);
+              if (status.currentMode === 'anonymous') {
+                setTimeout(() => {
+                  let pitchs = ['0.76', '0.77', '0.78', '0.79', '0.80', '1.3', '1.4', '1.5', '1.6', '1.7']
+                  let pitch = pitchs[Math.floor(Math.random() * pitchs.length)]
+                  state.publisher.stream.applyFilter("GStreamerFilter", {"command": `pitch pitch=${pitch}`});
+                }, 1000);
+              }
+            })
+
             state.session.on('signal:mode', (event) => {
               let mode = event.data
               
