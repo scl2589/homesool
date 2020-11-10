@@ -1,7 +1,7 @@
 <template>
 <div v-if="streamManager">
 	<div>
-		<div class="overlay d-flex justify-content-center align-items-center" v-if="anonymousHost">
+		<div class="overlay d-flex justify-content-center align-items-center" v-if="currentMode === 'anonymous'">
 			<img height="100%" src="@/assets/images/host.png" alt="">
 		</div>
 		<ov-video :stream-manager="streamManager"/>
@@ -24,7 +24,7 @@ export default {
 		streamManager: Object,
 	},
 	computed: {
-		...mapState('meetingStore', ['anonymousHost']),
+		...mapState('meetingStore', ['currentMode']),
 		clientData () {
 			const { clientData } = this.getConnectionData();
 			return clientData;

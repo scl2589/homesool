@@ -20,23 +20,18 @@ package io.openvidu.server.game;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.Resource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import io.openvidu.client.internal.ProtocolElements;
-import io.openvidu.server.core.IdentifierPrefixes;
 import io.openvidu.server.core.Participant;
 import io.openvidu.server.rpc.RpcNotificationService;
 
@@ -53,11 +48,12 @@ public class GameService {
 	static final int INITIAL = 2;
 	static final int LIAR = 3;
 	static final int STRAWBERRY = 4;
+	static final int DRINKTEST = 5;
 
 	private static final Logger log = LoggerFactory.getLogger(GameService.class);
 
 	static RpcNotificationService rpcNotificationService;
-
+	static InitialGameUtil initialGameUtil = new InitialGameUtil();
 	// Thread는 ConcurrentHashMap으로 관리
 	protected ConcurrentHashMap<String, Thread> wordThread = new ConcurrentHashMap<>();
 
@@ -68,6 +64,13 @@ public class GameService {
 	protected ConcurrentHashMap<String, Integer> upDownNumberMap = new ConcurrentHashMap<>();
 	// < sessionId, participantsList >
 	protected ConcurrentHashMap<String, ArrayList<Participant>> upDownListMap = new ConcurrentHashMap<>();
+
+	// < sessionId, initialWord >
+	protected ConcurrentHashMap<String, String> initialWordMap = new ConcurrentHashMap<>();
+	// < sessionId, String >
+	protected ConcurrentHashMap<String, HashSet<String>> initialAnswerMap = new ConcurrentHashMap<>();
+	// < sessionId, Set<Participant> >
+	protected ConcurrentHashMap<String, HashSet<Participant>> initialAnswerUserMap = new ConcurrentHashMap<>();
 
 	public void controlGame(Participant participant, JsonObject message, Set<Participant> participants,
 			RpcNotificationService rnfs) {
@@ -142,6 +145,25 @@ public class GameService {
 			upDownNumberMap.put(message.get("sessionId").getAsString(), (int) (Math.random() * 100) + 1);
 			upDownListMap.put(message.get("sessionId").getAsString(), pList);
 		}
+		if (gameId == INITIAL) {
+			String[] initial = { "ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ" };
+			// 랜덤 초성 선택
+			ArrayList<String> randomWords = new ArrayList<String>(Arrays.asList(initial));
+			Collections.shuffle(randomWords);
+			// 첫째자리
+			String initialword = randomWords.get(0);
+			Collections.shuffle(randomWords);
+			// 둘째자리
+			initialword += randomWords.get(0);
+			// 초성 저장
+			initialWordMap.put(message.get("sessionId").getAsString(), initialword);
+			// 정답 단어 목록
+			initialAnswerMap.put(message.get("sessionId").getAsString(), new HashSet<String>());
+			// 정답 유저 목록
+			HashSet<Participant> pSet = new HashSet<Participant>(participants);
+			initialAnswerUserMap.put(message.get("sessionId").getAsString(), pSet);
+
+		}
 		params.add("data", data);
 		// 브로드 캐스팅
 		for (Participant p : participants) {
@@ -165,8 +187,9 @@ public class GameService {
 		case SMILE: // 웃으면 술이와요
 			// 스레드 시작
 			SmileRunnable alarmRunnable = new SmileRunnable(theme, participants, rnfs);
-			Thread alarmThread = new Thread(alarmRunnable);
-			wordThread.putIfAbsent(sessionId, alarmThread);
+			Thread smileThread = new Thread(alarmRunnable);
+			smileThread.start();
+			wordThread.putIfAbsent(sessionId, smileThread);
 			break;
 		case UPDOWN: // UP & DOWN
 			int index = data.get("index").getAsInt();
@@ -191,6 +214,9 @@ public class GameService {
 					}
 					data.addProperty("participantId", upDownListMap.get(sessionId).get(index).getParticipantPublicId());
 					data.addProperty("gameStatus", 3);
+
+					upDownNumberMap.remove(sessionId);
+					upDownListMap.remove(sessionId);
 				}
 			}
 			// 게임 순서와 데이터 보내주기
@@ -201,10 +227,58 @@ public class GameService {
 			}
 			break;
 		case INITIAL: // 자음 퀴즈
+			String word = data.get("word").getAsString();
+			String ansInitWord = initialWordMap.get(sessionId);
+			int isCorrect = 1;
+			// 길이 검증
+			if (word.length() == 2) {
+				// 초성 검증
+				String initialWord = initialGameUtil.Direct(word.charAt(0));
+				initialWord += initialGameUtil.Direct(word.charAt(1));
+				if (initialWord.equals(ansInitWord)) {
+					// 중복 검증
+					if (!initialAnswerMap.get(sessionId).contains(word)) {
+						// 사전 검증
+						if (initialGameUtil.searchWord("word")) {
+							isCorrect = 2;
+							initialAnswerMap.get(sessionId).add(word);
+							initialAnswerUserMap.get(sessionId).remove(participant);
+						}
+					}
+				}
+			}
+			data.addProperty("isCorrect", isCorrect);
+			if (initialAnswerUserMap.get(sessionId).size() > 1) {
+				params.add("data", data);
+				for (Participant p : participants) {
+					rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+							ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+				}
+			}
+			// 꼴지 정해짐
+			else {
+				String participantId = null;
+				for (Participant p : initialAnswerUserMap.get(sessionId)) {
+					participantId = p.getParticipantPublicId();
+				}
+				data.addProperty("participantId", participantId);
+				data.addProperty("gameStatus", 3);
+				params.add("data", data);
+
+				initialWordMap.remove(sessionId);
+				initialAnswerMap.remove(sessionId);
+				initialAnswerUserMap.remove(sessionId);
+
+				for (Participant p : participants) {
+					rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+							ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+				}
+			}
 			break;
 		case LIAR: // 라이어 게임
 			LiarGameRunnable liarGameRunnable = new LiarGameRunnable(theme, participants, rnfs);
 			Thread liarThread = new Thread(liarGameRunnable);
+			liarThread.start();
 			wordThread.putIfAbsent(sessionId, liarThread);
 			// sessionId, count
 			TreeMap<String, Integer> liarMap = new TreeMap<String, Integer>();

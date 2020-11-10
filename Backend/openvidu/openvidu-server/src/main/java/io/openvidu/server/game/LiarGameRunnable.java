@@ -66,7 +66,11 @@ public class LiarGameRunnable implements Runnable {
 		try {
 			JsonObject data = new JsonObject();
 			JsonObject params = new JsonObject();
-
+			
+			//signal:game parameter 추가
+			String temp = "signal:game";
+	        params.addProperty("type", temp);
+	         
 			data.addProperty("gameStatus", 2);
 
 			data.addProperty("word", randomWords.get(0));
@@ -88,7 +92,7 @@ public class LiarGameRunnable implements Runnable {
 			}
 
 			// 게임 시간 2분 진행
-			Thread.sleep(120000);
+			Thread.sleep(1200);
 			data.addProperty("turn", 2);
 			params.add("data", data);
 			for (Participant p : participants) {

@@ -1,16 +1,24 @@
 <template>
   <div class="d-flex flex-column justify-content-between p-2 w-100">
     <section class="countdown">
-      <div v-show="!expired" class="timer">
+      <div 
+        v-show="!expired" 
+        class="timer"
+      >
         <h3>Snapshot</h3>
         <div class="box">
           <div class="spacer"></div>
-          <p class="value">{{ remain }}</p>
-          <p class="label">초 후</p>
+          <p class="value">
+            {{ remain }}
+          </p>
+          <p class="label">
+            초 후
+          </p>
         </div>
-        <p class="text">사진찍어요~</p>
+        <p class="text">
+          사진찍어요~
+        </p>
       </div>
-
       <div 
         v-show="expired"
         class="expired-timer timer"
@@ -18,7 +26,7 @@
         <div class="d-flex justify-content-between">
           <button 
             class="btn btn-yellow"
-            @click="retakePhoto"
+            @click="changeMode('snapshot')"
           >
             재촬영
           </button>
@@ -38,7 +46,6 @@
           <p class="label">여러분의 사진입니다! 마음에 드시나요?</p>
         </div>
       </div>
-    
     </section>
   </div>
 </template>
@@ -54,10 +61,8 @@ export default {
   name: 'SnapShotPanel',
   data() {
     return {
-      seconds: 'CAPTUREE!',
       remain: 5,
       expired: false,
-      dialog: false,
       captured: null,
     }
   },
@@ -169,13 +174,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('meetingStore', ['closeMultiPanel', 'startSnapshotMode', 'attachImage']),
-    retakePhoto() {
-      this.closeMultiPanel()
-      setTimeout(() => {
-        this.startSnapshotMode()
-      }, 100);
-    },
+    ...mapActions('meetingStore', ['changeMode', 'attachImage']),
     savePhoto() {
       var a = document.createElement('a');
       // toDataURL defaults to png, so we need to request a jpeg, then convert for file download.
