@@ -54,7 +54,7 @@ export default {
     clickSendTheme(theme){
       alert("주제선택");
       var request = new Object();
-      request.gameId=this.gameId;
+      request.gameId=this.selectedGame;
       request.theme=theme;
       request.gameStatus=2;
 
