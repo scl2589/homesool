@@ -74,7 +74,7 @@ public class LiarGameRunnable implements Runnable {
 			data.addProperty("gameStatus", 2);
 
 			data.addProperty("word", randomWords.get(0));
-			data.addProperty("liar", randomParticipants.get(0).getParticipantPublicId());
+			data.addProperty("liarId", randomParticipants.get(0).getParticipantPublicId());
 			data.addProperty("turn", 0);
 
 			params.add("data", data);
