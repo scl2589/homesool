@@ -25,14 +25,35 @@
           </div>
         </div>
         <div class="startgame" v-if="gameStatus==2">
-            <div class="showWord" v-if="gameTurn==0">
+            <div class="showWordBox" v-if="gameTurn==0">
+              <div class="showWord" v-if="gameLiar == publisher.session.connection.connectionId">
+                <p>당신은 라이어입니다 </p>
+              </div>
+              <div class="showLiar" v-else>
                 <p>해당 단어는 {{this.gameWord}} 입니다 </p>
+              </div>
             </div>
             <div class="AboutWord" v-if="gameTurn==1">
                 <p>단어에 대해<br>서로 얘기해 주세요 </p>
             </div>
             <div class="VoteForLiar" v-if="gameTurn==2">
                 <p>라이어한테 투표하세요 </p>
+                <div class="list">
+                  <div v-for="subscriber in subscribers" :key="subscriber.stream.connection.data">
+                    <input type="radio" id="{$this.subscriber.stream.connection.connectionId}"
+                    :value="subscriber.stream.connection.connectionId" v-model="picked">
+                    <label for="subscriber.stream.connection.connectionId"> {{subscriber.stream.connection.data.slice(15,-2)}} </label>
+                  </div>
+                </div>
+                <div class="submit">
+                  <button
+                  class="btn-yellow rounded"
+                 @click="voteForLiar()"
+                  >
+                  투표하기
+                  {{picked}}
+                  </button>
+                </div>
             </div>
         </div>
     </div>
@@ -44,8 +65,13 @@ import { mapState, mapActions, mapGetters } from 'vuex'
 export default {
  name: "GamePanel",
   computed: {
-    ...mapState('meetingStore', ['gameStatus', 'selectedGame', 'gameTurn', 'gameWord']),
+    ...mapState('meetingStore', ['gameStatus', 'selectedGame', 'gameTurn', 'gameWord', 'subscribers','gameLiar','myself','publisher']),
     ...mapGetters('meetingStore', ['notModeHost'])
+  },
+  data(){
+    return{
+      picked : null,
+    }
   },
   methods:{
        ...mapActions("meetingStore", [

@@ -45,6 +45,7 @@ const meetingStore = {
     gameStatus: 0,
     gameTurn: 0,
     gameWord: '',
+    gameLiar:'',
 
     // theme
     theme: 'basic',
@@ -156,6 +157,9 @@ const meetingStore = {
     },
     SET_GAME_WORD(state, value){
       state.gameWord = value
+    },
+    SET_GAME_LIAR(state, value){
+      state.gameLiar = value
     },
 
     // theme
@@ -644,6 +648,9 @@ const meetingStore = {
               }
               if(event.data.word){
                 commit('SET_GAME_WORD',event.data.word);
+              }
+              if(event.data.liar){
+                commit('SET_GAME_LIAR',event.data.liar);
               }
             });
 
