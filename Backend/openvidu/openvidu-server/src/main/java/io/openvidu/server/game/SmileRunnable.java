@@ -77,6 +77,10 @@ public class SmileRunnable implements Runnable{
 		JsonObject data = new JsonObject();
 		JsonObject params = new JsonObject();
 		
+		//signal:game parameter 추가
+		String temp = "signal:game";
+        params.addProperty("type", temp);
+        
 		int wIdx = 0;
 		int pIdx = 0;
 		int wMax = randomWords.size();

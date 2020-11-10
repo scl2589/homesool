@@ -142,28 +142,6 @@ export default {
      console.log(jsonRequest);
      this.sendGameRequest(jsonRequest);
     },
-    clickSendTheme(theme){
-      alert("주제선택");
-      var request = new Object();
-      request.gameId=0;
-      request.theme=theme;
-      request.gameStatus=2;
-
-      var jsonRequest = JSON.stringify(request);
-      console.log(jsonRequest);
-      this.sendGameRequest(jsonRequest);
-    },
-    clickStopGame() {
-     alert("게임종료");
-     var request = new Object();
-     request.gameId=0;
-     request.paneltyId=0;
-     request.gameStatus=3;
-
-     var jsonRequest = JSON.stringify(request);
-     console.log(jsonRequest);
-     this.sendGameRequest(jsonRequest);
-    },
   }
 }
 </script>
