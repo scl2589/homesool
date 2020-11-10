@@ -602,7 +602,12 @@ const meetingStore = {
             });
             state.session.on('signal:attachImage', (event) => {
               console.log("EVENT.DATA", event.data)
-              document.getElementById('preview').appendChild(event.data)  
+              setTimeout(() => {
+                var image = document.createElement('img') 
+                image.src = "https://firebasestorage.googleapis.com/v0/b/homesuli.appspot.com/o/snapshot_" + state.mySessionId + "%2F" + event.data + ".jpg?alt=media&token=942e1b59-2774-4d79-b0e7-098d76168b49"
+                image.style.maxWidth="90%"
+                document.getElementById('preview').appendChild(image)
+              }, 700);
             })
             return true;
 					})
@@ -717,9 +722,9 @@ const meetingStore = {
           console.log(err)
       })
     },
-    attachImage({ state }, data) {
+    attachImage({ state }, file) {
       state.session.signal({
-        data: data,
+        data: file,
         to: [],
         type: 'attachImage'
       })
