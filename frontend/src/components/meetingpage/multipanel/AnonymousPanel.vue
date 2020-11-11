@@ -27,9 +27,7 @@ export default {
   methods: {
     ...mapActions('meetingStore', ['changeMode', 'endAnonymousMode']),
     clickEndAnonymousMode() {
-      if (confirm('진실의 방을 끝내시겠습니까?')) {
-        this.changeMode(null);
-      }
+      this.changeMode(null);
     }
   },
 
