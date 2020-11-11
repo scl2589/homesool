@@ -60,7 +60,7 @@ const meetingStore = {
     gamePaneltyPublisher: undefined,
 
     gameInitialWord:'',
-    gameIsCorrect:1,
+    gameIsCorrect: 1,
     participantPublicId:'',
 
     gameUpDownResult:'',
@@ -81,6 +81,9 @@ const meetingStore = {
 
     //capture
     screenshotInfo: null,
+
+    //game
+    sentence: null
   },
   getters: {
     notModeHost(state) {
@@ -274,6 +277,11 @@ const meetingStore = {
     //screenshot
     SET_SCREENSHOT_INFO(state, data) {
       state.screenshotInfo = data;
+    },
+
+    //game
+    SET_SENTENCE(state, data) {
+      state.sentence = data;
     }
   },
   actions: {
@@ -346,7 +354,14 @@ const meetingStore = {
       commit('SET_GAME_STATUS', 0);
       commit('SET_GAME_TURN', 0);
       commit('SET_GAME_WORD', '');
-      //게임 끝남 시그널
+
+      commit('SET_GAME_ISCORRECT',1);
+    },
+    endGameSignal({ state }) {
+      state.session.signal({
+        type: 'endGame',
+        to: [],
+      })
     },
     endSnapshotMode() {
       // 스냅샷 모드가 꺼졌을 경우 후처리해야할 부분
@@ -593,7 +608,7 @@ const meetingStore = {
         state.publisher.publishAudio(true) 
       }
     },
-    enterSession({ state, rootGetters, commit }, enterData) {
+    enterSession({ state, rootGetters, commit, dispatch }, enterData) {
       commit('SET_CURRENT_DRINK', enterData.currentDrink);
       const drinkData = {
         "liquorLimit": 0,
@@ -716,7 +731,15 @@ const meetingStore = {
               data.time = moment(time).format('HH:mm')
               commit('SET_MESSAGES', data)
             });
-
+            state.session.on('signal:endGame',(event) =>{
+              console.log(event)
+              // endGameProcess 를 어떻게 부르죠??,,,
+              commit('SET_SELECTED_GAME', null);
+              commit('SET_GAME_STATUS', 0);
+              commit('SET_GAME_TURN', 0);
+              commit('SET_GAME_WORD', '');
+              commit('SET_GAME_ISCORRECT',1);
+            });
             state.session.on('signal:theme', (event) => {
               commit('SET_THEME', event.data)
             });
@@ -753,10 +776,10 @@ const meetingStore = {
                 //게임 시작
                 commit('SET_SELECTED_GAME', event.data.gameId);
                 commit('SET_GAME_STATUS', event.data.gameStatus);
+                console.log("isCorrect : " + state.gameIsCorrect)
               }
-              if(event.data.gameStatus == 4){
+              if(event.data.gameStatus == 0){
                 //게임 종료
-                commit('RESET_GAME_ISCORRECT');
               }
               commit('SET_GAME_STATUS',event.data.gameStatus);
               if(event.data.gameStatus==3 && event.data.gameId != 4){
@@ -821,13 +844,17 @@ const meetingStore = {
                 commit('SET_GAME_INITIALWORD',event.data.initialWord);
               }
               if(event.data.isCorrect){
-                if(event.from.connectionId == state.publisher.stream.connection.connectionId)
+                console.log("-----iscorrect------")
+                
+                if(event.from.connectionId == state.publisher.stream.connection.connectionId){
+                  console.log(event.from.connectionId)
+                  console.log(state.publisher.stream.connection.connectionId)  
                   commit('SET_GAME_ISCORRECT',event.data.isCorrect);
+                }
               }
               if(event.data.participantPublicId){
                 commit('SET_GAME_PARTICIPANTPUBLICID',event.data.participantPublicId)
               }
-
               if(event.data.updown){
                 commit('SET_GAME_UPDOWN_RESULT',event.data.updown)
               }
@@ -838,6 +865,10 @@ const meetingStore = {
                 commit('SET_GAME_UPDOWN_NUMBER',event.data.number)
               }
 
+              if (event.data.sentence) {
+                commit('SET_SENTENCE', event.data.sentence)
+                dispatch('recordVoice')
+              }
             });
 
             state.session.on('signal:share', (event) => {
@@ -966,9 +997,9 @@ const meetingStore = {
         type: 'share' 
       })
     },
-    sendGameRequest({ state }, request){
+    sendGameRequest({ state }, data){
       state.session.signal({
-        data: request,
+        data: data,
         to: [],
         type: 'game'
       })
@@ -1039,6 +1070,22 @@ const meetingStore = {
         .catch((err) => {
           console.log(err)
         })
+    },
+    recordVoice({state}) {
+      console.log(state)
+      const sdk = require("microsoft-cognitiveservices-speech-sdk");
+      const speechConfig = sdk.SpeechConfig.fromSubscription("9bd552b2504c45e1802217ac626d6508", "koreacentral");
+      speechConfig.speechRecognitionLanguage = "ko-KR";
+      function fromMic() {
+          let audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
+          let recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
+          
+          console.log('Speak into your microphone.');
+          recognizer.recognizeOnceAsync(result => {
+              console.log(`RECOGNIZED: Text=${result.text}`);
+          });
+      }
+      fromMic();
     }
   }
 }

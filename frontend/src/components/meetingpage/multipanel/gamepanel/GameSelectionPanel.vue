@@ -17,7 +17,7 @@
           <li><router-link :to="{ name: 'UpAndDownDescription' }">Up & Down</router-link></li>
           <li><router-link :to="{ name: 'ConsonantQuizDescription' }">자음 퀴즈</router-link></li>
           <li><router-link :to="{ name: 'LiarGameDescription' }">라이어 게임</router-link></li>
-          <li><router-link :to="{ name: 'StrawberryGameDescription' }">딸기 게임</router-link></li>
+          <li><router-link :to="{ name: 'FindOutDrunkenDescription' }">나술안취했어</router-link></li>
         </div>
       </div>
       <div class="col-8 my-1">

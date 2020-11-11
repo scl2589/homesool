@@ -16,6 +16,7 @@ import UpAndDownDescription from '@/components/meetingpage/multipanel/gamepanel/
 import StrawberryGameDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/StrawberryGameDescription';
 import LiarGameDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/LiarGameDescription';
 import ConsonantQuizDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/ConsonantQuizDescription';
+import FindOutDrunkenDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/FindOutDrunkenDescription'
 
 Vue.use(VueRouter);
 
@@ -60,6 +61,11 @@ const routes = [
         path: 'consonant',
         component: ConsonantQuizDescription,
         name: 'ConsonantQuizDescription',
+      },
+      {
+        path: 'drunken',
+        component: FindOutDrunkenDescription,
+        name: 'FindOutDrunkenDescription',
       },
     ],
   },
