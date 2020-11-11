@@ -46,7 +46,9 @@ const meetingStore = {
     gameTurn: 0,
     gameWord: '',
     gameLiar:'',
-
+    gameInitialWord:'',
+    gameIsCorrect:1,
+    participantPublicId:'',
     // theme
     theme: 'basic',
 
@@ -161,7 +163,18 @@ const meetingStore = {
     SET_GAME_LIAR(state, value){
       state.gameLiar = value
     },
-
+    SET_GAME_INITIALWORD(state, value){
+      state.gameInitialWord = value
+    },
+    SET_GAME_ISCORRECT(state, value){
+      state.gameIsCorrect = value
+    },
+    SET_GAME_PARTICIPANTPUBLICID(state, value){
+      state.participantPublicId = value
+    },
+    RESET_GAME_ISCORRECT(state){
+      state.gameIsCorrect = 1
+    },
     // theme
     SET_THEME(state, theme) {
       state.theme = theme;
@@ -640,7 +653,10 @@ const meetingStore = {
                 commit('SET_SELECTED_GAME', event.data.gameId);
                 commit('SET_GAME_STATUS', event.data.gameStatus);
               }
-
+              if(event.data.gameStatus == 4){
+                //게임 종료
+                commit('RESET_GAME_ISCORRECT');
+              }
               commit('SET_GAME_STATUS',event.data.gameStatus);
 
               if(event.data.turn >= 0){
@@ -651,6 +667,16 @@ const meetingStore = {
               }
               if(event.data.liar){
                 commit('SET_GAME_LIAR',event.data.liar);
+              }
+              if(event.data.initialWord){
+                commit('SET_GAME_INITIALWORD',event.data.initialWord);
+              }
+              if(event.data.isCorrect){
+                if(event.from.connectionId == state.publisher.stream.connection.connectionId)
+                  commit('SET_GAME_ISCORRECT',event.data.isCorrect);
+              }
+              if(event.data.participantPublicId){
+                commit('SET_GAME_PARTICIPANTPUBLICID',event.data.participantPublicId)
               }
             });
 
