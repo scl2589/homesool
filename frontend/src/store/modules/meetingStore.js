@@ -4,6 +4,7 @@ import secrets from '@/secrets';
 import axios from 'axios';
 import { OpenVidu } from 'openvidu-browser';
 import moment from 'moment';
+import Swal from 'sweetalert2'
 
 const OPENVIDU_SERVER_SECRET = "MY_SECRET";
 
@@ -58,6 +59,11 @@ const meetingStore = {
     gamePaneltyStreamManager: undefined,
     gamePaneltyPublisher: undefined,
 
+
+    gameInitialWord:'',
+    gameIsCorrect:1,
+    participantPublicId:'',
+
     // theme
     theme: 'basic',
 
@@ -69,13 +75,20 @@ const meetingStore = {
     screenSubscribers: [],
     screenOvToken: null,
     isSharingMode: false,
+
+    //capture
+    screenshotInfo: null,
   },
   getters: {
     notModeHost(state) {
-      if (state.publisher.stream.connection.connectionId !== state.modeHost.id) {
-        return state.modeHost;
+      if (state.modeHost) {
+        if (state.publisher.stream.connection.connectionId !== state.modeHost.id) {
+          return state.modeHost;
+        } else {
+          return false;
+        }
       } else {
-        return false;
+        return true;
       }
     }
   },
@@ -169,6 +182,7 @@ const meetingStore = {
     SET_GAME_LIAR(state, value){
       state.gameLiar = value
     },
+<<<<<<< frontend/src/store/modules/meetingStore.js
     SET_GAME_LIAR_DATA(state, value){
       state.gameLiarData = value
     },
@@ -204,6 +218,20 @@ const meetingStore = {
     },
     
 
+=======
+    SET_GAME_INITIALWORD(state, value){
+      state.gameInitialWord = value
+    },
+    SET_GAME_ISCORRECT(state, value){
+      state.gameIsCorrect = value
+    },
+    SET_GAME_PARTICIPANTPUBLICID(state, value){
+      state.participantPublicId = value
+    },
+    RESET_GAME_ISCORRECT(state){
+      state.gameIsCorrect = 1
+    },
+>>>>>>> frontend/src/store/modules/meetingStore.js
     // theme
     SET_THEME(state, theme) {
       state.theme = theme;
@@ -230,25 +258,50 @@ const meetingStore = {
     },
     SET_IS_SHARING_MODE(state, value) {
       state.isSharingMode = value;
+    },
+
+    //screenshot
+    SET_SCREENSHOT_INFO(state, data) {
+      state.screenshotInfo = data;
     }
   },
   actions: {
     changeMode({ state, getters }, mode) {
-      // 진행 중인 노래가 있거나, 게임이 있거나, 스냅샷이 있거나 할 경우 여기서 막아줌
-      if (state.selectedSong || state.selectedGame || (state.currentMode === 'snapshot')) {
-        if (getters.notModeHost) {
-          alert('지금은 다른 모드로 전환할 수 없습니다.');
-          return
+      if (getters.notModeHost) {
+        // modeHost가 아닌 경우
+        if (state.currentMode && state.modeHost) {          
+          // 현재 진행 중인 mode와 modeHost가 있는 경우
+          if (state.selectedSong || state.selectedGame || state.currentMode === 'snapshot') {
+            // 현재 멈추면 안되는 상황인 경우
+            alert('지금은 다른 모드로 전환할 수 없습니다.');
+            return;
+          } else {
+            // 현재 모드를 중단해도 되는 경우
+            if (state.currentMode !== mode) {
+              if (!confirm('현재 모드를 중단하시겠습니까?')) {
+                return;
+              }
+            }
+          }
         } else {
-          if (!confirm('현재 모드를 중단하시겠습니까?')) {
-            return
+          if (state.modeHost) {
+            // 현재 currentMode는 없지만 modeHost가 null 값이 아닌 경우(실제 snapshot 모드가 진행 중인 경우)
+            alert('지금은 다른 모드로 전환할 수 없습니다.');
+            return;
+          } else {
+            // modeHost가 중간에 나가버린 경우
+            if (state.currentMode && state.currentMode !== mode) {
+              if (!confirm('현재 모드를 중단하시겠습니까?')) {
+                return;
+              }
+            }
           }
         }
       } else {
-        // 만약 현재 모드가 켜져있는 상태에서 특정 모드로 전환하고자 할 시 한 번 확인
-        if (mode && state.currentMode && mode !== state.currentMode) {
+        // modeHost인 경우
+        if (state.currentMode && state.currentMode !== mode) {
           if (!confirm('현재 모드를 중단하시겠습니까?')) {
-            return
+            return;
           }
         }
       }
@@ -542,9 +595,52 @@ const meetingStore = {
             commit('SET_NICKNAME', enterData.nickName);
             state.session.publish(state.publisher);
 
+            state.session.on('streamCreated', (event) => {
+              console.log(event);
+              let status = {
+                theme: state.theme,
+                currentMode: state.currentMode,
+                modeHost: state.modeHost,
+                selectedSong: state.selectedSong,
+                selectedGame: state.selectedGame,
+                gameStatus: state.gameStatus
+              }
+              state.session.signal({
+                type: 'status',
+                data: JSON.stringify(status),
+                to: [event.stream.connection.connectionId],
+              })
+            })
+
+            state.session.on('signal:status', (event) => {
+              let status = JSON.parse(event.data);
+              if (!state.currentMode && !state.modeHost) {
+                commit('SET_THEME', status.theme);
+                commit('SET_MODE_HOST', status.modeHost);
+                commit('SET_SELECTED_SONG', status.selectedSong);
+                commit('SET_SELECTED_GAME', status.selectedGame);
+                commit('SET_GAME_STATUS', status.gameStatus);
+                if (status.currentMode === 'anonymous') {
+                  setTimeout(() => {
+                    let pitchs = ['0.76', '0.77', '0.78', '0.79', '0.80', '1.3', '1.4', '1.5', '1.6', '1.7']
+                    let pitch = pitchs[Math.floor(Math.random() * pitchs.length)]
+                    state.publisher.stream.applyFilter("GStreamerFilter", {"command": `pitch pitch=${pitch}`});
+                  }, 1000);
+                } else if (status.currentMode === 'snapshot') {
+                  return;
+                }
+                commit('SET_CURRENT_MODE', status.currentMode);
+              }
+            })
+
             state.session.on('signal:mode', (event) => {
               let mode = event.data
               
+              if (mode === 'hostleave') {
+                commit('SET_MODE_HOST', null);
+                return;
+              }
+
               if (mode) {
                 let modeHost = {
                   'id': event.from.connectionId,
@@ -559,8 +655,11 @@ const meetingStore = {
                 let pitchs = ['0.76', '0.77', '0.78', '0.79', '0.80', '1.3', '1.4', '1.5', '1.6', '1.7']
                 let pitch = pitchs[Math.floor(Math.random() * pitchs.length)]
                 state.publisher.stream.applyFilter("GStreamerFilter", {"command": `pitch pitch=${pitch}`});
-                alert('진실의 방 모드가 켜졌습니다!');
                 commit('SET_CURRENT_MODE', mode);
+                Swal.fire({
+                  icon: 'success',
+                  text: '진실의 방 모드가 켜졌습니다!'
+                });
               } else if (mode === 'singing') {
                 commit('SET_IS_SONG_ENDED', false);
                 commit('SET_CURRENT_MODE', mode);
@@ -636,7 +735,10 @@ const meetingStore = {
                 commit('SET_SELECTED_GAME', event.data.gameId);
                 commit('SET_GAME_STATUS', event.data.gameStatus);
               }
-
+              if(event.data.gameStatus == 4){
+                //게임 종료
+                commit('RESET_GAME_ISCORRECT');
+              }
               commit('SET_GAME_STATUS',event.data.gameStatus);
               if(event.data.gameStatus==3){
                 setTimeout(() => {
@@ -697,6 +799,16 @@ const meetingStore = {
                 
                 
               }
+              if(event.data.initialWord){
+                commit('SET_GAME_INITIALWORD',event.data.initialWord);
+              }
+              if(event.data.isCorrect){
+                if(event.from.connectionId == state.publisher.stream.connection.connectionId)
+                  commit('SET_GAME_ISCORRECT',event.data.isCorrect);
+              }
+              if(event.data.participantPublicId){
+                commit('SET_GAME_PARTICIPANTPUBLICID',event.data.participantPublicId)
+              }
             });
 
             state.session.on('signal:share', (event) => {
@@ -707,7 +819,24 @@ const meetingStore = {
                 commit('SET_IS_SHARING_MODE', true)
               }
             });
-          
+
+            state.session.on('signal:attachImage', (event) => {
+              setTimeout(() => {
+                var image = document.createElement('img')  
+                image.src = "https://firebasestorage.googleapis.com/v0/b/homesuli.appspot.com/o/snapshot_" + state.mySessionId + "%2F" + event.data + ".jpg?alt=media&token=942e1b59-2774-4d79-b0e7-098d76168b49"
+                image.style.maxWidth="90%"
+                document.getElementById('preview').appendChild(image)
+              }, 1500);
+            });
+
+            state.session.on('streamDestroyed', (event) => {
+              if (state.modeHost) {
+                if (state.modeHost.id === event.stream.connection.connectionId) {
+                  commit('SET_MODE_HOST', null);
+                }
+              }
+            });
+
             return true;
 					})
 					.catch(error => {
@@ -821,13 +950,14 @@ const meetingStore = {
           console.log(err)
       })
     },
-    attachImage({ state }, data) {
+    attachImage({ state }, file) {
       state.session.signal({
-        data: data,
+        data: file,
         to: [],
         type: 'attachImage'
       })
     },
+<<<<<<< frontend/src/store/modules/meetingStore.js
     setPaneltyScreen({ state, commit, dispatch }){
       if (state.isSharingMode) {
         return
@@ -869,6 +999,19 @@ const meetingStore = {
         commit('SET_GAME_PANELTY_SUBSCRIBER', paneltySubscribers);
         commit('SET_OVTOKEN', token);
 			});
+=======
+    saveScreenshotInfo({ commit }, data) {
+      commit('SET_SCREENSHOT_INFO', data)
+    },
+    saveScreenshot({ state, rootGetters }) {
+      axios.post(SERVER.URL + SERVER.ROUTES.photo, state.screenshotInfo, rootGetters.config)
+        .then(() => {
+          console.log("SUCCESSFUL - uploading screenshot")
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+>>>>>>> frontend/src/store/modules/meetingStore.js
     }
   }
 }

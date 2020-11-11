@@ -43,12 +43,11 @@ public class GameService {
 	static final int FINISHGAME = 3;
 	static final int COMPLETEPENALTY = 4;
 	static final int VOTELIAR = 5;
-	static final int SMILE = 0;
 	static final int UPDOWN = 1;
 	static final int INITIAL = 2;
 	static final int LIAR = 3;
-	static final int STRAWBERRY = 4;
-	static final int DRINKTEST = 5;
+	static final int SMILE = 4;
+	static final int DRUNKTEST = 5;
 
 	private static final Logger log = LoggerFactory.getLogger(GameService.class);
 
@@ -71,6 +70,9 @@ public class GameService {
 	protected ConcurrentHashMap<String, HashSet<String>> initialAnswerMap = new ConcurrentHashMap<>();
 	// < sessionId, Set<Participant> >
 	protected ConcurrentHashMap<String, HashSet<Participant>> initialAnswerUserMap = new ConcurrentHashMap<>();
+
+	// < sessionId, sentence >
+	protected ConcurrentHashMap<String, String> drunkTestMap = new ConcurrentHashMap<>();
 
 	public void controlGame(Participant participant, JsonObject message, Set<Participant> participants,
 			RpcNotificationService rnfs) {
@@ -144,8 +146,7 @@ public class GameService {
 			Collections.shuffle(pList);
 			upDownNumberMap.put(message.get("sessionId").getAsString(), (int) (Math.random() * 100) + 1);
 			upDownListMap.put(message.get("sessionId").getAsString(), pList);
-		}
-		if (gameId == INITIAL) {
+		} else if (gameId == INITIAL) {
 			String[] initial = { "ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ" };
 			// 랜덤 초성 선택
 			ArrayList<String> randomWords = new ArrayList<String>(Arrays.asList(initial));
@@ -155,6 +156,8 @@ public class GameService {
 			Collections.shuffle(randomWords);
 			// 둘째자리
 			initialword += randomWords.get(0);
+
+			data.addProperty("initialWord", initialword);
 			// 초성 저장
 			initialWordMap.put(message.get("sessionId").getAsString(), initialword);
 			// 정답 단어 목록
@@ -163,6 +166,12 @@ public class GameService {
 			HashSet<Participant> pSet = new HashSet<Participant>(participants);
 			initialAnswerUserMap.put(message.get("sessionId").getAsString(), pSet);
 
+		} else if (gameId == DRUNKTEST) {
+			String sentence = DrunkTestUtil.sentences[(int) (Math.random() * DrunkTestUtil.sentences.length)];
+			
+			data.addProperty("sentence", sentence);
+			// 띄어쓰기 제거 후 저장
+			drunkTestMap.put(message.get("sessionId").getAsString(), sentence.replaceAll(" ", ""));
 		}
 		params.add("data", data);
 		// 브로드 캐스팅
@@ -193,7 +202,7 @@ public class GameService {
 			break;
 		case UPDOWN: // UP & DOWN
 			int index = data.get("index").getAsInt();
-			data.addProperty("participantId", upDownListMap.get(sessionId).get(index).getParticipantPublicId());
+			data.addProperty("participantPublicId", upDownListMap.get(sessionId).get(index).getParticipantPublicId());
 			data.addProperty("index", ++index);
 			int size = participants.size();
 			if (index >= size) {
@@ -212,7 +221,8 @@ public class GameService {
 					if (index >= size) {
 						index -= size;
 					}
-					data.addProperty("participantId", upDownListMap.get(sessionId).get(index).getParticipantPublicId());
+					data.addProperty("participantPublicId",
+							upDownListMap.get(sessionId).get(index).getParticipantPublicId());
 					data.addProperty("gameStatus", 3);
 
 					upDownNumberMap.remove(sessionId);
@@ -239,7 +249,7 @@ public class GameService {
 					// 중복 검증
 					if (!initialAnswerMap.get(sessionId).contains(word)) {
 						// 사전 검증
-						if (initialGameUtil.searchWord("word")) {
+						if (initialGameUtil.searchWord(word)) {
 							isCorrect = 2;
 							initialAnswerMap.get(sessionId).add(word);
 							initialAnswerUserMap.get(sessionId).remove(participant);
@@ -257,11 +267,11 @@ public class GameService {
 			}
 			// 꼴지 정해짐
 			else {
-				String participantId = null;
+				String participantPublicId = null;
 				for (Participant p : initialAnswerUserMap.get(sessionId)) {
-					participantId = p.getParticipantPublicId();
+					participantPublicId = p.getParticipantPublicId();
 				}
-				data.addProperty("participantId", participantId);
+				data.addProperty("participantPublicId", participantPublicId);
 				data.addProperty("gameStatus", 3);
 				params.add("data", data);
 
@@ -288,7 +298,28 @@ public class GameService {
 			}
 			liarCountMap.put(sessionId, liarMap);
 			break;
-		case STRAWBERRY: // 딸기 게임
+		case DRUNKTEST: // 나안취했어
+			String answer = drunkTestMap.get(sessionId);
+			String sentence = data.get("sentence").getAsString();
+			data.addProperty("sentence", sentence);
+			// 공백 제거 후 비교
+			String drunk;
+			// 통과
+			if (answer.equals(sentence.replaceAll(" ", ""))) {
+				drunk = "1";
+			// 실패
+			} else {
+				drunk = "2";
+			}
+			data.addProperty("drunk", drunk);
+			data.addProperty("gameStatus", 3);
+			params.add("data", data);
+			drunkTestMap.remove(sessionId);
+
+			for (Participant p : participants) {
+				rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
+						ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
+			}
 			break;
 		}
 	}
@@ -350,22 +381,22 @@ public class GameService {
 			String electId = liarMap.firstKey();
 
 			// 벌칙자 정하기 ( 투표자 == 라이어 )
-			String participantId = electId;
+			String participantPublicId = electId;
 
 			// 라이어가 안걸렸을 때
 			if (!liarId.equals(electId)) {
 				// 사용자 랜덤 선택
 				ArrayList<Participant> pList = new ArrayList<>(participants);
 				Collections.shuffle(pList);
-				participantId = pList.get(0).getParticipantPublicId();
+				participantPublicId = pList.get(0).getParticipantPublicId();
 				// 라이어인지 한번 더 확인
-				if (participantId.equals(electId)) {
-					participantId = pList.get(1).getParticipantPublicId();
+				if (participantPublicId.equals(electId)) {
+					participantPublicId = pList.get(1).getParticipantPublicId();
 				}
 			}
 
 			data.addProperty("voteId", electId);
-			data.addProperty("participantId", participantId);
+			data.addProperty("participantPublicId", participantPublicId);
 			params.add("data", data);
 
 			// 게임 세션 제거

@@ -30,7 +30,8 @@ export default {
         'UpAndDownDescription', 
         'StrawberryGameDescription', 
         'LiarGameDescription', 
-        'ConsonantQuizDescription'
+        'ConsonantQuizDescription',
+        'FindOutDrunkenDescription'
       ],
     }
   },
@@ -83,7 +84,7 @@ export default {
   text-align: center;
   color: #2c3e50;
   background-color: black;
-  height:100vh;
+  height:100%;
 }
 
 $header-height:35px;

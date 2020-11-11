@@ -51,8 +51,11 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 import html2canvas from 'html2canvas'
+import firebase from 'firebase'
+import moment from 'moment';
+// import { image } from 'html2canvas/dist/types/css/types/image'
 
 export default {
   name: 'SnapShotPanel',
@@ -64,7 +67,8 @@ export default {
     }
   },
   computed: {
-    ...mapState('meetingStore', ['isSnapshotMode']),
+    ...mapState('meetingStore', ['isSnapshotMode', 'mySessionId', 'roomId']),
+    ...mapGetters('meetingStore', ['notModeHost'])
   },
   watch: {
     remain: {
@@ -74,96 +78,130 @@ export default {
             this.remain--;
           }, 1000)
         } else {
-          let canvas = document.getElementById('canvas');
-          let ctx = canvas.getContext('2d');
-          let videos = document.querySelectorAll('video');
-          let w, h;
-          if (videos.length == 1) {
-            for (let i = 0, len = videos.length; i < len; i++ ) {
-              const v = videos[i]
-              try {
-                w = v.videoWidth
-                h = v.videoHeight
-                canvas.width = w * 2
-                canvas.height = h * 2
-                ctx.fillRect(w/2, 0, w, h) 
-                ctx.drawImage(v, w/2, 0, w, h)
-                v.style.backgroundImage = `url(${canvas.toDataURL()})`
-                v.style.backgroundSize = 'cover'
-                ctx.clearRect(0, 0, w, h);
-              } catch(e) {
-                continue
+          if ( !this.notModeHost ) {
+            let canvas = document.getElementById('canvas');
+            let ctx = canvas.getContext('2d');
+            let videos = document.querySelectorAll('video');
+            let w, h;
+            if (videos.length == 1) {
+              for (let i = 0, len = videos.length; i < len; i++ ) {
+                const v = videos[i]
+                try {
+                  w = v.videoWidth
+                  h = v.videoHeight
+                  canvas.width = w * 2
+                  canvas.height = h * 2
+                  ctx.fillRect(w/2, 0, w, h) 
+                  ctx.drawImage(v, w/2, 0, w, h)
+                  v.style.backgroundImage = `url(${canvas.toDataURL()})`
+                  v.style.backgroundSize = 'cover'
+                  ctx.clearRect(0, 0, w, h);
+                } catch(e) {
+                  continue
+                }
               }
             }
-          }
-          else if (videos.length <= 3) {
-            for (let i = 0, len = videos.length; i < len; i++ ) {
-              const v = videos[i]
-              try {
-                w = v.videoWidth
-                h = v.videoHeight
-                canvas.width = w * 2
-                canvas.height = h * 2
-                ctx.fillRect(0, h/2, w, h) 
-                ctx.drawImage(v, 0, h/2, w, h)
-                v.style.backgroundImage = `url(${canvas.toDataURL()})`
-                v.style.backgroundSize = 'cover'
-                ctx.clearRect(0, 0, w, h);
-              } catch(e) {
-                continue
+            else if (videos.length <= 3) {
+              for (let i = 0, len = videos.length; i < len; i++ ) {
+                const v = videos[i]
+                try {
+                  w = v.videoWidth
+                  h = v.videoHeight
+                  canvas.width = w * 2
+                  canvas.height = h * 2
+                  ctx.fillRect(0, h/2, w, h) 
+                  ctx.drawImage(v, 0, h/2, w, h)
+                  v.style.backgroundImage = `url(${canvas.toDataURL()})`
+                  v.style.backgroundSize = 'cover'
+                  ctx.clearRect(0, 0, w, h);
+                } catch(e) {
+                  continue
+                }
+              }
+            } else {
+              for (let i = 0, len = videos.length; i < len; i++ ) {
+                const v = videos[i]
+                try {
+                  w = v.videoWidth
+                  h = v.videoHeight
+                  canvas.width = w * 2
+                  canvas.height = h * 2
+                  ctx.fillRect(w/2, h/2, w, h) 
+                  ctx.drawImage(v, w/2, h/2, w, h)
+                  v.style.backgroundImage = `url(${canvas.toDataURL()})`
+                  v.style.backgroundSize = 'cover'
+                  ctx.clearRect(0, 0, w, h);
+                } catch(e) {
+                  continue
+                }
               }
             }
-          } else {
-            for (let i = 0, len = videos.length; i < len; i++ ) {
-              const v = videos[i]
-              try {
-                w = v.videoWidth
-                h = v.videoHeight
-                canvas.width = w * 2
-                canvas.height = h * 2
-                ctx.fillRect(w/2, h/2, w, h) 
-                ctx.drawImage(v, w/2, h/2, w, h)
-                v.style.backgroundImage = `url(${canvas.toDataURL()})`
-                v.style.backgroundSize = 'cover'
-                ctx.clearRect(0, 0, w, h);
-              } catch(e) {
-                continue
-              }
-            }
-          }
 
-          html2canvas(document.querySelector('#capture'), {
-            userCORS:true,
-          }).then(canvas => {
-            canvas.style.maxWidth="80%"
-            canvas.style.height="auto"
-            canvas.style.marginLeft="auto"
-            canvas.style.marginRight="auto"
-            this.captured = canvas
-            
-            // var data = this.captured.toDataURL("image/jpeg")
-            // this.attachImage(data)
+            html2canvas(document.querySelector('#capture'), {
+              userCORS:true,
+            }).then(canvas => {
+              canvas.style.maxWidth="80%"
+              canvas.style.height="auto"
+              canvas.style.marginLeft="auto"
+              canvas.style.marginRight="auto"
+              this.captured = canvas
+              
+              for (let i = 0, len = videos.length; i < len; i++ ) {
+                videos[i].style.background='none'
+              }
 
-            // document.getElementById('preview').appendChild(canvas)  
-            for (let i = 0, len = videos.length; i < len; i++ ) {
-              videos[i].style.background='none'
-            }
-            
-        });
+              const promises = []
+              var storageRef = firebase.storage().ref() 
+
+              var converting = canvas.toDataURL("image/jpeg")
+              var ct = new Date()
+              var file_name =  moment(ct).format('YYYY-MM-DDTHH-mm-ss')
+              var file = this.dataURLtoFile(converting, file_name + '.jpg')
+              storageRef.child('snapshot_' + this.mySessionId).child(file.name).put(file)
+              Promise.all(promises).then(() => {
+                this.attachImage(file_name)
+                var imageInfo = {
+                  "img" : file_name,
+                  "roomId": this.roomId,
+                }
+                this.saveScreenshotInfo(imageInfo)
+                // let url = "https://firebasestorage.googleapis.com/v0/b/homesuli.appspot.com/o/" + image_url + "?alt=media&token=8ec754d3-c76c-4adf-9bef-abbe41171c81"
+              })
+              
+          });
           this.expired = true;
+          } else {
+            this.expired = true
+          }
         }
       },
       immediate: true
     }
   },
   methods: {
-    ...mapActions('meetingStore', ['changeMode']),
+    ...mapActions('meetingStore', ['changeMode', 'attachImage', 'saveScreenshot', 'saveScreenshotInfo']),
     savePhoto() {
+      // 파일로 저장하는 로직 
       var a = document.createElement('a');
       // toDataURL defaults to png, so we need to request a jpeg, then convert for file download.
       a.href = this.captured.toDataURL("image/jpeg").replace("image/jpeg", "image/octet-stream");
       a.download = 'file.jpg';
       a.click();
+
+      // 백에 저장
+      this.saveScreenshot(this.saveScreenshotInfo)
+    },
+    dataURLtoFile(dataURL, fileName) {
+      var arr = dataURL.split(','),
+        mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]), 
+        n = bstr.length, 
+        u8arr = new Uint8Array(n);
+            
+        while(n--){
+          u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new File([u8arr], fileName, {type:mime});
     }
   }
 }
