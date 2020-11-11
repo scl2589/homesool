@@ -61,7 +61,7 @@ const meetingStore = {
 
 
     gameInitialWord:'',
-    gameIsCorrect:1,
+    gameIsCorrect: 1,
     participantPublicId:'',
 
     // theme
@@ -226,9 +226,6 @@ const meetingStore = {
     SET_GAME_PARTICIPANTPUBLICID(state, value){
       state.participantPublicId = value
     },
-    RESET_GAME_ISCORRECT(state){
-      state.gameIsCorrect = 1
-    },
     // theme
     SET_THEME(state, theme) {
       state.theme = theme;
@@ -332,6 +329,13 @@ const meetingStore = {
       commit('SET_GAME_STATUS', 0);
       commit('SET_GAME_TURN', 0);
       commit('SET_GAME_WORD', '');
+      commit('SET_GAME_ISCORRECT',1);
+    },
+    endGameSignal({ state }) {
+      state.session.signal({
+        type: 'endGame',
+        to: [],
+      })
     },
     endSnapshotMode() {
       // 스냅샷 모드가 꺼졌을 경우 후처리해야할 부분
@@ -701,7 +705,15 @@ const meetingStore = {
               data.time = moment(time).format('HH:mm')
               commit('SET_MESSAGES', data)
             });
-
+            state.session.on('signal:endGame',(event) =>{
+              console.log(event)
+              // endGameProcess 를 어떻게 부르죠??,,,
+              commit('SET_SELECTED_GAME', null);
+              commit('SET_GAME_STATUS', 0);
+              commit('SET_GAME_TURN', 0);
+              commit('SET_GAME_WORD', '');
+              commit('SET_GAME_ISCORRECT',1);
+            });
             state.session.on('signal:theme', (event) => {
               commit('SET_THEME', event.data)
             });
@@ -731,10 +743,10 @@ const meetingStore = {
                 //게임 시작
                 commit('SET_SELECTED_GAME', event.data.gameId);
                 commit('SET_GAME_STATUS', event.data.gameStatus);
+                console.log("isCorrect : " + state.gameIsCorrect)
               }
-              if(event.data.gameStatus == 4){
+              if(event.data.gameStatus == 0){
                 //게임 종료
-                commit('RESET_GAME_ISCORRECT');
               }
               commit('SET_GAME_STATUS',event.data.gameStatus);
               if(event.data.gameStatus==3){
@@ -800,8 +812,13 @@ const meetingStore = {
                 commit('SET_GAME_INITIALWORD',event.data.initialWord);
               }
               if(event.data.isCorrect){
-                if(event.from.connectionId == state.publisher.stream.connection.connectionId)
+                console.log("-----iscorrect------")
+                
+                if(event.from.connectionId == state.publisher.stream.connection.connectionId){
+                  console.log(event.from.connectionId)
+                  console.log(state.publisher.stream.connection.connectionId)  
                   commit('SET_GAME_ISCORRECT',event.data.isCorrect);
+                }
               }
               if(event.data.participantPublicId){
                 commit('SET_GAME_PARTICIPANTPUBLICID',event.data.participantPublicId)
