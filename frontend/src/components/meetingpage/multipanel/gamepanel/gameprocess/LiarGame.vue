@@ -75,20 +75,20 @@
               @click.native="updateMainVideoStreamManager(gamePaneltyPublisher)"
             />
           <div class="d-flex justify-content-around" v-if="!notModeHost">
-          <button
-            class="btn btn-yellow"
-            @click="changeMode(null)"
-          >
-            술게임 모드 끝내기
-          </button>
-          <button
-            class="btn btn-yellow"
-            @click="endGameProcess"
-          >
-            술게임 고르기
-          </button>
+            <button
+              class="btn btn-yellow"
+              @click="changeMode(null)"
+            >
+              술게임 모드 끝내기
+            </button>
+            <button
+              class="btn btn-yellow"
+              @click="sendEndgame()"
+            >
+              술게임 고르기
+            </button>
         </div>
-        </div>
+       </div>
     </div>
 </template>
 
@@ -141,6 +141,15 @@ export default {
       console.log("투표"+jsonRequest);
       this.sendGameRequest(jsonRequest);
     },
+    sendEndgame(){
+      var request = new Object();
+      request.gameId=this.selectedGame;
+      request.gameStatus=4;
+
+      var jsonRequest = JSON.stringify(request);
+      console.log(jsonRequest);
+      this.sendGameRequest(jsonRequest);
+    }
   }
 }
 </script>
