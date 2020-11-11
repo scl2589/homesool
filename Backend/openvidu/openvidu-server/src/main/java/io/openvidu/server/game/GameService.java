@@ -146,6 +146,8 @@ public class GameService {
 			Collections.shuffle(pList);
 			upDownNumberMap.put(message.get("sessionId").getAsString(), (int) (Math.random() * 100) + 1);
 			upDownListMap.put(message.get("sessionId").getAsString(), pList);
+			data.addProperty("index", 1);
+			data.addProperty("participantPublicId", pList.get(0).getParticipantPublicId());
 		} else if (gameId == INITIAL) {
 			String[] initial = { "ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ" };
 			// 랜덤 초성 선택
@@ -202,33 +204,36 @@ public class GameService {
 			break;
 		case UPDOWN: // UP & DOWN
 			int index = data.get("index").getAsInt();
-			data.addProperty("participantPublicId", upDownListMap.get(sessionId).get(index).getParticipantPublicId());
-			data.addProperty("index", ++index);
 			int size = participants.size();
 			if (index >= size) {
 				index -= size;
 			}
+			data.addProperty("participantPublicId", upDownListMap.get(sessionId).get(index).getParticipantPublicId());
+			data.addProperty("index", ++index);
+			
+			
 			// 숫자 판별
 			if (data.has("number")) {
 				int number = data.get("number").getAsInt();
 				int answer = upDownNumberMap.get(sessionId);
+				System.out.println("number:" + number + " answer:" + answer + "index : " + index);
 				if (number > answer) {
-					data.addProperty("updown", "up");
-				} else if (number < answer) {
 					data.addProperty("updown", "down");
+				} else if (number < answer) {
+					data.addProperty("updown", "up");
 				} else { // 정답 맞췄을 때
-					index++;
 					if (index >= size) {
 						index -= size;
 					}
-					data.addProperty("participantPublicId",
-							upDownListMap.get(sessionId).get(index).getParticipantPublicId());
+					/*data.addProperty("participantPublicId",
+							upDownListMap.get(sessionId).get(index).getParticipantPublicId());*/
 					data.addProperty("gameStatus", 3);
 
 					upDownNumberMap.remove(sessionId);
 					upDownListMap.remove(sessionId);
 				}
 			}
+			
 			// 게임 순서와 데이터 보내주기
 			params.add("data", data);
 			for (Participant p : participants) {
@@ -249,7 +254,7 @@ public class GameService {
 					// 중복 검증
 					if (!initialAnswerMap.get(sessionId).contains(word)) {
 						// 사전 검증
-						if (initialGameUtil.searchWord("word")) {
+						if (initialGameUtil.searchWord(word)) {
 							isCorrect = 2;
 							initialAnswerMap.get(sessionId).add(word);
 							initialAnswerUserMap.get(sessionId).remove(participant);
