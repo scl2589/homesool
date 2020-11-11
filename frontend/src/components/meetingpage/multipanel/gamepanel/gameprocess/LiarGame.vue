@@ -64,7 +64,7 @@
         <div class="endgame" v-if="gameStatus==3">
           <h5> 게임이 종료되었습니다 </h5>
           <h5> 당첨자 : {{this.gameVoteData}} </h5>
-          <h5> 라이어 : {{this.gameLarDaita}} </h5>
+          <h5> 라이어 : {{this.gameLiarDaita}} </h5>
           <h5> 벌칙자 : {{this.gameParticipantData}} </h5>
         </div>
         <div class="paneltygame" v-if="gameStatus==4">
@@ -75,20 +75,20 @@
               @click.native="updateMainVideoStreamManager(gamePaneltyPublisher)"
             />
           <div class="d-flex justify-content-around" v-if="!notModeHost">
-          <button
-            class="btn btn-yellow"
-            @click="changeMode(null)"
-          >
-            술게임 모드 끝내기
-          </button>
-          <button
-            class="btn btn-yellow"
-            @click="sendEndgame()"
-          >
-            술게임 고르기
-          </button>
+            <button
+              class="btn btn-yellow"
+              @click="changeMode(null)"
+            >
+              술게임 모드 끝내기
+            </button>
+            <button
+              class="btn btn-yellow"
+              @click="sendEndgame()"
+            >
+              술게임 고르기
+            </button>
         </div>
-        </div>
+       </div>
     </div>
 </template>
 
