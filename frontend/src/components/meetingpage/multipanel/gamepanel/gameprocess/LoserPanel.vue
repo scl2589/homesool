@@ -9,7 +9,7 @@
 
     </div>
     <div v-if="selectedGame == 2">
-
+      <p>{{ loser.stream.connection.data.slice(15,-2) }}님이 꼴찌 입니다!!!</p>
     </div>
     <div v-if="selectedGame == 3">
 
