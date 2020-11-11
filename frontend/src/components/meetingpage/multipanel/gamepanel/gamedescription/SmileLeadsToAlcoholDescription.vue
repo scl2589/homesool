@@ -20,7 +20,7 @@
           </div>
           <div class="carousel-item">
             <img 
-              src="require('@/assets/images/sample.png')" 
+              :src="require('@/assets/images/sample.png')" 
               class="d-block w-100" 
               alt="sample image"
             >
@@ -30,33 +30,13 @@
           </div>
           <div class="carousel-item">
             <img 
-              src="require('@/assets/images/sample.png')" 
+              :src="require('@/assets/images/sample.png')" 
               class="d-block w-100" 
               alt="sample image"
             >
             <p class="description">
               3. 이 과정에서 이를 보인다면<br> 당신은...벌칙 당첨!
             </p>
-          </div>
-          <div class="carousel-item">
-            <button
-            class="btn-yellow rounded"
-            @click="clickSendTheme('열대과일')"
-          >
-            열대과일
-          </button>
-          <button
-            class="btn-yellow rounded"
-            @click="clickSendTheme('야채')"
-          >
-            야 채
-          </button>
-          <button
-            class="btn-yellow rounded"
-            @click="clickStopGame()"
-          >
-            게임종료
-          </button>
           </div>
         </div>
         <button class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
@@ -127,19 +107,13 @@ export default {
     }
   },
    methods:{
-     ...mapActions("meetingStore", [
-      "clickChatPanel",
-      "sendGameRequest",
-    ]),
+     ...mapActions("meetingStore", ["sendGameRequest"]),
     clickStartGame() {
-     alert("게임시작");
      var request = new Object();
-     request.gameId=0;
-     request.paneltyId=0;
+     request.gameId=4;
+     request.penaltyId=0;
      request.gameStatus=1;
-
      var jsonRequest = JSON.stringify(request);
-     console.log(jsonRequest);
      this.sendGameRequest(jsonRequest);
     },
   }

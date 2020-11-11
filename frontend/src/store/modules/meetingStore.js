@@ -47,6 +47,9 @@ const meetingStore = {
     gameTurn: 0,
     gameWord: '',
     gameLiar:'',
+    gamePlayer: '',
+    loser: null,
+    penaltyId: null,
 
     // theme
     theme: 'basic',
@@ -68,6 +71,17 @@ const meetingStore = {
       if (state.modeHost) {
         if (state.publisher.stream.connection.connectionId !== state.modeHost.id) {
           return state.modeHost;
+        } else {
+          return false;
+        }
+      } else {
+        return true;
+      }
+    },
+    notGamePlayer(state) {
+      if (state.gamePlayer) {
+        if (state.gamePlayer !== state.publisher.stream.connection.connectionId) {
+          return true;
         } else {
           return false;
         }
@@ -165,6 +179,15 @@ const meetingStore = {
     },
     SET_GAME_LIAR(state, value){
       state.gameLiar = value
+    },
+    SET_GAME_PLAYER(state, value) {
+      state.gamePlayer = value
+    },
+    SET_LOSER(state, value) {
+      state.loser = value
+    },
+    SET_PENALTY_ID(state, value) {
+      state.penaltyId = value
     },
 
     // theme
@@ -531,7 +554,6 @@ const meetingStore = {
             state.session.publish(state.publisher);
 
             state.session.on('streamCreated', (event) => {
-              console.log(event);
               let status = {
                 theme: state.theme,
                 currentMode: state.currentMode,
@@ -662,25 +684,40 @@ const meetingStore = {
             });
             
             state.session.on('signal:game', (event) => {
-              console.log(event.type)
-              console.log(event.penaltyId)
-              console.log(event.data)
-              if(event.data.gameStatus == 1){
+              if(event.data.gameStatus == 1) {
                 //게임 시작
                 commit('SET_SELECTED_GAME', event.data.gameId);
                 commit('SET_GAME_STATUS', event.data.gameStatus);
+                commit('SET_PENALTY_ID', event.data.penaltyId)
               }
 
-              commit('SET_GAME_STATUS',event.data.gameStatus);
+              if(event.data.gameStatus == 3) {
+                commit('SET_GAME_STATUS', event.data.gameStatus);
+                if (state.publisher.stream.connection.connectionId === event.from.connectionId) {
+                  commit('SET_LOSER', state.publisher);
+                } else {
+                  state.subscribers.forEach(subscriber => {
+                    if (subscriber.stream.connection.connectionId === event.from.connectionId) {
+                      commit('SET_LOSER', subscriber);
+                      // break;
+                    }
+                  });
+                }
+              }
 
-              if(event.data.turn >= 0){
-                commit('SET_GAME_TURN',event.data.turn);
+              commit('SET_GAME_STATUS', event.data.gameStatus);
+
+              if(event.data.turn >= 0) {
+                commit('SET_GAME_TURN', event.data.turn);
               }
-              if(event.data.word){
-                commit('SET_GAME_WORD',event.data.word);
+              if(event.data.word) {
+                commit('SET_GAME_WORD', event.data.word);
               }
-              if(event.data.liar){
-                commit('SET_GAME_LIAR',event.data.liar);
+              if(event.data.liar) {
+                commit('SET_GAME_LIAR', event.data.liar);
+              }
+              if(event.data.player) {
+                commit('SET_GAME_PLAYER', event.data.player);
               }
             });
 
@@ -839,6 +876,55 @@ const meetingStore = {
           console.log("SUCCESSFUL - uploading screenshot")
         })
         .catch((err) => {
+          console.log(err)
+        })
+    },
+    checkIsSmile({ state }) {
+      console.log(state.selectedGame);
+      let myVideo = document.getElementById('myVideo').childNodes[0].childNodes[1];
+      let canvas = document.createElement("CANVAS");
+      let ctx = canvas.getContext('2d');
+      canvas.width = myVideo.videoWidth;
+      canvas.height = myVideo.videoHeight;
+
+      ctx.fillRect(0, 0, myVideo.videoWidth, myVideo.videoHeight);
+      ctx.drawImage(myVideo , 0, 0, myVideo.videoWidth, myVideo.videoHeight);
+      
+      let converting = canvas.toDataURL("image/jpeg");
+      let arr = converting.split(',');
+      let mime = arr[0].match(/:(.*?);/)[1];
+      let bstr = atob(arr[1]);
+      let n = bstr.length;
+      let u8arr = new Uint8Array(n);
+      while(n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      let file = new File([u8arr], 'temp', {type:mime});
+      let frm = new FormData()
+      frm.append('files', file);
+
+      axios.post(
+        'https://k3a503.p.ssafy.io:5000/emotion',
+        frm,
+        {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+        .then(res => {
+          console.log(res);
+          if (res.data === 'smile') {
+            let request = {
+              gameStatus: 3
+            }
+            state.session.signal({
+              data: JSON.stringify(request),
+              to: [],
+              type: 'game'
+            })
+          }
+        })
+        .catch(err => {
           console.log(err)
         })
     }
