@@ -59,10 +59,13 @@ const meetingStore = {
     gamePaneltyStreamManager: undefined,
     gamePaneltyPublisher: undefined,
 
-
     gameInitialWord:'',
     gameIsCorrect:1,
     participantPublicId:'',
+
+    gameUpDownResult:'',
+    gameUpDownIndex:0,
+    gameUpDownNumber:-1,
 
     // theme
     theme: 'basic',
@@ -229,6 +232,17 @@ const meetingStore = {
     RESET_GAME_ISCORRECT(state){
       state.gameIsCorrect = 1
     },
+
+    SET_GAME_UPDOWN_RESULT(state,value){
+      state.gameUpDownResult = value
+    },
+    SET_GAME_UPDOWN_INDEX(state,value){
+      state.gameUpDownIndex = value
+    },
+    SET_GAME_UPDOWN_NUMBER(state,value){
+      state.gameUpDownNumber = value
+    },
+    
     // theme
     SET_THEME(state, theme) {
       state.theme = theme;
@@ -332,6 +346,7 @@ const meetingStore = {
       commit('SET_GAME_STATUS', 0);
       commit('SET_GAME_TURN', 0);
       commit('SET_GAME_WORD', '');
+      //게임 끝남 시그널
     },
     endSnapshotMode() {
       // 스냅샷 모드가 꺼졌을 경우 후처리해야할 부분
@@ -727,6 +742,13 @@ const meetingStore = {
               console.log(event.type)
               console.log(event.penaltyId)
               console.log(event.data)
+              //초기화
+              if(event.data.gameStatus == 0){
+                commit('SET_SELECTED_GAME', null);
+                commit('SET_GAME_STATUS', 0);
+                commit('SET_GAME_TURN', 0);
+                commit('SET_GAME_WORD', '');
+              }
               if(event.data.gameStatus == 1){
                 //게임 시작
                 commit('SET_SELECTED_GAME', event.data.gameId);
@@ -737,7 +759,7 @@ const meetingStore = {
                 commit('RESET_GAME_ISCORRECT');
               }
               commit('SET_GAME_STATUS',event.data.gameStatus);
-              if(event.data.gameStatus==3){
+              if(event.data.gameStatus==3 && event.data.gameId != 4){
                 setTimeout(() => {
                   commit('SET_GAME_STATUS', 4);
                 }, 5000);
@@ -758,11 +780,11 @@ const meetingStore = {
                 //commit('SET_GAME_LIAR',event.data.liar);
                 //라이어의 닉네임
                 for(let i=0; i<state.subscribers.length; i++){
-                  if(state.subscribers[i].stream.connection.connectionId == event.data.voteId){
+                  if(state.subscribers[i].stream.connection.connectionId == event.data.liarId){
                     commit('SET_GAME_LIAR_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
                   }
                 }
-                if(state.publisher.session.connection.connectionId == event.data.liar){ //본인체크
+                if(state.publisher.session.connection.connectionId == event.data.liarId){ //본인체크
                   commit('SET_GAME_LIAR_DATA',state.publisher.session.connection.data.slice(15,-2));
                 }
               }
@@ -774,22 +796,21 @@ const meetingStore = {
                     commit('SET_GAME_VOTE_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
                   }
                 }
-                if(state.publisher.session.connection.connectionId == event.data.liar){ //본인체크
+                if(state.publisher.session.connection.connectionId == event.data.voteId){ //본인체크
                   commit('SET_GAME_VOTE_DATA',state.publisher.session.connection.data.slice(15,-2));
                 }
               }
-              if(event.data.participantId){
-                commit('SET_GAME_PARTICIPANT_ID',event.data.participantId);
+              if(event.data.participantPublicId){
+                commit('SET_GAME_PARTICIPANT_ID',event.data.participantPublicId);
                 //벌칙자의 닉네임도 찾아서 넣어줘야함
                 for(let i=0; i<state.subscribers.length; i++){
-                  if(state.subscribers[i].stream.connection.connectionId == event.data.participantId){
+                  if(state.subscribers[i].stream.connection.connectionId == event.data.participantPublicId){
                     commit('SET_GAME_PARTICIPANT_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
                     //벌칙자 stream 생성
-                    this.setPaneltyScreen();
+                    //this.setPaneltyScreen();
                   }
                 }
-  
-                if(state.publisher.session.connection.connectionId == event.data.liar){ //본인체크
+                if(state.publisher.session.connection.connectionId == event.data.participantPublicId){ //본인체크
                   commit('SET_GAME_PARTICIPANT_DATA',state.publisher.session.connection.data.slice(15,-2));
                 }
 
@@ -806,6 +827,17 @@ const meetingStore = {
               if(event.data.participantPublicId){
                 commit('SET_GAME_PARTICIPANTPUBLICID',event.data.participantPublicId)
               }
+
+              if(event.data.updown){
+                commit('SET_GAME_UPDOWN_RESULT',event.data.updown)
+              }
+              if(event.data.index >= 0){
+                commit('SET_GAME_UPDOWN_INDEX',event.data.index)
+              }
+              if(event.data.number >= 0){
+                commit('SET_GAME_UPDOWN_NUMBER',event.data.number)
+              }
+
             });
 
             state.session.on('signal:share', (event) => {

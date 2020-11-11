@@ -64,7 +64,7 @@
         <div class="endgame" v-if="gameStatus==3">
           <h5> 게임이 종료되었습니다 </h5>
           <h5> 당첨자 : {{this.gameVoteData}} </h5>
-          <h5> 라이어 : {{this.gameLiarData}} </h5>
+          <h5> 라이어 : {{this.gameLarDaita}} </h5>
           <h5> 벌칙자 : {{this.gameParticipantData}} </h5>
         </div>
         <div class="paneltygame" v-if="gameStatus==4">
@@ -83,7 +83,7 @@
           </button>
           <button
             class="btn btn-yellow"
-            @click="endGameProcess"
+            @click="sendEndgame()"
           >
             술게임 고르기
           </button>
@@ -141,6 +141,15 @@ export default {
       console.log("투표"+jsonRequest);
       this.sendGameRequest(jsonRequest);
     },
+    sendEndgame(){
+      var request = new Object();
+      request.gameId=this.selectedGame;
+      request.gameStatus=4;
+
+      var jsonRequest = JSON.stringify(request);
+      console.log(jsonRequest);
+      this.sendGameRequest(jsonRequest);
+    }
   }
 }
 </script>
