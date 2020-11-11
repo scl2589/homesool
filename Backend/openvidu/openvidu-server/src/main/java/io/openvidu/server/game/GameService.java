@@ -167,11 +167,11 @@ public class GameService {
 			initialAnswerUserMap.put(message.get("sessionId").getAsString(), pSet);
 
 		} else if (gameId == DRUNKTEST) {
-			String sentence = DrunkTestUtil.sentences[(int) Math.random() * DrunkTestUtil.sentences.length];
+			String sentence = DrunkTestUtil.sentences[(int) (Math.random() * DrunkTestUtil.sentences.length)];
 			
 			data.addProperty("sentence", sentence);
 			// 띄어쓰기 제거 후 저장
-			drunkTestMap.put(message.get("ssesionId").getAsString(), sentence.replaceAll(" ", ""));
+			drunkTestMap.put(message.get("sessionId").getAsString(), sentence.replaceAll(" ", ""));
 		}
 		params.add("data", data);
 		// 브로드 캐스팅
