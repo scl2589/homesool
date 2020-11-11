@@ -2,6 +2,8 @@
   <div class="panel">
     <SmileLeadsToAlcohol v-if="selectedGame==0">
     </SmileLeadsToAlcohol>
+    <ConsonantQuiz v-if="selectedGame==2">
+    </ConsonantQuiz>
     <LiarGame v-if="selectedGame==3">
     </LiarGame>
   </div>
@@ -11,6 +13,7 @@
 import { mapState, mapActions } from 'vuex'
 import SmileLeadsToAlcohol from '@/components/meetingpage/multipanel/gamepanel/gameprocess/SmileLeadsToAlcohol'
 import LiarGame from '@/components/meetingpage/multipanel/gamepanel/gameprocess/LiarGame'
+import ConsonantQuiz from '@/components/meetingpage/multipanel/gamepanel/gameprocess/ConsonantQuiz'
 
 export default {
   name: 'GameProcessPanel',
@@ -22,7 +25,8 @@ export default {
 
   components:{
     SmileLeadsToAlcohol,
-    LiarGame
+    LiarGame,
+    ConsonantQuiz
   },
 
   computed: {

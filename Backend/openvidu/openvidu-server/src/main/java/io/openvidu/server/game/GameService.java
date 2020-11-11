@@ -249,7 +249,7 @@ public class GameService {
 					// 중복 검증
 					if (!initialAnswerMap.get(sessionId).contains(word)) {
 						// 사전 검증
-						if (initialGameUtil.searchWord("word")) {
+						if (initialGameUtil.searchWord(word)) {
 							isCorrect = 2;
 							initialAnswerMap.get(sessionId).add(word);
 							initialAnswerUserMap.get(sessionId).remove(participant);

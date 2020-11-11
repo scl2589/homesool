@@ -81,6 +81,7 @@
         <div>
           <button
             class="btn-yellow rounded"
+            @click="clickStartGame()"
           >
             시작하기
           </button>
@@ -92,8 +93,9 @@
 </template>
 
 <script>
+import {mapActions} from 'vuex';
 export default {
-  name: 'UpAndDownDescription',
+  name: 'ConsonantQuiznDescription',
   data() {
     return {
       penalty: null,
@@ -103,6 +105,17 @@ export default {
         '5분동안 카메라 정지'
       ],
     }
+  },
+  methods: {
+    ...mapActions('meetingStore', ['sendGameRequest']),
+    clickStartGame() {
+     var request = new Object();
+     request.gameId=2;
+     request.paneltyId=0;
+     request.gameStatus=1;
+     var jsonRequest = JSON.stringify(request);
+     this.sendGameRequest(jsonRequest);
+    },
   }
 }
 </script>
