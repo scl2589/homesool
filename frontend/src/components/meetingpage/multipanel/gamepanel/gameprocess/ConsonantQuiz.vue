@@ -22,18 +22,34 @@
                 </button>
               </div>
             </div>
+          </div>
+          <div v-else>
+            통과
           </div> 
       </div>
       <div class="finishgame" v-if="gameStatus==3">
         <div class="showName">
           <div v-for="subscriber in subscribers" :key="subscriber.stream.connection.data">
-            <div :v-if="subscriber.stream.connection.connectionId==participantPublicId">
+            <div v-if="subscriber.stream.connection.connectionId==participantPublicId">
               {{subscriber.stream.connection.data.slice(15,-2)}} 패배!!
             </div>
           </div>
-          <button class="finish-btn" @click="clickFinishgame()">
-            끝내기
+          <div v-if="publisher.stream.connection.connectionId==participantPublicId">
+            {{publisher.stream.connection.data.slice(15,-2)}} 패배!!
+          </div>
+          <button
+            class="btn btn-yellow"
+            @click="changeMode(null)"
+          >
+            술게임 모드 끝내기
           </button>
+          <button
+            class="btn btn-yellow"
+            @click="endGameSignal"
+          >
+            술게임 고르기
+          </button>
+
         </div>
       </div>
     </div>
@@ -46,7 +62,7 @@ import { mapState, mapActions, mapGetters } from 'vuex'
 export default {
  name: "GamePanel",
   computed: {
-    ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameInitialWord','gameIsCorrect','participantPublicId','subscribers']),
+    ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameInitialWord','gameIsCorrect','participantPublicId','subscribers','publisher']),
     ...mapGetters('meetingStore', ['notModeHost'])
   },
   data(){
@@ -56,7 +72,7 @@ export default {
   },
   methods:{
        ...mapActions("meetingStore", [
-      "sendGameRequest",
+      "sendGameRequest",'changeMode','endGameSignal'
     ]),
     clickSendWord(word){
       var request = new Object();
