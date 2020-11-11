@@ -182,7 +182,6 @@ const meetingStore = {
     SET_GAME_LIAR(state, value){
       state.gameLiar = value
     },
-<<<<<<< frontend/src/store/modules/meetingStore.js
     SET_GAME_LIAR_DATA(state, value){
       state.gameLiarData = value
     },
@@ -218,7 +217,6 @@ const meetingStore = {
     },
     
 
-=======
     SET_GAME_INITIALWORD(state, value){
       state.gameInitialWord = value
     },
@@ -231,7 +229,6 @@ const meetingStore = {
     RESET_GAME_ISCORRECT(state){
       state.gameIsCorrect = 1
     },
->>>>>>> frontend/src/store/modules/meetingStore.js
     // theme
     SET_THEME(state, theme) {
       state.theme = theme;
@@ -957,7 +954,6 @@ const meetingStore = {
         type: 'attachImage'
       })
     },
-<<<<<<< frontend/src/store/modules/meetingStore.js
     setPaneltyScreen({ state, commit, dispatch }){
       if (state.isSharingMode) {
         return
@@ -998,8 +994,8 @@ const meetingStore = {
         commit('SET_GAME_PANELTY_SESSION', paneltySession);
         commit('SET_GAME_PANELTY_SUBSCRIBER', paneltySubscribers);
         commit('SET_OVTOKEN', token);
-			});
-=======
+      });
+    },
     saveScreenshotInfo({ commit }, data) {
       commit('SET_SCREENSHOT_INFO', data)
     },
@@ -1011,7 +1007,6 @@ const meetingStore = {
         .catch((err) => {
           console.log(err)
         })
->>>>>>> frontend/src/store/modules/meetingStore.js
     }
   }
 }
