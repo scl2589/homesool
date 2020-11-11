@@ -71,24 +71,38 @@
           <h5> 벌칙화면 </h5>
             <user-video 
               class="my-2 px-2 sub-video" 
-              :stream-manager="sub" 
-              @click.native="updateMainVideoStreamManager(sub)"
+              :stream-manager="gamePaneltyPublisher" 
+              @click.native="updateMainVideoStreamManager(gamePaneltyPublisher)"
             />
+          <div class="d-flex justify-content-around" v-if="!notModeHost">
+          <button
+            class="btn btn-yellow"
+            @click="changeMode(null)"
+          >
+            술게임 모드 끝내기
+          </button>
+          <button
+            class="btn btn-yellow"
+            @click="endGameProcess"
+          >
+            술게임 고르기
+          </button>
+        </div>
         </div>
     </div>
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
-//import UserVideo from '../../../UserVideo';
+import UserVideo from '../../../UserVideo';
 
 export default {
  name: "GamePanel",
  components : {
-   //UserVideo,
+   UserVideo,
  },
   computed: {
-    ...mapState('meetingStore', ['gameStatus', 'selectedGame', 'gameTurn', 'gameWord', 
+    ...mapState('meetingStore', ['gameStatus', 'selectedGame', 'gameTurn', 'gameWord', 'gamePaneltySubscriber', 'gamePaneltyPublisher',
                                 'subscribers','gameLiar','myself','publisher','gameVoteData','gameParticipantData','gameLiarData']),
     ...mapGetters('meetingStore', ['notModeHost'])
   },
@@ -101,6 +115,8 @@ export default {
   methods:{
        ...mapActions("meetingStore", [
       "sendGameRequest",
+      'changeMode',
+      'endGameProcess',
     ]),
     clickSendTheme(theme){
       alert("주제선택");

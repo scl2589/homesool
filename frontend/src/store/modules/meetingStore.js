@@ -52,8 +52,12 @@ const meetingStore = {
     gameParticipantId:'', //벌칙자
     gameParticipantData:'', //벌칙자이름
     gamePaneltyId:0,
-    gamePaneltySubscriber: undefined,
-    
+    gamePaneltyOV:undefined,
+    gamePaneltySubscriber: [],
+    gamePaneltySession: undefined,
+    gamePaneltyStreamManager: undefined,
+    gamePaneltyPublisher: undefined,
+
     // theme
     theme: 'basic',
 
@@ -183,6 +187,22 @@ const meetingStore = {
     SET_GAME_PANELTY_ID(state,value){
       state.gamePaneltyId = value
     },
+    SET_GAME_PANELTY_SUBSCRIBER(state, subscriber){
+      state.gamePaneltySubscriber = subscriber
+    },
+    SET_GAME_PANELTY_OV(state,gamePaneltyOV){
+      state.gamePaneltyOV = gamePaneltyOV
+    },
+    SET_GAME_PANELTY_SESSION(state, gamePaneltySession){
+      state. gamePaneltySession =  gamePaneltySession
+    },
+    SET_GAME_PANELTY_STREAM_MANAGER(state,gamePaneltyStreamManager){
+      state.gamePaneltyStreamManager = gamePaneltyStreamManager
+    },
+    SET_GAME_PANELTY_PUBLISHER(state,gamePaneltyPublisher){
+      state.gamePaneltyPublisher = gamePaneltyPublisher
+    },
+    
 
     // theme
     SET_THEME(state, theme) {
@@ -634,9 +654,9 @@ const meetingStore = {
               if(event.data.word){
                 commit('SET_GAME_WORD',event.data.word);
               }
-              if(event.data.liar){
-                //commit('SET_GAME_LIAR',event.data.liarId);
-                commit('SET_GAME_LIAR',event.data.liar);
+              if(event.data.liarId){
+                commit('SET_GAME_LIAR',event.data.liarId);
+                //commit('SET_GAME_LIAR',event.data.liar);
                 //라이어의 닉네임
                 for(let i=0; i<state.subscribers.length; i++){
                   if(state.subscribers[i].stream.connection.connectionId == event.data.voteId){
@@ -665,6 +685,8 @@ const meetingStore = {
                 for(let i=0; i<state.subscribers.length; i++){
                   if(state.subscribers[i].stream.connection.connectionId == event.data.participantId){
                     commit('SET_GAME_PARTICIPANT_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
+                    //벌칙자 stream 생성
+                    this.setPaneltyScreen();
                   }
                 }
   
@@ -672,7 +694,8 @@ const meetingStore = {
                   commit('SET_GAME_PARTICIPANT_DATA',state.publisher.session.connection.data.slice(15,-2));
                 }
 
-                //벌칙자 stream 생성
+                
+                
               }
             });
 
@@ -804,6 +827,48 @@ const meetingStore = {
         to: [],
         type: 'attachImage'
       })
+    },
+    setPaneltyScreen({ state, commit, dispatch }){
+      if (state.isSharingMode) {
+        return
+      } 
+      // --- Get an OpenVidu object ---
+			const PaneltyOV = new OpenVidu();
+			// --- Init a session ---
+			const paneltySession = PaneltyOV.initSession();
+			// --- Specify the actions when events take place in the session ---
+			// On every new Stream received...
+      const paneltySubscribers = [];
+			paneltySession.on('streamCreated', ({ stream }) => {
+        const subscriber2 = paneltySession.subscribe(stream);
+				paneltySubscribers.push(subscriber2);
+			});
+			// On every Stream destroyed...
+			paneltySession.on('streamDestroyed', ({ stream }) => {
+				const index2 = paneltySubscribers.indexOf(stream.streamManager, 0);
+				if (index2 >= 0) {
+					paneltySubscribers.splice(index2, 1);
+				}
+			});
+        dispatch('getToken', state.mySessionId).then(token => {
+          let paneltyPublisher = PaneltyOV.initPublisher(undefined, {
+            audioSource: undefined, // The source of audio. If undefined default microphone
+            videoSource: undefined, // The source of video. If undefined default webcam
+            publishAudio: true,  	// Whether you want to start publishing with your audio unmuted or not
+            publishVideo: true,  	// Whether you want to start publishing with your video enabled or not
+            resolution: '640x480',  // The resolution of your video
+            frameRate: 30,			// The frame rate of your video
+            insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
+            mirror: true,       	// Whether to mirror your local video or not
+          });
+        paneltySession.publish(paneltyPublisher);
+        commit('SET_GAME_PANELTY_OV', PaneltyOV);
+        commit('SET_GAME_PANELTY_STREAM_MANAGER', paneltyPublisher);
+        commit('SET_GAME_PANELTY_PUBLISHER', paneltyPublisher);
+        commit('SET_GAME_PANELTY_SESSION', paneltySession);
+        commit('SET_GAME_PANELTY_SUBSCRIBER', paneltySubscribers);
+        commit('SET_OVTOKEN', token);
+			});
     }
   }
 }
