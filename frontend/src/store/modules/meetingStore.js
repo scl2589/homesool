@@ -47,9 +47,23 @@ const meetingStore = {
     gameTurn: 0,
     gameWord: '',
     gameLiar:'',
+    gameLiarData:'',
+    gameVoteId:'',
+    gameVoteData:'',  //걸린사람 이름
+    gameParticipantId:'', //벌칙자
+    gameParticipantData:'', //벌칙자이름
+    gamePaneltyId:0,
+    gamePaneltyOV:undefined,
+    gamePaneltySubscriber: [],
+    gamePaneltySession: undefined,
+    gamePaneltyStreamManager: undefined,
+    gamePaneltyPublisher: undefined,
+
+
     gameInitialWord:'',
     gameIsCorrect:1,
     participantPublicId:'',
+
     // theme
     theme: 'basic',
 
@@ -168,6 +182,43 @@ const meetingStore = {
     SET_GAME_LIAR(state, value){
       state.gameLiar = value
     },
+<<<<<<< frontend/src/store/modules/meetingStore.js
+    SET_GAME_LIAR_DATA(state, value){
+      state.gameLiarData = value
+    },
+    SET_GAME_VOTE_ID(state, value){
+      state.gameVoteId = value
+    },
+    SET_GAME_PARTICIPANT_ID(state, value){
+      state.gameParticipantId = value
+    },
+    SET_GAME_PARTICIPANT_DATA(state, value){
+      state.gameParticipantData = value
+    },
+    SET_GAME_VOTE_DATA(state, value){
+      state.gameVoteData = value
+    },
+    SET_GAME_PANELTY_ID(state,value){
+      state.gamePaneltyId = value
+    },
+    SET_GAME_PANELTY_SUBSCRIBER(state, subscriber){
+      state.gamePaneltySubscriber = subscriber
+    },
+    SET_GAME_PANELTY_OV(state,gamePaneltyOV){
+      state.gamePaneltyOV = gamePaneltyOV
+    },
+    SET_GAME_PANELTY_SESSION(state, gamePaneltySession){
+      state. gamePaneltySession =  gamePaneltySession
+    },
+    SET_GAME_PANELTY_STREAM_MANAGER(state,gamePaneltyStreamManager){
+      state.gamePaneltyStreamManager = gamePaneltyStreamManager
+    },
+    SET_GAME_PANELTY_PUBLISHER(state,gamePaneltyPublisher){
+      state.gamePaneltyPublisher = gamePaneltyPublisher
+    },
+    
+
+=======
     SET_GAME_INITIALWORD(state, value){
       state.gameInitialWord = value
     },
@@ -180,6 +231,7 @@ const meetingStore = {
     RESET_GAME_ISCORRECT(state){
       state.gameIsCorrect = 1
     },
+>>>>>>> frontend/src/store/modules/meetingStore.js
     // theme
     SET_THEME(state, theme) {
       state.theme = theme;
@@ -688,6 +740,15 @@ const meetingStore = {
                 commit('RESET_GAME_ISCORRECT');
               }
               commit('SET_GAME_STATUS',event.data.gameStatus);
+              if(event.data.gameStatus==3){
+                setTimeout(() => {
+                  commit('SET_GAME_STATUS', 4);
+                }, 5000);
+              }
+              
+              if(event.data.paneltyId){
+                commit('SET_GAME_PANELTY_ID',event.data.paneltyId);
+              }
 
               if(event.data.turn >= 0){
                 commit('SET_GAME_TURN',event.data.turn);
@@ -695,8 +756,48 @@ const meetingStore = {
               if(event.data.word){
                 commit('SET_GAME_WORD',event.data.word);
               }
-              if(event.data.liar){
-                commit('SET_GAME_LIAR',event.data.liar);
+              if(event.data.liarId){
+                commit('SET_GAME_LIAR',event.data.liarId);
+                //commit('SET_GAME_LIAR',event.data.liar);
+                //라이어의 닉네임
+                for(let i=0; i<state.subscribers.length; i++){
+                  if(state.subscribers[i].stream.connection.connectionId == event.data.voteId){
+                    commit('SET_GAME_LIAR_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
+                  }
+                }
+                if(state.publisher.session.connection.connectionId == event.data.liar){ //본인체크
+                  commit('SET_GAME_LIAR_DATA',state.publisher.session.connection.data.slice(15,-2));
+                }
+              }
+              if(event.data.voteId){
+                commit('SET_GAME_VOTE_ID',event.data.voteId);
+                //당선자??의 닉네임도 찾아서 넣어줘야함
+                for(let i=0; i<state.subscribers.length; i++){
+                  if(state.subscribers[i].stream.connection.connectionId == event.data.voteId){
+                    commit('SET_GAME_VOTE_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
+                  }
+                }
+                if(state.publisher.session.connection.connectionId == event.data.liar){ //본인체크
+                  commit('SET_GAME_VOTE_DATA',state.publisher.session.connection.data.slice(15,-2));
+                }
+              }
+              if(event.data.participantId){
+                commit('SET_GAME_PARTICIPANT_ID',event.data.participantId);
+                //벌칙자의 닉네임도 찾아서 넣어줘야함
+                for(let i=0; i<state.subscribers.length; i++){
+                  if(state.subscribers[i].stream.connection.connectionId == event.data.participantId){
+                    commit('SET_GAME_PARTICIPANT_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
+                    //벌칙자 stream 생성
+                    this.setPaneltyScreen();
+                  }
+                }
+  
+                if(state.publisher.session.connection.connectionId == event.data.liar){ //본인체크
+                  commit('SET_GAME_PARTICIPANT_DATA',state.publisher.session.connection.data.slice(15,-2));
+                }
+
+                
+                
               }
               if(event.data.initialWord){
                 commit('SET_GAME_INITIALWORD',event.data.initialWord);
@@ -856,6 +957,49 @@ const meetingStore = {
         type: 'attachImage'
       })
     },
+<<<<<<< frontend/src/store/modules/meetingStore.js
+    setPaneltyScreen({ state, commit, dispatch }){
+      if (state.isSharingMode) {
+        return
+      } 
+      // --- Get an OpenVidu object ---
+			const PaneltyOV = new OpenVidu();
+			// --- Init a session ---
+			const paneltySession = PaneltyOV.initSession();
+			// --- Specify the actions when events take place in the session ---
+			// On every new Stream received...
+      const paneltySubscribers = [];
+			paneltySession.on('streamCreated', ({ stream }) => {
+        const subscriber2 = paneltySession.subscribe(stream);
+				paneltySubscribers.push(subscriber2);
+			});
+			// On every Stream destroyed...
+			paneltySession.on('streamDestroyed', ({ stream }) => {
+				const index2 = paneltySubscribers.indexOf(stream.streamManager, 0);
+				if (index2 >= 0) {
+					paneltySubscribers.splice(index2, 1);
+				}
+			});
+        dispatch('getToken', state.mySessionId).then(token => {
+          let paneltyPublisher = PaneltyOV.initPublisher(undefined, {
+            audioSource: undefined, // The source of audio. If undefined default microphone
+            videoSource: undefined, // The source of video. If undefined default webcam
+            publishAudio: true,  	// Whether you want to start publishing with your audio unmuted or not
+            publishVideo: true,  	// Whether you want to start publishing with your video enabled or not
+            resolution: '640x480',  // The resolution of your video
+            frameRate: 30,			// The frame rate of your video
+            insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
+            mirror: true,       	// Whether to mirror your local video or not
+          });
+        paneltySession.publish(paneltyPublisher);
+        commit('SET_GAME_PANELTY_OV', PaneltyOV);
+        commit('SET_GAME_PANELTY_STREAM_MANAGER', paneltyPublisher);
+        commit('SET_GAME_PANELTY_PUBLISHER', paneltyPublisher);
+        commit('SET_GAME_PANELTY_SESSION', paneltySession);
+        commit('SET_GAME_PANELTY_SUBSCRIBER', paneltySubscribers);
+        commit('SET_OVTOKEN', token);
+			});
+=======
     saveScreenshotInfo({ commit }, data) {
       commit('SET_SCREENSHOT_INFO', data)
     },
@@ -867,6 +1011,7 @@ const meetingStore = {
         .catch((err) => {
           console.log(err)
         })
+>>>>>>> frontend/src/store/modules/meetingStore.js
     }
   }
 }
