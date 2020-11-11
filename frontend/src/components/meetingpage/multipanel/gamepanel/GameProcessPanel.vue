@@ -1,6 +1,6 @@
 <template>
   <div class="panel">
-    <SmileLeadsToAlcohol v-if="selectedGame==0">
+    <SmileLeadsToAlcohol v-if="selectedGame==4">
     </SmileLeadsToAlcohol>
     <UpAndDown v-if="selectedGame==1">
     </UpAndDown>

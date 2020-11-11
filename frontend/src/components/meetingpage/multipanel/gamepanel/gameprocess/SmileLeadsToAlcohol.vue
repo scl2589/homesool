@@ -25,22 +25,55 @@
           </div>
         </div>
         <div class="startgame" v-if="gameStatus==2">
-            
+          <div v-if="notGamePlayer">
+            <p>다른 사람의 차례입니다.</p>
+          </div>
+          <div v-else>
+            <p><strong>{{ gameWord }}</strong>를 읽어주세요!</p>
+          </div>
+          <small>웃으면 안됩니다!</small>
         </div>
+        <loser-panel class="w-100" v-if="gameStatus == 3"/>
     </div>
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
+import LoserPanel from '@/components/meetingpage/multipanel/gamepanel/gameprocess/LoserPanel';
 export default {
   name: 'SmileLeadsToAlcohol',
+  data() {
+    return {
+      checkSmile: null
+    }
+  },
+  components: {
+    LoserPanel
+  },
   computed: {
     ...mapState('meetingStore', ['gameStatus', 'selectedGame', 'gameWord']),
-    ...mapGetters('meetingStore', ['notModeHost'])
+    ...mapGetters('meetingStore', ['notModeHost', 'notGamePlayer'])
+  },
+  watch: {
+    gameStatus(value) {
+      if (value == 2) {
+        this.checkSmile = setInterval(() => {
+          if (!this.selectedGame) {
+            clearInterval(this.checkSmile);
+          } else {
+            this.checkIsSmile();
+          }
+        }, 3000);
+      } else if (value == 3) {
+        clearInterval(this.checkSmile);
+      }
+    }
   },
   methods:{
        ...mapActions("meetingStore", [
       "sendGameRequest",
+      "checkIsSmile",
+      "updateMainVideoStreamManager"
     ]),
     clickSendTheme(theme){
       alert("주제선택");
@@ -53,6 +86,10 @@ export default {
       console.log(jsonRequest);
       this.sendGameRequest(jsonRequest);
     },
+  },
+
+  beforeDestroy() {
+    clearInterval(this.checkSmile)
   }
 }
 </script>
