@@ -7,6 +7,7 @@ export default {
     user: '/user',
     login: '/user/login',
     room: '/room',
-    photo: '/room/photo'
+    photo: '/room/photo',
+    voice: '/v1/recongnize'
   }
 }

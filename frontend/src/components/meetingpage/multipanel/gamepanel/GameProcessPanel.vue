@@ -6,6 +6,8 @@
     </ConsonantQuiz>
     <LiarGame v-if="selectedGame==3">
     </LiarGame>
+    <FindOutDrunken v-if="selectedGame==5">
+    </FindOutDrunken>
   </div>
 </template>
 
@@ -13,6 +15,7 @@
 import { mapState, mapActions } from 'vuex'
 import SmileLeadsToAlcohol from '@/components/meetingpage/multipanel/gamepanel/gameprocess/SmileLeadsToAlcohol'
 import LiarGame from '@/components/meetingpage/multipanel/gamepanel/gameprocess/LiarGame'
+import FindOutDrunken  from '@/components/meetingpage/multipanel/gamepanel/gameprocess/FindOutDrunken'
 import ConsonantQuiz from '@/components/meetingpage/multipanel/gamepanel/gameprocess/ConsonantQuiz'
 
 export default {
@@ -26,6 +29,7 @@ export default {
   components:{
     SmileLeadsToAlcohol,
     LiarGame,
+    FindOutDrunken,
     ConsonantQuiz
   },
 
@@ -46,8 +50,8 @@ export default {
 <style scoped>
 .panel {
   background-color: black;
-  height: 100%;
-  max-height: 46vh;
+  /* height: 100%; */
+  height: 46vh;
 }
 .panel-title{
   padding : 30px;
