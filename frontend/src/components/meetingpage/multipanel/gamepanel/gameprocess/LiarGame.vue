@@ -64,7 +64,7 @@
         <div class="endgame" v-if="gameStatus==3">
           <h5> 게임이 종료되었습니다 </h5>
           <h5> 당첨자 : {{this.gameVoteData}} </h5>
-          <h5> 라이어 : {{this.gameLiarDaita}} </h5>
+          <h5> 라이어 : {{this.gameLiarData}} </h5>
           <h5> 벌칙자 : {{this.gameParticipantData}} </h5>
         </div>
         <div class="paneltygame" v-if="gameStatus==4">
