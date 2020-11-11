@@ -69,15 +69,24 @@
         </div>
         <div class="paneltygame" v-if="gameStatus==4">
           <h5> 벌칙화면 </h5>
+            <user-video 
+              class="my-2 px-2 sub-video" 
+              :stream-manager="sub" 
+              @click.native="updateMainVideoStreamManager(sub)"
+            />
         </div>
     </div>
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
+//import UserVideo from '../../../UserVideo';
 
 export default {
  name: "GamePanel",
+ components : {
+   //UserVideo,
+ },
   computed: {
     ...mapState('meetingStore', ['gameStatus', 'selectedGame', 'gameTurn', 'gameWord', 
                                 'subscribers','gameLiar','myself','publisher','gameVoteData','gameParticipantData','gameLiarData']),

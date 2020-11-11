@@ -51,7 +51,9 @@ const meetingStore = {
     gameVoteData:'',  //걸린사람 이름
     gameParticipantId:'', //벌칙자
     gameParticipantData:'', //벌칙자이름
-
+    gamePaneltyId:0,
+    gamePaneltySubscriber: undefined,
+    
     // theme
     theme: 'basic',
 
@@ -177,6 +179,9 @@ const meetingStore = {
     },
     SET_GAME_VOTE_DATA(state, value){
       state.gameVoteData = value
+    },
+    SET_GAME_PANELTY_ID(state,value){
+      state.gamePaneltyId = value
     },
 
     // theme
@@ -613,6 +618,15 @@ const meetingStore = {
               }
 
               commit('SET_GAME_STATUS',event.data.gameStatus);
+              if(event.data.gameStatus==3){
+                setTimeout(() => {
+                  commit('SET_GAME_STATUS', 4);
+                }, 5000);
+              }
+              
+              if(event.data.paneltyId){
+                commit('SET_GAME_PANELTY_ID',event.data.paneltyId);
+              }
 
               if(event.data.turn >= 0){
                 commit('SET_GAME_TURN',event.data.turn);
@@ -653,11 +667,12 @@ const meetingStore = {
                     commit('SET_GAME_PARTICIPANT_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
                   }
                 }
-                alert(state.myself);
-                alert(state.nickName);
+  
                 if(state.publisher.session.connection.connectionId == event.data.liar){ //본인체크
                   commit('SET_GAME_PARTICIPANT_DATA',state.publisher.session.connection.data.slice(15,-2));
                 }
+
+                //벌칙자 stream 생성
               }
             });
 
