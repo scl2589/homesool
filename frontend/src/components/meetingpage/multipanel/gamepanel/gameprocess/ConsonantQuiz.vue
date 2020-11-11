@@ -1,6 +1,11 @@
 <template>
     <div class="panel">
       <div class="startgame" v-if="gameStatus==1 || gameStatus==2">
+        <div class="answer">
+          <p v-for="word in gameAnswerWords" :key="word.word">
+            {{word.nickName}} : {{word.word}}
+          </p>
+        </div>
         <div class="showWord">
           <p>{{this.gameInitialWord}}</p>
         </div>
@@ -27,7 +32,8 @@
             통과
           </div> 
       </div>
-      <div class="finishgame" v-if="gameStatus==3">
+      <loser-panel class="w-100" v-if="gameStatus == 3"/>
+      <!-- <div class="finishgame" v-if="gameStatus==3">
         <div class="showName">
           <div v-for="subscriber in subscribers" :key="subscriber.stream.connection.data">
             <div v-if="subscriber.stream.connection.connectionId==participantPublicId">
@@ -51,24 +57,27 @@
           </button>
 
         </div>
-      </div>
+      </div> -->
     </div>
 
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
-
+import LoserPanel from '@/components/meetingpage/multipanel/gamepanel/gameprocess/LoserPanel';
 export default {
  name: "GamePanel",
   computed: {
-    ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameInitialWord','gameIsCorrect','participantPublicId','subscribers','publisher']),
+    ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameInitialWord','gameIsCorrect','participantPublicId','subscribers','publisher','gameAnswerWords']),
     ...mapGetters('meetingStore', ['notModeHost'])
   },
   data(){
     return{
       word: "",
     }
+  },
+  components: {
+    LoserPanel
   },
   methods:{
        ...mapActions("meetingStore", [

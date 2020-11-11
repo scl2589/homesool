@@ -65,6 +65,7 @@ const meetingStore = {
 
     gameInitialWord:'',
     gameIsCorrect: 1,
+    gameAnswerWords: [],
     participantPublicId:'',
 
     gameUpDownResult:'',
@@ -253,11 +254,17 @@ const meetingStore = {
     SET_GAME_ISCORRECT(state, value){
       state.gameIsCorrect = value
     },
+    SET_GAME_ANSWERWORDS(state, data){
+      console.log(data)
+      console.log(data.word)
+      console.log(data.nickName)
+      state.gameAnswerWords.push(data)
+    },
+    RESET_GAME_ANSWERWORDS(state){
+      state.gameAnswerWords = []
+    },
     SET_GAME_PARTICIPANTPUBLICID(state, value){
       state.participantPublicId = value
-    },
-    RESET_GAME_ISCORRECT(state){
-      state.gameIsCorrect = 1
     },
     SET_GAME_UPDOWN_RESULT(state,value){
       state.gameUpDownResult = value
@@ -377,8 +384,8 @@ const meetingStore = {
       commit('SET_GAME_STATUS', 0);
       commit('SET_GAME_TURN', 0);
       commit('SET_GAME_WORD', '');
-
       commit('SET_GAME_ISCORRECT',1);
+      commit('RESET_GAME_ANSWERWORDS');
     },
     endGameSignal({ state }) {
       state.session.signal({
@@ -793,18 +800,29 @@ const meetingStore = {
 
               if(event.data.gameStatus == 3) {
                 commit('SET_GAME_STATUS', event.data.gameStatus);
-                if (state.publisher.stream.connection.connectionId === event.from.connectionId) {
-                  commit('SET_LOSER', state.publisher);
-                } else {
-                  state.subscribers.forEach(subscriber => {
-                    if (subscriber.stream.connection.connectionId === event.from.connectionId) {
-                      commit('SET_LOSER', subscriber);
-                      // break;
-                    }
-                  });
+                if (event.data.participantPublicId){
+                  if (state.publisher.stream.connection.connectionId === event.data.participantPublicId) {
+                    commit('SET_LOSER', state.publisher);
+                  } else {
+                    state.subscribers.forEach(subscriber => {
+                      if (subscriber.stream.connection.connectionId === event.data.participantPublicId) {
+                        commit('SET_LOSER', subscriber);
+                      }
+                    });
+                  }
+                }
+                else{
+                  if (state.publisher.stream.connection.connectionId === event.from.connectionId) {
+                    commit('SET_LOSER', state.publisher);
+                  } else {
+                    state.subscribers.forEach(subscriber => {
+                      if (subscriber.stream.connection.connectionId === event.from.connectionId) {
+                        commit('SET_LOSER', subscriber);
+                      }
+                    });
+                  }
                 }
               }
-
               commit('SET_GAME_STATUS', event.data.gameStatus);
 
               //초기화
@@ -879,12 +897,25 @@ const meetingStore = {
               if(event.data.initialWord){
                 commit('SET_GAME_INITIALWORD',event.data.initialWord);
               }
-              if(event.data.isCorrect){
-                console.log("-----iscorrect------")
-                
+              if(event.data.isCorrect == 2){
+                if (state.publisher.stream.connection.connectionId === event.from.connectionId) {
+                  let data = {
+                    nickName : state.publisher.stream.connection.data.slice(15,-2),
+                    word : event.data.word,
+                  }
+                  commit('SET_GAME_ANSWERWORDS', data);
+                } else {
+                  state.subscribers.forEach(subscriber => {
+                    if (subscriber.stream.connection.connectionId === event.from.connectionId) {
+                      let data = {
+                        nickName : subscriber.stream.connection.data.slice(15,-2),
+                        word : event.data.word,
+                      }
+                      commit('SET_GAME_ANSWERWORDS', data);
+                    }
+                  });
+                }
                 if(event.from.connectionId == state.publisher.stream.connection.connectionId){
-                  console.log(event.from.connectionId)
-                  console.log(state.publisher.stream.connection.connectionId)  
                   commit('SET_GAME_ISCORRECT',event.data.isCorrect);
                 }
               }
