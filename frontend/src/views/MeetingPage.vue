@@ -261,7 +261,6 @@ export default {
       'publisher',
       'screenPublisher',
       'currentMode',
-      'modeHost'
     ]),
     isMultiPanel() {
       if (this.currentMode) {

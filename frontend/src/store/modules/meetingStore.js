@@ -4,6 +4,7 @@ import secrets from '@/secrets';
 import axios from 'axios';
 import { OpenVidu } from 'openvidu-browser';
 import moment from 'moment';
+import Swal from 'sweetalert2'
 
 const OPENVIDU_SERVER_SECRET = "MY_SECRET";
 
@@ -46,6 +47,22 @@ const meetingStore = {
     gameTurn: 0,
     gameWord: '',
     gameLiar:'',
+    gameLiarData:'',
+    gameVoteId:'',
+    gameVoteData:'',  //걸린사람 이름
+    gameParticipantId:'', //벌칙자
+    gameParticipantData:'', //벌칙자이름
+    gamePaneltyId:0,
+    gamePaneltyOV:undefined,
+    gamePaneltySubscriber: [],
+    gamePaneltySession: undefined,
+    gamePaneltyStreamManager: undefined,
+    gamePaneltyPublisher: undefined,
+
+
+    gameInitialWord:'',
+    gameIsCorrect: 1,
+    participantPublicId:'',
 
     // theme
     theme: 'basic',
@@ -67,10 +84,14 @@ const meetingStore = {
   },
   getters: {
     notModeHost(state) {
-      if (state.publisher.stream.connection.connectionId !== state.modeHost.id) {
-        return state.modeHost;
+      if (state.modeHost) {
+        if (state.publisher.stream.connection.connectionId !== state.modeHost.id) {
+          return state.modeHost;
+        } else {
+          return false;
+        }
       } else {
-        return false;
+        return true;
       }
     }
   },
@@ -164,7 +185,50 @@ const meetingStore = {
     SET_GAME_LIAR(state, value){
       state.gameLiar = value
     },
+    SET_GAME_LIAR_DATA(state, value){
+      state.gameLiarData = value
+    },
+    SET_GAME_VOTE_ID(state, value){
+      state.gameVoteId = value
+    },
+    SET_GAME_PARTICIPANT_ID(state, value){
+      state.gameParticipantId = value
+    },
+    SET_GAME_PARTICIPANT_DATA(state, value){
+      state.gameParticipantData = value
+    },
+    SET_GAME_VOTE_DATA(state, value){
+      state.gameVoteData = value
+    },
+    SET_GAME_PANELTY_ID(state,value){
+      state.gamePaneltyId = value
+    },
+    SET_GAME_PANELTY_SUBSCRIBER(state, subscriber){
+      state.gamePaneltySubscriber = subscriber
+    },
+    SET_GAME_PANELTY_OV(state,gamePaneltyOV){
+      state.gamePaneltyOV = gamePaneltyOV
+    },
+    SET_GAME_PANELTY_SESSION(state, gamePaneltySession){
+      state. gamePaneltySession =  gamePaneltySession
+    },
+    SET_GAME_PANELTY_STREAM_MANAGER(state,gamePaneltyStreamManager){
+      state.gamePaneltyStreamManager = gamePaneltyStreamManager
+    },
+    SET_GAME_PANELTY_PUBLISHER(state,gamePaneltyPublisher){
+      state.gamePaneltyPublisher = gamePaneltyPublisher
+    },
+    
 
+    SET_GAME_INITIALWORD(state, value){
+      state.gameInitialWord = value
+    },
+    SET_GAME_ISCORRECT(state, value){
+      state.gameIsCorrect = value
+    },
+    SET_GAME_PARTICIPANTPUBLICID(state, value){
+      state.participantPublicId = value
+    },
     // theme
     SET_THEME(state, theme) {
       state.theme = theme;
@@ -205,21 +269,41 @@ const meetingStore = {
   },
   actions: {
     changeMode({ state, getters }, mode) {
-      // 진행 중인 노래가 있거나, 게임이 있거나, 스냅샷이 있거나 할 경우 여기서 막아줌
-      if (state.selectedSong || state.selectedGame || (state.currentMode === 'snapshot')) {
-        if (getters.notModeHost) {
-          alert('지금은 다른 모드로 전환할 수 없습니다.');
-          return
+      if (getters.notModeHost) {
+        // modeHost가 아닌 경우
+        if (state.currentMode && state.modeHost) {          
+          // 현재 진행 중인 mode와 modeHost가 있는 경우
+          if (state.selectedSong || state.selectedGame || state.currentMode === 'snapshot') {
+            // 현재 멈추면 안되는 상황인 경우
+            alert('지금은 다른 모드로 전환할 수 없습니다.');
+            return;
+          } else {
+            // 현재 모드를 중단해도 되는 경우
+            if (state.currentMode !== mode) {
+              if (!confirm('현재 모드를 중단하시겠습니까?')) {
+                return;
+              }
+            }
+          }
         } else {
-          if (!confirm('현재 모드를 중단하시겠습니까?')) {
-            return
+          if (state.modeHost) {
+            // 현재 currentMode는 없지만 modeHost가 null 값이 아닌 경우(실제 snapshot 모드가 진행 중인 경우)
+            alert('지금은 다른 모드로 전환할 수 없습니다.');
+            return;
+          } else {
+            // modeHost가 중간에 나가버린 경우
+            if (state.currentMode && state.currentMode !== mode) {
+              if (!confirm('현재 모드를 중단하시겠습니까?')) {
+                return;
+              }
+            }
           }
         }
       } else {
-        // 만약 현재 모드가 켜져있는 상태에서 특정 모드로 전환하고자 할 시 한 번 확인
-        if (mode && state.currentMode && mode !== state.currentMode) {
+        // modeHost인 경우
+        if (state.currentMode && state.currentMode !== mode) {
           if (!confirm('현재 모드를 중단하시겠습니까?')) {
-            return
+            return;
           }
         }
       }
@@ -253,6 +337,13 @@ const meetingStore = {
       commit('SET_GAME_STATUS', 0);
       commit('SET_GAME_TURN', 0);
       commit('SET_GAME_WORD', '');
+      commit('SET_GAME_ISCORRECT',1);
+    },
+    endGameSignal({ state }) {
+      state.session.signal({
+        type: 'endGame',
+        to: [],
+      })
     },
     endSnapshotMode() {
       // 스냅샷 모드가 꺼졌을 경우 후처리해야할 부분
@@ -513,50 +604,52 @@ const meetingStore = {
             commit('SET_NICKNAME', enterData.nickName);
             state.session.publish(state.publisher);
 
-            state.session.signal({
-              type: 'firstenter',
-              data: null,
-              to: [],
-            })
-
-            state.session.on('signal:firstenter', (event) => {
-              if (state.publisher.stream.connection.connectionId !== event.from.connectionId) {
-                let status = {
-                  theme: state.theme,
-                  currentMode: state.currentMode,
-                  modeHost: state.modeHost,
-                  selectedSong: state.selectedSong,
-                  selectedGame: state.selectedGame,
-                  gameStatus: state.gameStatus
-                }
-                state.session.signal({
-                  type: 'status',
-                  data: JSON.stringify(status),
-                  to: [event.from],
-                })
+            state.session.on('streamCreated', (event) => {
+              console.log(event);
+              let status = {
+                theme: state.theme,
+                currentMode: state.currentMode,
+                modeHost: state.modeHost,
+                selectedSong: state.selectedSong,
+                selectedGame: state.selectedGame,
+                gameStatus: state.gameStatus
               }
+              state.session.signal({
+                type: 'status',
+                data: JSON.stringify(status),
+                to: [event.stream.connection.connectionId],
+              })
             })
 
             state.session.on('signal:status', (event) => {
               let status = JSON.parse(event.data);
-              commit('SET_THEME', status.theme);
-              commit('SET_CURRENT_MODE', status.currentMode);
-              commit('SET_MODE_HOST', status.modeHost);
-              commit('SET_SELECTED_SONG', status.selectedSong);
-              commit('SET_SELECTED_GAME', status.selectedGame);
-              commit('SET_GAME_STATUS', status.gameStatus);
-              if (status.currentMode === 'anonymous') {
-                setTimeout(() => {
-                  let pitchs = ['0.76', '0.77', '0.78', '0.79', '0.80', '1.3', '1.4', '1.5', '1.6', '1.7']
-                  let pitch = pitchs[Math.floor(Math.random() * pitchs.length)]
-                  state.publisher.stream.applyFilter("GStreamerFilter", {"command": `pitch pitch=${pitch}`});
-                }, 1000);
+              if (!state.currentMode && !state.modeHost) {
+                commit('SET_THEME', status.theme);
+                commit('SET_MODE_HOST', status.modeHost);
+                commit('SET_SELECTED_SONG', status.selectedSong);
+                commit('SET_SELECTED_GAME', status.selectedGame);
+                commit('SET_GAME_STATUS', status.gameStatus);
+                if (status.currentMode === 'anonymous') {
+                  setTimeout(() => {
+                    let pitchs = ['0.76', '0.77', '0.78', '0.79', '0.80', '1.3', '1.4', '1.5', '1.6', '1.7']
+                    let pitch = pitchs[Math.floor(Math.random() * pitchs.length)]
+                    state.publisher.stream.applyFilter("GStreamerFilter", {"command": `pitch pitch=${pitch}`});
+                  }, 1000);
+                } else if (status.currentMode === 'snapshot') {
+                  return;
+                }
+                commit('SET_CURRENT_MODE', status.currentMode);
               }
             })
 
             state.session.on('signal:mode', (event) => {
               let mode = event.data
               
+              if (mode === 'hostleave') {
+                commit('SET_MODE_HOST', null);
+                return;
+              }
+
               if (mode) {
                 let modeHost = {
                   'id': event.from.connectionId,
@@ -571,8 +664,11 @@ const meetingStore = {
                 let pitchs = ['0.76', '0.77', '0.78', '0.79', '0.80', '1.3', '1.4', '1.5', '1.6', '1.7']
                 let pitch = pitchs[Math.floor(Math.random() * pitchs.length)]
                 state.publisher.stream.applyFilter("GStreamerFilter", {"command": `pitch pitch=${pitch}`});
-                alert('진실의 방 모드가 켜졌습니다!');
                 commit('SET_CURRENT_MODE', mode);
+                Swal.fire({
+                  icon: 'success',
+                  text: '진실의 방 모드가 켜졌습니다!'
+                });
               } else if (mode === 'singing') {
                 commit('SET_IS_SONG_ENDED', false);
                 commit('SET_CURRENT_MODE', mode);
@@ -617,7 +713,15 @@ const meetingStore = {
               data.time = moment(time).format('HH:mm')
               commit('SET_MESSAGES', data)
             });
-
+            state.session.on('signal:endGame',(event) =>{
+              console.log(event)
+              // endGameProcess 를 어떻게 부르죠??,,,
+              commit('SET_SELECTED_GAME', null);
+              commit('SET_GAME_STATUS', 0);
+              commit('SET_GAME_TURN', 0);
+              commit('SET_GAME_WORD', '');
+              commit('SET_GAME_ISCORRECT',1);
+            });
             state.session.on('signal:theme', (event) => {
               commit('SET_THEME', event.data)
             });
@@ -647,9 +751,21 @@ const meetingStore = {
                 //게임 시작
                 commit('SET_SELECTED_GAME', event.data.gameId);
                 commit('SET_GAME_STATUS', event.data.gameStatus);
+                console.log("isCorrect : " + state.gameIsCorrect)
               }
-
+              if(event.data.gameStatus == 0){
+                //게임 종료
+              }
               commit('SET_GAME_STATUS',event.data.gameStatus);
+              if(event.data.gameStatus==3){
+                setTimeout(() => {
+                  commit('SET_GAME_STATUS', 4);
+                }, 5000);
+              }
+              
+              if(event.data.paneltyId){
+                commit('SET_GAME_PANELTY_ID',event.data.paneltyId);
+              }
 
               if(event.data.turn >= 0){
                 commit('SET_GAME_TURN',event.data.turn);
@@ -657,8 +773,63 @@ const meetingStore = {
               if(event.data.word){
                 commit('SET_GAME_WORD',event.data.word);
               }
-              if(event.data.liar){
-                commit('SET_GAME_LIAR',event.data.liar);
+              if(event.data.liarId){
+                commit('SET_GAME_LIAR',event.data.liarId);
+                //commit('SET_GAME_LIAR',event.data.liar);
+                //라이어의 닉네임
+                for(let i=0; i<state.subscribers.length; i++){
+                  if(state.subscribers[i].stream.connection.connectionId == event.data.voteId){
+                    commit('SET_GAME_LIAR_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
+                  }
+                }
+                if(state.publisher.session.connection.connectionId == event.data.liar){ //본인체크
+                  commit('SET_GAME_LIAR_DATA',state.publisher.session.connection.data.slice(15,-2));
+                }
+              }
+              if(event.data.voteId){
+                commit('SET_GAME_VOTE_ID',event.data.voteId);
+                //당선자??의 닉네임도 찾아서 넣어줘야함
+                for(let i=0; i<state.subscribers.length; i++){
+                  if(state.subscribers[i].stream.connection.connectionId == event.data.voteId){
+                    commit('SET_GAME_VOTE_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
+                  }
+                }
+                if(state.publisher.session.connection.connectionId == event.data.liar){ //본인체크
+                  commit('SET_GAME_VOTE_DATA',state.publisher.session.connection.data.slice(15,-2));
+                }
+              }
+              if(event.data.participantId){
+                commit('SET_GAME_PARTICIPANT_ID',event.data.participantId);
+                //벌칙자의 닉네임도 찾아서 넣어줘야함
+                for(let i=0; i<state.subscribers.length; i++){
+                  if(state.subscribers[i].stream.connection.connectionId == event.data.participantId){
+                    commit('SET_GAME_PARTICIPANT_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
+                    //벌칙자 stream 생성
+                    this.setPaneltyScreen();
+                  }
+                }
+  
+                if(state.publisher.session.connection.connectionId == event.data.liar){ //본인체크
+                  commit('SET_GAME_PARTICIPANT_DATA',state.publisher.session.connection.data.slice(15,-2));
+                }
+
+                
+                
+              }
+              if(event.data.initialWord){
+                commit('SET_GAME_INITIALWORD',event.data.initialWord);
+              }
+              if(event.data.isCorrect){
+                console.log("-----iscorrect------")
+                
+                if(event.from.connectionId == state.publisher.stream.connection.connectionId){
+                  console.log(event.from.connectionId)
+                  console.log(state.publisher.stream.connection.connectionId)  
+                  commit('SET_GAME_ISCORRECT',event.data.isCorrect);
+                }
+              }
+              if(event.data.participantPublicId){
+                commit('SET_GAME_PARTICIPANTPUBLICID',event.data.participantPublicId)
               }
               if (event.data.sentence) {
                 commit('SET_SENTENCE', event.data.sentence)
@@ -674,6 +845,7 @@ const meetingStore = {
                 commit('SET_IS_SHARING_MODE', true)
               }
             });
+
             state.session.on('signal:attachImage', (event) => {
               setTimeout(() => {
                 var image = document.createElement('img')  
@@ -681,7 +853,16 @@ const meetingStore = {
                 image.style.maxWidth="90%"
                 document.getElementById('preview').appendChild(image)
               }, 1500);
-            })
+            });
+
+            state.session.on('streamDestroyed', (event) => {
+              if (state.modeHost) {
+                if (state.modeHost.id === event.stream.connection.connectionId) {
+                  commit('SET_MODE_HOST', null);
+                }
+              }
+            });
+
             return true;
 					})
 					.catch(error => {
@@ -801,6 +982,48 @@ const meetingStore = {
         to: [],
         type: 'attachImage'
       })
+    },
+    setPaneltyScreen({ state, commit, dispatch }){
+      if (state.isSharingMode) {
+        return
+      } 
+      // --- Get an OpenVidu object ---
+			const PaneltyOV = new OpenVidu();
+			// --- Init a session ---
+			const paneltySession = PaneltyOV.initSession();
+			// --- Specify the actions when events take place in the session ---
+			// On every new Stream received...
+      const paneltySubscribers = [];
+			paneltySession.on('streamCreated', ({ stream }) => {
+        const subscriber2 = paneltySession.subscribe(stream);
+				paneltySubscribers.push(subscriber2);
+			});
+			// On every Stream destroyed...
+			paneltySession.on('streamDestroyed', ({ stream }) => {
+				const index2 = paneltySubscribers.indexOf(stream.streamManager, 0);
+				if (index2 >= 0) {
+					paneltySubscribers.splice(index2, 1);
+				}
+			});
+        dispatch('getToken', state.mySessionId).then(token => {
+          let paneltyPublisher = PaneltyOV.initPublisher(undefined, {
+            audioSource: undefined, // The source of audio. If undefined default microphone
+            videoSource: undefined, // The source of video. If undefined default webcam
+            publishAudio: true,  	// Whether you want to start publishing with your audio unmuted or not
+            publishVideo: true,  	// Whether you want to start publishing with your video enabled or not
+            resolution: '640x480',  // The resolution of your video
+            frameRate: 30,			// The frame rate of your video
+            insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
+            mirror: true,       	// Whether to mirror your local video or not
+          });
+        paneltySession.publish(paneltyPublisher);
+        commit('SET_GAME_PANELTY_OV', PaneltyOV);
+        commit('SET_GAME_PANELTY_STREAM_MANAGER', paneltyPublisher);
+        commit('SET_GAME_PANELTY_PUBLISHER', paneltyPublisher);
+        commit('SET_GAME_PANELTY_SESSION', paneltySession);
+        commit('SET_GAME_PANELTY_SUBSCRIBER', paneltySubscribers);
+        commit('SET_OVTOKEN', token);
+      });
     },
     saveScreenshotInfo({ commit }, data) {
       commit('SET_SCREENSHOT_INFO', data)
