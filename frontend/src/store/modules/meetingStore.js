@@ -61,6 +61,9 @@ const meetingStore = {
 
     //capture
     screenshotInfo: null,
+
+    //game
+    sentence: null
   },
   getters: {
     notModeHost(state) {
@@ -193,6 +196,11 @@ const meetingStore = {
     //screenshot
     SET_SCREENSHOT_INFO(state, data) {
       state.screenshotInfo = data;
+    },
+
+    //game
+    SET_SENTENCE(state, data) {
+      state.sentence = data;
     }
   },
   actions: {
@@ -491,7 +499,7 @@ const meetingStore = {
         state.publisher.publishAudio(true) 
       }
     },
-    enterSession({ state, rootGetters, commit }, enterData) {
+    enterSession({ state, rootGetters, commit, dispatch }, enterData) {
       commit('SET_CURRENT_DRINK', enterData.currentDrink);
       const drinkData = {
         "liquorLimit": 0,
@@ -652,6 +660,10 @@ const meetingStore = {
               if(event.data.liar){
                 commit('SET_GAME_LIAR',event.data.liar);
               }
+              if (event.data.sentence) {
+                commit('SET_SENTENCE', event.data.sentence)
+                dispatch('recordVoice')
+              }
             });
 
             state.session.on('signal:share', (event) => {
@@ -770,9 +782,9 @@ const meetingStore = {
         type: 'share' 
       })
     },
-    sendGameRequest({ state }, request){
+    sendGameRequest({ state }, data){
       state.session.signal({
-        data: request,
+        data: data,
         to: [],
         type: 'game'
       })
@@ -801,6 +813,22 @@ const meetingStore = {
         .catch((err) => {
           console.log(err)
         })
+    },
+    recordVoice({state}) {
+      console.log(state)
+      const sdk = require("microsoft-cognitiveservices-speech-sdk");
+      const speechConfig = sdk.SpeechConfig.fromSubscription("9bd552b2504c45e1802217ac626d6508", "koreacentral");
+      speechConfig.speechRecognitionLanguage = "ko-KR";
+      function fromMic() {
+          let audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
+          let recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
+          
+          console.log('Speak into your microphone.');
+          recognizer.recognizeOnceAsync(result => {
+              console.log(`RECOGNIZED: Text=${result.text}`);
+          });
+      }
+      fromMic();
     }
   }
 }
