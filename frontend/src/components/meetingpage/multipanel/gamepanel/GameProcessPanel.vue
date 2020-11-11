@@ -34,7 +34,7 @@ export default {
     LiarGame,
 
     ConsonantQuiz,
-    UpAndDown
+    UpAndDown,
     FindOutDrunken,
   },
 
