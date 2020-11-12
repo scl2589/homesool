@@ -20,7 +20,12 @@ package io.openvidu.server.game;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,7 +62,7 @@ public class GameService {
 	protected ConcurrentHashMap<String, Thread> wordThread = new ConcurrentHashMap<>();
 
 	// < sessionId , <userId,count> >
-	protected ConcurrentHashMap<String, TreeMap<String, Integer>> liarCountMap = new ConcurrentHashMap<>();
+	protected ConcurrentHashMap<String, Map<String, Integer>> liarCountMap = new ConcurrentHashMap<>();
 
 	// < sessionId , number >
 	protected ConcurrentHashMap<String, Integer> upDownNumberMap = new ConcurrentHashMap<>();
@@ -310,7 +315,7 @@ public class GameService {
 			liarThread.start();
 			wordThread.putIfAbsent(sessionId, liarThread);
 			// sessionId, count
-			TreeMap<String, Integer> liarMap = new TreeMap<String, Integer>();
+			Map<String, Integer> liarMap = new HashMap<String, Integer>();
 			liarMap.put("count", 0);
 			for (Participant p : participants) {
 				liarMap.put(p.getParticipantPublicId(), 0);
@@ -385,7 +390,7 @@ public class GameService {
 		String sessionId = message.get("sessionId").getAsString();
 		// 지목당한 아이디
 		String voteId = data.get("voteId").getAsString();
-		TreeMap<String, Integer> liarMap = liarCountMap.get(sessionId);
+		Map<String, Integer> liarMap = liarCountMap.get(sessionId);
 
 		// 라이어 아이디
 		String liarId = data.get("liarId").getAsString();
@@ -396,9 +401,24 @@ public class GameService {
 		liarMap.put(voteId, liarMap.get(voteId) + 1);
 		// 투표 끝
 		if (liarMap.get("count") == participants.size()) {
+			
+			liarMap.remove("count");	//없애주지 않으면 무조건 count를 반환
+			// value 내림차순으로 정렬하고, value가 같으면 key 오름차순으로 정렬
+	        List<Map.Entry<String, Integer>> list = new LinkedList<>(liarMap.entrySet());
+	        
+	        Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+	            @Override
+	            public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+	                int comparision = (o1.getValue() - o2.getValue()) * -1;
+	                return comparision == 0 ? o1.getKey().compareTo(o2.getKey()) : comparision;
+	            }
+	        });
+	        
+	        System.out.println(list.get(0).getKey() + " & " + list.get(0).getValue());
+	        
 			// 최다 투표자
-			String electId = liarMap.firstKey();
-
+			String electId = list.get(0).getKey();
+			System.out.println("electId :" + electId);
 			// 벌칙자 정하기 ( 투표자 == 라이어 )
 			String participantPublicId = electId;
 
@@ -409,11 +429,11 @@ public class GameService {
 				Collections.shuffle(pList);
 				participantPublicId = pList.get(0).getParticipantPublicId();
 				// 라이어인지 한번 더 확인
-				if (participantPublicId.equals(electId)) {
+				if (participantPublicId.equals(liarId)) {
 					participantPublicId = pList.get(1).getParticipantPublicId();
 				}
 			}
-
+			
 			data.addProperty("voteId", electId);
 			data.addProperty("participantPublicId", participantPublicId);
 			params.add("data", data);

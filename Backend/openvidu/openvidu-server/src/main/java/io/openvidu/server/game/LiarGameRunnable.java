@@ -72,7 +72,6 @@ public class LiarGameRunnable implements Runnable {
 	        params.addProperty("type", temp);
 	         
 			data.addProperty("gameStatus", 2);
-
 			data.addProperty("word", randomWords.get(0));
 			data.addProperty("liarId", randomParticipants.get(0).getParticipantPublicId());
 			data.addProperty("turn", 0);
@@ -85,6 +84,7 @@ public class LiarGameRunnable implements Runnable {
 			// 5초 동안 단어 확인 후 게임 시작
 			Thread.sleep(5000);
 			data.addProperty("turn", 1);
+			data.addProperty("theme", this.theme);	//주제추가
 			params.add("data", data);
 			for (Participant p : participants) {
 				rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
@@ -92,7 +92,8 @@ public class LiarGameRunnable implements Runnable {
 			}
 
 			// 게임 시간 2분 진행
-			Thread.sleep(120000);
+			System.out.println(participants.size());
+			Thread.sleep(1000*30*participants.size());
 			data.addProperty("turn", 2);
 			params.add("data", data);
 			for (Participant p : participants) {

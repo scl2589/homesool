@@ -34,7 +34,15 @@
               </div>
             </div>
             <div class="aboutWord" v-if="gameTurn==1">
-                <p>단어에 대해<br>서로 얘기해 주세요 </p>
+                <p> 주제 : {{gameTheme}} </p>
+                <h3>단어에 대해<br>서로 얘기해 주세요 </h3>
+                {{subscribers.length}}
+                <circular-count-down-timer
+                    :initial-value="(subscribers.length+1)*30"
+                    :show-minute="false"
+                    :show-hour="false"
+                    :size="150"
+                ></circular-count-down-timer>
             </div>
             <div class="voteForLiar" v-if="gameTurn==2">
               <div class="voteComplete" v-if="DidVote">
@@ -51,7 +59,7 @@
                 <p>라이어한테 투표하세요 </p>
                 <div class="list">
                   <div v-for="subscriber in subscribers" :key="subscriber.stream.connection.data">
-                    <input type="radio" id="{$this.subscriber.stream.connection.connectionId}"
+                    <input type="radio" id="subscriber.stream.connection.connectionId"
                     :value="subscriber.stream.connection.connectionId" v-model="picked">
                     <label for="subscriber.stream.connection.connectionId"> {{subscriber.stream.connection.data.slice(15,-2)}} </label>
                   </div>
@@ -82,8 +90,9 @@ export default {
  },
   computed: {
     ...mapState('meetingStore', ['gameStatus', 'selectedGame', 'gameTurn', 'gameWord',
-                                'subscribers','gameLiar','myself','publisher']),
+                                'subscribers','gameLiar','myself','publisher','gameTheme']),
     ...mapGetters('meetingStore', ['notModeHost']),
+
   },
   data(){
     return{
@@ -112,9 +121,9 @@ export default {
       this.DidVote = true;
       var request = new Object();
       request.gameId=this.selectedGame;
-      request.liarId=this.picked;
+      request.liarId=this.gameLiar;
       request.gameStatus=5;
-      request.voteId=this.publisher.session.connection.connectionId;
+      request.voteId=this.picked;
 
       var jsonRequest = JSON.stringify(request);
       console.log("투표"+jsonRequest);
