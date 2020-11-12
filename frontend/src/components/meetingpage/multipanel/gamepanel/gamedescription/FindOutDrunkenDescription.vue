@@ -51,23 +51,6 @@
         </div>
         <div class="d-flex justify-content-between align-items-center mx-2 mt-auto">
           <div class="penalty">
-            <!-- Default dropup button -->
-            <!-- <div class="btn-group dropup">
-              <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                벌칙 - {{ penalty }}
-              </button>
-              <div class="dropdown-menu">
-                <li class="dropdown-item" @click="changePenalty('술 한 잔 마시기')">
-                  술 한 잔 마시기 
-                </li>
-                <li class="dropdown-item">
-                  5분동안 음소거
-                </li>
-                <li class="dropdown-item">
-                  5분동안 카메라 정지
-                </li>
-              </div>
-            </div> -->
             <v-select
               :items="items"
               label="벌칙"
@@ -98,24 +81,22 @@
         <div class="col-6 box my-2 py-2">
           <button 
             class="btn"
-            @click="clickParticipant(publisher.session.connection.connectionId)"
+            @click="clickParticipant(publisher.stream.connection.connectionId)"
           >
-            {{ publisher.session.connection.data.slice(15, -2)}}
+            {{ publisher.stream.connection.data.slice(15, -2)}}
           </button>
         </div>
-        <div v-if="subscribers">
-          <div 
-            v-for="subscriber in subscribers" 
-            :key="subscriber.session.connection.connectionId"
-            class="col-6 box my-2"
+        <div 
+          v-for="(subscriber, id) in subscribers" 
+          :key="id"
+          class="col-6 box my-2 py-2"
+        >
+          <button 
+            class="btn"
+            @click="clickParticipant(subscriber.stream.connection.connectionId)"
           >
-            <button 
-              class="btn"
-              @click="clickParticipant(subscriber.session.connection.connectionId)"
-            >
-              {{ subscriber.session.connection.data.slice(15, -2)}}
-            </button>
-          </div>
+            {{ subscriber.stream.connection.data.slice(15, -2)}}
+          </button>
         </div>
       </div>
     </div>
@@ -148,7 +129,7 @@ export default {
     clickParticipant(id) {
       var request = new Object();
       request.gameId = 5;
-      request.participant = id;
+      request.participantPublicId = id;
       request.paneltyId = 0;
       request.gameStatus = 1;
       var jsonRequest = JSON.stringify(request);

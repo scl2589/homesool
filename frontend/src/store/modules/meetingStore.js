@@ -80,7 +80,8 @@ const meetingStore = {
     screenshotInfo: null,
 
     //game
-    sentence: null
+    sentence: null,
+    drunkenText: null
   },
   getters: {
     notModeHost(state) {
@@ -229,6 +230,15 @@ const meetingStore = {
     SET_GAME_PARTICIPANTPUBLICID(state, value){
       state.participantPublicId = value
     },
+
+    SET_SENTENCE(state, data) {
+      state.sentence = data;
+    },
+
+    SET_DRUNKEN_TEXT(state, data) {
+      state.drunkenText = data
+    },
+
     // theme
     SET_THEME(state, theme) {
       state.theme = theme;
@@ -261,11 +271,6 @@ const meetingStore = {
     SET_SCREENSHOT_INFO(state, data) {
       state.screenshotInfo = data;
     },
-
-    //game
-    SET_SENTENCE(state, data) {
-      state.sentence = data;
-    }
   },
   actions: {
     changeMode({ state, getters }, mode) {
@@ -756,13 +761,7 @@ const meetingStore = {
               if(event.data.gameStatus == 0){
                 //게임 종료
               }
-              commit('SET_GAME_STATUS',event.data.gameStatus);
-              if(event.data.gameStatus==3){
-                setTimeout(() => {
-                  commit('SET_GAME_STATUS', 4);
-                }, 5000);
-              }
-              
+
               if(event.data.paneltyId){
                 commit('SET_GAME_PANELTY_ID',event.data.paneltyId);
               }
@@ -831,9 +830,15 @@ const meetingStore = {
               if(event.data.participantPublicId){
                 commit('SET_GAME_PARTICIPANTPUBLICID',event.data.participantPublicId)
               }
-              if (event.data.sentence) {
-                commit('SET_SENTENCE', event.data.sentence)
+              if (event.data.sentence && event.data.gameStatus == 1) {
+                commit('SET_GAME_STATUS', 2)
+                // setTimeout(() => {
+                  commit('SET_SENTENCE', event.data.sentence)
+                // }, 1000);
                 dispatch('recordVoice')
+              }
+              if (event.data.sentence && event.data.gameStatus == 3) {
+                commit('SET_SENTENCE', event.data.sentence)
               }
             });
 
@@ -1037,19 +1042,19 @@ const meetingStore = {
           console.log(err)
         })
     },
-    recordVoice({state}) {
-      console.log(state)
+    recordVoice({ commit }) {
       const sdk = require("microsoft-cognitiveservices-speech-sdk");
       const speechConfig = sdk.SpeechConfig.fromSubscription("9bd552b2504c45e1802217ac626d6508", "koreacentral");
       speechConfig.speechRecognitionLanguage = "ko-KR";
       function fromMic() {
-          let audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
-          let recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
-          
-          console.log('Speak into your microphone.');
-          recognizer.recognizeOnceAsync(result => {
-              console.log(`RECOGNIZED: Text=${result.text}`);
-          });
+        let audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
+        let recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
+        
+        console.log('Speak into your microphone.');
+        recognizer.recognizeOnceAsync(result => {
+        console.log(`RECOGNIZED: Text=${result.text}`);
+        commit('SET_DRUNKEN_TEXT', result.text)
+        });
       }
       fromMic();
     }
