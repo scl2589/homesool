@@ -62,7 +62,6 @@ const meetingStore = {
     gameAnswerWords: [],
     gameWordResult : '',
     participantPublicId:'',
-    participantPublicData:'',
 
     // updown
     gameUpDownResult:'',
@@ -252,9 +251,6 @@ const meetingStore = {
     },
     SET_DRUNKEN_TEXT(state, data) {
       state.drunkenText = data
-    },
-    SET_PARTICIPANTPUBLICDATA(state, data){
-      state.participantPublicData = data;
     },
     
     // theme
@@ -874,19 +870,6 @@ const meetingStore = {
                 }
                 if(state.selectedGame == 5){  //나술안취했어
 
-                }
-                //게임공통
-                if(event.data.participantPublicId){
-                  commit('SET_GAME_PARTICIPANTPUBLICID',event.data.participantPublicId)
-                  //벌칙자의 닉네임도 찾아서 넣어줘야함
-                  for(let i=0; i<state.subscribers.length; i++){
-                    if(state.subscribers[i].stream.connection.connectionId == event.data.participantPublicId){
-                      commit('SET_PARTICIPANTPUBLICDATA',state.subscribers[i].stream.connection.data.slice(15,-2));
-                    }
-                  }
-                  if(state.publisher.session.connection.connectionId == event.data.participantPublicId){ //본인체크
-                    commit('SET_PARTICIPANTPUBLICDATA',state.publisher.session.connection.data.slice(15,-2));
-                  }
                 }
               }
               else if(event.data.gameStatus == 3) {
