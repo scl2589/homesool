@@ -50,19 +50,21 @@ const meetingStore = {
     loser: null,
     gameTurn: 0,
     gameWord: '',
+    participantPublicId:'',
+    participantPublicData:'',
 
     // liar game
     gameLiar:'',
     gameLiarData:'',
     gameVoteId:'',
     gameVoteData:'',  //걸린사람 이름
+    gameTheme:'',
   
+    //초성게임
     gameInitialWord:'',
     gameIsCorrect: 1,
     gameAnswerWords: [],
     gameWordResult : '',
-    participantPublicId:'',
-    participantPublicData:'',
 
     // updown
     gameUpDownResult:'',
@@ -263,8 +265,8 @@ const meetingStore = {
     SET_DRUNKEN_TEXT(state, data) {
       state.drunkenText = data
     },
-    SET_PARTICIPANTPUBLICDATA(state, data){
-      state.participantPublicData = data;
+    SET_GAME_THEME(state, data){
+      state.gameTheme = data;
     },
     SET_DRUNK(state, data) {
       state.drunk = data
@@ -880,6 +882,9 @@ const meetingStore = {
                   commit('SET_GAME_TURN', event.data.turn);
                   commit('SET_GAME_WORD', event.data.word);
                   commit('SET_GAME_LIAR', event.data.liarId);
+                  if(event.data.turn==1){
+                    commit('SET_GAME_THEME', event.data.theme);
+                  }
                 }
                 if(state.selectedGame == 4){  //웃으면 술이와요
                   commit('SET_GAME_WORD', event.data.word);

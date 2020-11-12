@@ -6,9 +6,11 @@ import store from './store'
 import vueMoment from 'vue-moment'
 import secrets from './secrets'
 import VueCookies from 'vue-cookies'
+import CircularCountDownTimer from "vue-circular-count-down-timer";
 
-Vue.use(VueCookies)
+Vue.use(VueCookies);
 Vue.use(vueMoment);
+Vue.use(CircularCountDownTimer);
 
 //  calendar
 import VCalendar from 'v-calendar';
