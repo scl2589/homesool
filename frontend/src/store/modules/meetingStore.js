@@ -72,6 +72,7 @@ const meetingStore = {
     // 나술안취했어
     sentence: null,
     drunkenText: null,
+    drunk: null,
 
     // theme
     theme: 'basic',
@@ -109,6 +110,15 @@ const meetingStore = {
         }
       } else {
         return true;
+      }
+    },
+    findDrunken(state) {
+      if (state.drunk == 1) {
+        return "아직 안취했습니다."
+      } else if (state.drunk == 2) {
+        return "취했습니다."
+      } else {
+        return false
       }
     }
   },
@@ -255,6 +265,9 @@ const meetingStore = {
     },
     SET_PARTICIPANTPUBLICDATA(state, data){
       state.participantPublicData = data;
+    },
+    SET_DRUNK(state, data) {
+      state.drunk = data
     },
     
     // theme
@@ -875,19 +888,6 @@ const meetingStore = {
                 if(state.selectedGame == 5){  //나술안취했어
 
                 }
-                //게임공통
-                if(event.data.participantPublicId){
-                  commit('SET_GAME_PARTICIPANTPUBLICID',event.data.participantPublicId)
-                  //벌칙자의 닉네임도 찾아서 넣어줘야함
-                  for(let i=0; i<state.subscribers.length; i++){
-                    if(state.subscribers[i].stream.connection.connectionId == event.data.participantPublicId){
-                      commit('SET_PARTICIPANTPUBLICDATA',state.subscribers[i].stream.connection.data.slice(15,-2));
-                    }
-                  }
-                  if(state.publisher.session.connection.connectionId == event.data.participantPublicId){ //본인체크
-                    commit('SET_PARTICIPANTPUBLICDATA',state.publisher.session.connection.data.slice(15,-2));
-                  }
-                }
               }
               else if(event.data.gameStatus == 3) {
                 if (state.selectedGame == 1) {
@@ -916,7 +916,6 @@ const meetingStore = {
                   }
                 }
                 //게임 공통
-                commit('SET_GAME_STATUS', event.data.gameStatus);
                 if (event.data.participantPublicId){
                   if (state.publisher.stream.connection.connectionId === event.data.participantPublicId) {
                     commit('SET_LOSER', state.publisher);
@@ -941,14 +940,16 @@ const meetingStore = {
                 }
               }
               
-              if (event.data.sentence && event.data.gameStatus == 1) {
-                commit('SET_GAME_STATUS', 2);
+              if (event.data.sentence && event.data.gameStatus == 2) {
                 commit('SET_SENTENCE', event.data.sentence);
-                dispatch('recordVoice');
+                if (state.publisher.stream.connection.connectionId === event.data.participantPublicId) {
+                  dispatch('recordVoice');
+                }
               }
 
               if (event.data.sentence && event.data.gameStatus == 3) {
                 commit('SET_SENTENCE', event.data.sentence)
+                commit('SET_DRUNK', event.data.drunk)
               }
             });
 
@@ -1163,7 +1164,7 @@ const meetingStore = {
           console.log(err)
         })
     },
-    recordVoice({ commit }) {
+    recordVoice({ commit, dispatch }) {
       const sdk = require("microsoft-cognitiveservices-speech-sdk");
       const speechConfig = sdk.SpeechConfig.fromSubscription("9bd552b2504c45e1802217ac626d6508", "koreacentral");
       speechConfig.speechRecognitionLanguage = "ko-KR";
@@ -1173,8 +1174,12 @@ const meetingStore = {
         
         console.log('Speak into your microphone.');
         recognizer.recognizeOnceAsync(result => {
-        console.log(`RECOGNIZED: Text=${result.text}`);
-        commit('SET_DRUNKEN_TEXT', result.text)
+          console.log(`RECOGNIZED: Text=${result.text}`);
+          if (result.text === undefined) {
+            dispatch('recordVoice')
+          } else {
+            commit('SET_DRUNKEN_TEXT', result.text)
+          }
         });
       }
       fromMic();
