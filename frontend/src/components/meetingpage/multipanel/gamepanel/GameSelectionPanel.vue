@@ -13,38 +13,39 @@
           <br />
         </div>
         <div class="game-list">
-          <li @click="selectDescription(1)">Up & Down</li>
-          <li @click="selectDescription(2)">자음 퀴즈</li>
-          <li @click="selectDescription(3)">라이어 게임</li>
-          <li @click="selectDescription(4)">웃으면 술이와요</li>
-          <li @click="selectDescription(5)">나술안취했어</li>
+          <li @click="selectGameId(1)">Up & Down</li>
+          <li @click="selectGameId(2)">자음 퀴즈</li>
+          <li @click="selectGameId(3)">라이어 게임</li>
+          <li @click="selectGameId(4)">웃으면 술이와요</li>
+          <li @click="selectGameId(5)">나술안취했어</li>
         </div>
       </div>
       <div class="col-8 my-1">
         <transition name="slide" mode="out-in">
-          <div>
-            <div v-if="selectedDescription == 1">
+          <div class="descriptions d-flex flex-column justify-content-between">
+            <div v-if="selectedGameId == 1">
               <UpAndDownDescription />
             </div>
-            <div v-if="selectedDescription == 2">
+            <div v-if="selectedGameId == 2">
               <ConsonantQuizDescription />
             </div>
-            <div v-if="selectedDescription == 3">
+            <div v-if="selectedGameId == 3">
               <LiarGameDescription />
             </div>
-            <div v-if="selectedDescription == 4">
+            <div v-if="selectedGameId == 4">
               <SmileLeadsToAlcoholDescription />
             </div>
-            <div v-if="selectedDescription == 5">
+            <div v-if="selectedGameId == 5">
               <FindOutDrunkenDescription />
             </div>
 
             <div
-              class="d-flex justify-content-between align-items-center mx-2 mt-auto"
-              v-if="selectedDescription"
+              class="d-flex justify-content-between align-items-center mx-2 mt-auto mb-2"
+              v-if="selectedGameId"
             >
               <div class="penalty">
                 <v-select
+                  v-model="penalty"
                   :items="items"
                   label="벌칙"
                   width="10px"
@@ -52,6 +53,7 @@
                   dense
                   append-icon=""
                   solo
+                  @change="checkInput"
                 ></v-select>
                 
               </div>
@@ -74,6 +76,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import Swal from 'sweetalert2'
 import ConsonantQuizDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/ConsonantQuizDescription';
 import FindOutDrunkenDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/FindOutDrunkenDescription';
 import LiarGameDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/LiarGameDescription';
@@ -91,12 +94,13 @@ export default {
   },
   data() {
     return {
-      selectedDescription: null,
-      penalty: null,
+      selectedGameId: null,
+      penalty: '',
       items: [
-        '술 한 잔 마시기', 
-        '5분동안 음소거',
-        '5분동안 카메라 정지'
+        '술 한 잔 마시기',
+        '노래 부르기', 
+        '댄스댄스',
+        '직접 입력'
       ],
     }
   },
@@ -106,15 +110,38 @@ export default {
   methods: {
     ...mapActions('meetingStore', ['sendGameRequest']),
     clickStartGame() {
+      if (!this.penalty || this.penalty === '직접 입력') {
+        alert('벌칙을 선택해주세요!');
+        return;
+      }
       var request = new Object();
-      request.gameId=this.selectedDescription;
-      request.paneltyId=0;
+      request.gameId=this.selectedGameId;
+      request.panelty=this.penalty;
       request.gameStatus=1;
       var jsonRequest = JSON.stringify(request);
       this.sendGameRequest(jsonRequest);
     },
-    selectDescription(value) {
-      this.selectedDescription = value;
+    selectGameId(value) {
+      this.selectedGameId = value;
+    },
+    checkInput() {
+      if (this.penalty === '직접 입력') {
+        Swal.fire({
+          title: '벌칙을 입력해주세요.',
+          input: 'text',
+          inputAttributes: {
+            autocapitalize: 'off'
+          },
+          showCancelButton: false,
+          confirmButtonText: '확인',
+          showLoaderOnConfirm: true,
+        }).then((result) => {
+          if (result.value) {
+            this.items.splice(-1, 0, result.value);
+            this.penalty = result.value;
+          }
+        })
+      }
     }
   }
 };
@@ -205,5 +232,12 @@ li:hover > a {
   100% {
     transform: translateY(0);
   }
+}
+
+.descriptions {
+  height: 45vh;
+  background-color: black;
+  border-left: 1px solid #707070;
+  border-radius: 15px;
 }
 </style>

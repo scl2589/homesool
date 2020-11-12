@@ -25,7 +25,7 @@
     </div>
 
     <div>
-      <p>벌칙은 {{ penalties[penaltyId] }} 입니다.</p>
+      <p>벌칙은 {{ penalty }} 입니다.</p>
     </div>
 
     <div>
@@ -53,14 +53,13 @@ export default {
   name: 'LoserPanel',
   data() {
     return {
-      penalties: ['술 한잔 마시기', '노래 부르기', '춤추기', '직접 정하기']
     }
   },
   components: {
     UserVideo
   },
   computed: {
-    ...mapState('meetingStore', ['loser', 'selectedGame', 'penaltyId', 'gameVoteData','gameLiarData', 'gameUpDownNumber'])
+    ...mapState('meetingStore', ['loser', 'selectedGame', 'penalty', 'gameVoteData','gameLiarData', 'gameUpDownNumber'])
   },
   methods: {
     ...mapActions('meetingStore', ['changeMode', 'endGameProcess', 'sendGameRequest']),
