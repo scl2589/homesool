@@ -33,31 +33,6 @@
           </div> 
       </div>
       <loser-panel class="w-100 d-flex justify-content-center align-items-center" v-if="gameStatus == 3"/>
-      <!-- <div class="finishgame" v-if="gameStatus==3">
-        <div class="showName">
-          <div v-for="subscriber in subscribers" :key="subscriber.stream.connection.data">
-            <div v-if="subscriber.stream.connection.connectionId==participantPublicId">
-              {{subscriber.stream.connection.data.slice(15,-2)}} 패배!!
-            </div>
-          </div>
-          <div v-if="publisher.stream.connection.connectionId==participantPublicId">
-            {{publisher.stream.connection.data.slice(15,-2)}} 패배!!
-          </div>
-          <button
-            class="btn btn-yellow"
-            @click="changeMode(null)"
-          >
-            술게임 모드 끝내기
-          </button>
-          <button
-            class="btn btn-yellow"
-            @click="endGameSignal"
-          >
-            술게임 고르기
-          </button>
-
-        </div>
-      </div> -->
     </div>
 
 </template>
@@ -68,7 +43,7 @@ import LoserPanel from '@/components/meetingpage/multipanel/gamepanel/gameproces
 export default {
  name: "GamePanel",
   computed: {
-    ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameInitialWord','gameIsCorrect','participantPublicId','subscribers','publisher','gameAnswerWords']),
+    ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameInitialWord','gameIsCorrect','subscribers','publisher','gameAnswerWords']),
     ...mapGetters('meetingStore', ['notModeHost'])
   },
   data(){

@@ -44,14 +44,14 @@ const meetingStore = {
     // game
     selectedGame: null,
     gameStatus: 0,
+    penaltyId: null,
+    currentPlayer: null,
+    loser: null,
     gameTurn: 0,
     gameWord: '',
-    gameLiar:'',
-    gamePlayer: '',
-    loser: null,
-    penaltyId: null,
-    sentence: null,
 
+    // liar game
+    gameLiar:'',
     gameLiarData:'',
     gameVoteId:'',
     gameVoteData:'',  //걸린사람 이름
@@ -62,9 +62,13 @@ const meetingStore = {
     participantPublicId:'',
     participantPublicData:'',
 
+    // updown
     gameUpDownResult:'',
     gameUpDownIndex:0,
     gameUpDownNumber:-1,
+
+    // 나술안취했어
+    sentence: null,
 
     // theme
     theme: 'basic',
@@ -93,10 +97,10 @@ const meetingStore = {
         return true;
       }
     },
-    notGamePlayer(state) {
-      if (state.gamePlayer) {
-        if (state.gamePlayer !== state.publisher.stream.connection.connectionId) {
-          return true;
+    notCurrentPlayer(state) {
+      if (state.currentPlayer) {
+        if (state.currentPlayer.stream.connection.connectionId !== state.publisher.stream.connection.connectionId) {
+          return state.currentPlayer;
         } else {
           return false;
         }
@@ -192,17 +196,17 @@ const meetingStore = {
     SET_GAME_WORD(state, value){
       state.gameWord = value
     },
-    SET_GAME_LIAR(state, value){
-      state.gameLiar = value
-    },
-    SET_GAME_PLAYER(state, value) {
-      state.gamePlayer = value
+    SET_CURRENT_PLAYER(state, value) {
+      state.currentPlayer = value
     },
     SET_LOSER(state, value) {
       state.loser = value
     },
     SET_PENALTY_ID(state, value) {
       state.penaltyId = value
+    },
+    SET_GAME_LIAR(state, value){
+      state.gameLiar = value
     },
     SET_GAME_LIAR_DATA(state, value){
       state.gameLiarData = value
@@ -238,16 +242,10 @@ const meetingStore = {
       state.gameIsCorrect = value
     },
     SET_GAME_ANSWERWORDS(state, data){
-      console.log(data)
-      console.log(data.word)
-      console.log(data.nickName)
       state.gameAnswerWords.push(data)
     },
     RESET_GAME_ANSWERWORDS(state){
       state.gameAnswerWords = []
-    },
-    SET_GAME_PARTICIPANTPUBLICID(state, value){
-      state.participantPublicId = value
     },
     SET_GAME_UPDOWN_RESULT(state,value){
       state.gameUpDownResult = value
@@ -363,29 +361,37 @@ const meetingStore = {
       commit('SET_SONGS', null);
       commit('SET_IS_SONG_ENDED', false);
     },
-    endGameProcess({ commit }) {
+    endGameProcess({ state, commit }) {
+      if (state.selectedGame == 1) {
+        // 업다운
+        commit('SET_GAME_UPDOWN_RESULT', '');
+        commit('SET_GAME_UPDOWN_INDEX', 0);
+        commit('SET_GAME_UPDOWN_NUMBER', -1);
+      } else if (state.selectedGame == 2) {
+        // 자음퀴즈
+        commit('SET_GAME_INITIALWORD', '');
+        commit('SET_GAME_ISCORRECT', 1);
+        commit('RESET_GAME_ANSWERWORDS');
+      } else if (state.selectedGame == 3) {
+        // 라이어
+        commit('SET_GAME_LIAR', '');
+        commit('SET_GAME_LIAR_DATA', '');
+        commit('SET_GAME_VOTE_ID', '');
+        commit('SET_GAME_VOTE_DATA', '');
+      } else if (state.selectedGame == 5) {
+        // 나술안취했어
+        commit('SET_SENTENCE', null);
+      }
+
+      // 공통
       commit('SET_SELECTED_GAME', null);
       commit('SET_GAME_STATUS', 0);
+      commit('SET_PENALTY_ID', null);
+      commit('SET_CURRENT_PLAYER', null);
+      commit('SET_LOSER', null);
       commit('SET_GAME_TURN', 0);
       commit('SET_GAME_WORD', '');
-      commit('SET_GAME_LIAR', '');
-      commit('SET_GAME_PLAYER', '');
-      commit('SET_LOSER', null);
-      commit('SET_PENALTY_ID', null);
-      commit('SET_SENTENCE', null);
-
-      commit('SET_GAME_ISCORRECT',1);
-      commit('RESET_GAME_ANSWERWORDS');
     },
-    // endGameSignal({ state }) {
-    //   state.session.signal({
-    //     type: 'endGame',
-    //     to: [],
-    //   })
-    // },
-    // endSnapshotMode() {
-    //   // 스냅샷 모드가 꺼졌을 경우 후처리해야할 부분
-    // },
     toggleChatPanel({ state, commit }) {
       commit('SET_IS_CHATPANEL', !state.isChatPanel);
     },
@@ -750,14 +756,7 @@ const meetingStore = {
               data.time = moment(time).format('HH:mm')
               commit('SET_MESSAGES', data)
             });
-            // state.session.on('signal:endGame',(event) =>{
-            //   console.log(event)
-            //   commit('SET_SELECTED_GAME', null);
-            //   commit('SET_GAME_STATUS', 0);
-            //   commit('SET_GAME_TURN', 0);
-            //   commit('SET_GAME_WORD', '');
-            //   commit('SET_GAME_ISCORRECT',1);
-            // });
+
             state.session.on('signal:theme', (event) => {
               commit('SET_THEME', event.data)
             });
@@ -780,8 +779,45 @@ const meetingStore = {
             });
             
             state.session.on('signal:game', (event) => {
+              commit('SET_GAME_STATUS', event.data.gameStatus);
+              
+              // 공통
+              if (event.data.player){ // 이거 participantPublicId랑 중복됨.. 백에서 정리함 필요할 듯!
+                if (state.publisher.stream.connection.connectionId === event.data.player) {
+                  commit('SET_CURRENT_PLAYER', state.publisher);
+                } else {
+                  state.subscribers.forEach(subscriber => {
+                    if (subscriber.stream.connection.connectionId === event.data.player) {
+                      commit('SET_CURRENT_PLAYER', subscriber);
+                    }
+                  });
+                }
+              }
+
+              if (event.data.participantPublicId){
+                if (state.publisher.stream.connection.connectionId === event.data.participantPublicId) {
+                  commit('SET_CURRENT_PLAYER', state.publisher);
+                } else {
+                  state.subscribers.forEach(subscriber => {
+                    if (subscriber.stream.connection.connectionId === event.data.participantPublicId) {
+                      commit('SET_CURRENT_PLAYER', subscriber);
+                    }
+                  });
+                }
+              }
+
+              if(event.data.gameStatus == 0){
+                // 게임 초기화(고르기 화면으로)
+                let modeHost = {
+                  'id': event.from.connectionId,
+                  'name': event.from.data.slice(15,-2)
+                }
+                commit('SET_MODE_HOST', modeHost);
+                dispatch('endGameProcess');
+              }
+
               if(event.data.gameStatus == 1) {
-                //게임 시작
+                //게임 시작(선택)
                 commit('SET_SELECTED_GAME', event.data.gameId);
                 commit('SET_GAME_STATUS', event.data.gameStatus);
                 commit('SET_PENALTY_ID', event.data.penaltyId)

@@ -2,16 +2,17 @@
     <div class="panel">
       <div class="startgame" v-if="gameStatus==1 || gameStatus==2">
         <div class="showWord">
-          <p>숫자를 맞춰 주세요 </p>
+          <p>숫자를 맞춰 주세요</p>
+          <div v-if="notCurrentPlayer">{{ notCurrentPlayer.stream.connection.data.slice(15,-2) }} 의 차례입니다</div>
           <div v-if="gameUpDownNumber >= 0">
               <p> 이전 번호 : {{this.gameUpDownNumber}}</p>
           </div>    
           <div>{{this.participantPublicData}} 의 차례입니다</div>
           <div v-if="gameStatus==2">
-            <p>{{this.gameUpDownResult}}</p>
+            <p>{{gameUpDownResult}}</p>
           </div>
         </div>
-          <div class="chat-box p-2 d-flex flex-column h-50" v-if="publisher.stream.connection.connectionId == participantPublicId">      
+          <div class="chat-box p-2 d-flex flex-column h-50" v-if="!notCurrentPlayer">      
             <div class="footer d-flex mt-auto">
               <div class="col-10 px-1 py-0">
                 <input 
