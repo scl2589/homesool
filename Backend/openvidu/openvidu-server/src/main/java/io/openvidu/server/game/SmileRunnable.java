@@ -91,7 +91,7 @@ public class SmileRunnable implements Runnable{
 			if (pIdx >= pMax)
 				pIdx -= pMax;
 			data.addProperty("word", randomWords.get(wIdx));
-			data.addProperty("player", randomParticipants.get(pIdx).getParticipantPublicId());
+			data.addProperty("participantPublicId", randomParticipants.get(pIdx).getParticipantPublicId());
 			data.addProperty("gameStatus", 2);
 			params.add("data", data);
 			for (Participant p : participants) {
@@ -100,7 +100,7 @@ public class SmileRunnable implements Runnable{
 			}
 			wIdx++;
 			pIdx++;
-			// 게임시간 3초씩 주기
+			// 게임시간 5초씩 주기
 			Thread.sleep(5000);	
 		}
 		}catch (InterruptedException e) {

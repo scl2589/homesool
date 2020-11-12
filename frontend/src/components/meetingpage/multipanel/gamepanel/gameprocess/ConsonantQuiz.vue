@@ -27,6 +27,9 @@
                 </button>
               </div>
             </div>
+          <div>
+            <p>{{this.gameWordResult}}</p>
+          </div>
           </div>
           <div v-else>
             통과
@@ -43,7 +46,7 @@ import LoserPanel from '@/components/meetingpage/multipanel/gamepanel/gameproces
 export default {
  name: "GamePanel",
   computed: {
-    ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameInitialWord','gameIsCorrect','subscribers','publisher','gameAnswerWords']),
+    ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameInitialWord','gameIsCorrect','subscribers','publisher','gameAnswerWords','gameWordResult']),
     ...mapGetters('meetingStore', ['notModeHost'])
   },
   data(){
@@ -64,14 +67,6 @@ export default {
       request.word=word;
       request.gameStatus=2;
       this.word = "";
-      var jsonRequest = JSON.stringify(request);
-      console.log(jsonRequest);
-      this.sendGameRequest(jsonRequest);
-    },
-     clickFinishgame(){
-      var request = new Object();
-      request.gameId=this.selectedGame;
-      request.gameStatus=4;
       var jsonRequest = JSON.stringify(request);
       console.log(jsonRequest);
       this.sendGameRequest(jsonRequest);

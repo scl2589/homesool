@@ -44,7 +44,7 @@ def emotion():
             return "pass", 200
     # 감정 인식 실패
     else:
-        return 400
+        return "no", 200
 
 
 if __name__ == '__main__':
@@ -56,7 +56,6 @@ if __name__ == '__main__':
     ssl_context.load_cert_chain(certfile=cert, keyfile=pkey)
     app.run(
         host="0.0.0.0",
-        debug=True,
         ssl_context=(cert, pkey)
         # ssl_context=ssl_context
     )
