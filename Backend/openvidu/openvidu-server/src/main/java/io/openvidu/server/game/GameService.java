@@ -335,10 +335,9 @@ public class GameService {
 				}
 				data.addProperty("drunk", drunk);
 				data.addProperty("gameStatus", 3);
-				params.add("data", data);
 				drunkTestMap.remove(sessionId);
 			}
-
+			params.add("data", data);
 			for (Participant p : participants) {
 				rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
 						ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
