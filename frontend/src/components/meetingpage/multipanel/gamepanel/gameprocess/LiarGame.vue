@@ -76,7 +76,7 @@ export default {
  },
   computed: {
     ...mapState('meetingStore', ['gameStatus', 'selectedGame', 'gameTurn', 'gameWord',
-                                'subscribers','gameLiar','myself','publisher','gameVoteData','gameParticipantData','gameLiarData']),
+                                'subscribers','gameLiar','myself','publisher','gameVoteData','gameLiarData']),
     ...mapGetters('meetingStore', ['notModeHost']),
   },
   data(){
