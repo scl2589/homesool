@@ -44,7 +44,7 @@ const meetingStore = {
     // game
     selectedGame: null,
     gameStatus: 0,
-    penaltyId: null,
+    penalty: '',
     currentPlayer: null,
     loser: null,
     gameTurn: 0,
@@ -203,8 +203,8 @@ const meetingStore = {
     SET_LOSER(state, value) {
       state.loser = value
     },
-    SET_PENALTY_ID(state, value) {
-      state.penaltyId = value
+    SET_PENALTY(state, value) {
+      state.penalty = value
     },
     SET_GAME_LIAR(state, value){
       state.gameLiar = value
@@ -217,24 +217,6 @@ const meetingStore = {
     },
     SET_GAME_VOTE_DATA(state, value){
       state.gameVoteData = value
-    },
-    SET_GAME_PANELTY_ID(state,value){
-      state.gamePaneltyId = value
-    },
-    SET_GAME_PANELTY_SUBSCRIBER(state, subscriber){
-      state.gamePaneltySubscriber = subscriber
-    },
-    SET_GAME_PANELTY_OV(state,gamePaneltyOV){
-      state.gamePaneltyOV = gamePaneltyOV
-    },
-    SET_GAME_PANELTY_SESSION(state, gamePaneltySession){
-      state. gamePaneltySession =  gamePaneltySession
-    },
-    SET_GAME_PANELTY_STREAM_MANAGER(state,gamePaneltyStreamManager){
-      state.gamePaneltyStreamManager = gamePaneltyStreamManager
-    },
-    SET_GAME_PANELTY_PUBLISHER(state,gamePaneltyPublisher){
-      state.gamePaneltyPublisher = gamePaneltyPublisher
     },
     SET_GAME_INITIALWORD(state, value){
       state.gameInitialWord = value
@@ -391,7 +373,7 @@ const meetingStore = {
       // 공통
       commit('SET_SELECTED_GAME', null);
       commit('SET_GAME_STATUS', 0);
-      commit('SET_PENALTY_ID', null);
+      commit('SET_PENALTY', '');
       commit('SET_CURRENT_PLAYER', null);
       commit('SET_LOSER', null);
       commit('SET_GAME_TURN', 0);
@@ -813,7 +795,7 @@ const meetingStore = {
                 //게임 시작(선택)
                 commit('SET_SELECTED_GAME', event.data.gameId);
                 commit('SET_GAME_STATUS', event.data.gameStatus);
-                commit('SET_PENALTY_ID', event.data.penaltyId)
+                commit('SET_PENALTY', event.data.panelty)
                 if(state.selectedGame == 1){  //업다운
                   commit('SET_GAME_UPDOWN_INDEX',event.data.index)
                   commit('SET_GAME_UPDOWN_NUMBER',event.data.number)
