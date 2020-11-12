@@ -66,7 +66,7 @@ export default {
     ...mapActions('meetingStore', ['changeMode', 'endGameProcess', 'sendGameRequest']),
     selectNewGame() {
       var request = new Object();
-      request.gameStatus=4;
+      request.gameStatus=0;
       var jsonRequest = JSON.stringify(request);
       this.sendGameRequest(jsonRequest);
     }

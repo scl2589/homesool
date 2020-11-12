@@ -22,20 +22,48 @@
       </div>
       <div class="col-8 my-1">
         <transition name="slide" mode="out-in">
-          <div v-if="selectedDescription == 1">
-            <UpAndDownDescription />
-          </div>
-          <div v-if="selectedDescription == 2">
-            <ConsonantQuizDescription />
-          </div>
-          <div v-if="selectedDescription == 3">
-            <LiarGameDescription />
-          </div>
-          <div v-if="selectedDescription == 4">
-            <SmileLeadsToAlcoholDescription />
-          </div>
-          <div v-if="selectedDescription == 5">
-            <FindOutDrunkenDescription />
+          <div>
+            <div v-if="selectedDescription == 1">
+              <UpAndDownDescription />
+            </div>
+            <div v-if="selectedDescription == 2">
+              <ConsonantQuizDescription />
+            </div>
+            <div v-if="selectedDescription == 3">
+              <LiarGameDescription />
+            </div>
+            <div v-if="selectedDescription == 4">
+              <SmileLeadsToAlcoholDescription />
+            </div>
+            <div v-if="selectedDescription == 5">
+              <FindOutDrunkenDescription />
+            </div>
+
+            <div
+              class="d-flex justify-content-between align-items-center mx-2 mt-auto"
+              v-if="selectedDescription"
+            >
+              <div class="penalty">
+                <v-select
+                  :items="items"
+                  label="벌칙"
+                  width="10px"
+                  hide-details
+                  dense
+                  append-icon=""
+                  solo
+                ></v-select>
+                
+              </div>
+              <div>
+                <button
+                  class="btn-yellow rounded"
+                  @click="clickStartGame()"
+                >
+                  시작하기
+                </button>
+              </div>
+            </div>
           </div>
         </transition>
       </div>
@@ -45,7 +73,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import ConsonantQuizDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/ConsonantQuizDescription';
 import FindOutDrunkenDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/FindOutDrunkenDescription';
 import LiarGameDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/LiarGameDescription';
@@ -63,13 +91,28 @@ export default {
   },
   data() {
     return {
-      selectedDescription: null
+      selectedDescription: null,
+      penalty: null,
+      items: [
+        '술 한 잔 마시기', 
+        '5분동안 음소거',
+        '5분동안 카메라 정지'
+      ],
     }
   },
   computed: {
     ...mapGetters('meetingStore', ['notModeHost'])
   },
   methods: {
+    ...mapActions('meetingStore', ['sendGameRequest']),
+    clickStartGame() {
+      var request = new Object();
+      request.gameId=this.selectedDescription;
+      request.paneltyId=0;
+      request.gameStatus=1;
+      var jsonRequest = JSON.stringify(request);
+      this.sendGameRequest(jsonRequest);
+    },
     selectDescription(value) {
       this.selectedDescription = value;
     }
