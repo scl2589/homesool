@@ -71,6 +71,7 @@ const meetingStore = {
 
     // 나술안취했어
     sentence: null,
+    drunkenText: null,
 
     // theme
     theme: 'basic',
@@ -249,10 +250,13 @@ const meetingStore = {
     SET_SENTENCE(state, data) {
       state.sentence = data;
     },
+    SET_DRUNKEN_TEXT(state, data) {
+      state.drunkenText = data
+    },
     SET_PARTICIPANTPUBLICDATA(state, data){
       state.participantPublicData = data;
     },
-
+    
     // theme
     SET_THEME(state, theme) {
       state.theme = theme;
@@ -936,10 +940,15 @@ const meetingStore = {
                   }
                 }
               }
+              
+              if (event.data.sentence && event.data.gameStatus == 1) {
+                commit('SET_GAME_STATUS', 2);
+                commit('SET_SENTENCE', event.data.sentence);
+                dispatch('recordVoice');
+              }
 
-              if (event.data.sentence) {
+              if (event.data.sentence && event.data.gameStatus == 3) {
                 commit('SET_SENTENCE', event.data.sentence)
-                dispatch('recordVoice')
               }
             });
 
@@ -1154,19 +1163,19 @@ const meetingStore = {
           console.log(err)
         })
     },
-    recordVoice({state}) {
-      console.log(state)
+    recordVoice({ commit }) {
       const sdk = require("microsoft-cognitiveservices-speech-sdk");
       const speechConfig = sdk.SpeechConfig.fromSubscription("9bd552b2504c45e1802217ac626d6508", "koreacentral");
       speechConfig.speechRecognitionLanguage = "ko-KR";
       function fromMic() {
-          let audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
-          let recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
-          
-          console.log('Speak into your microphone.');
-          recognizer.recognizeOnceAsync(result => {
-              console.log(`RECOGNIZED: Text=${result.text}`);
-          });
+        let audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
+        let recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
+        
+        console.log('Speak into your microphone.');
+        recognizer.recognizeOnceAsync(result => {
+        console.log(`RECOGNIZED: Text=${result.text}`);
+        commit('SET_DRUNKEN_TEXT', result.text)
+        });
       }
       fromMic();
     }
