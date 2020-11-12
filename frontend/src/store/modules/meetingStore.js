@@ -66,6 +66,7 @@ const meetingStore = {
     gameInitialWord:'',
     gameIsCorrect: 1,
     gameAnswerWords: [],
+    gameWordResult : '',
     participantPublicId:'',
 
     gameUpDownResult:'',
@@ -255,10 +256,10 @@ const meetingStore = {
       state.gameIsCorrect = value
     },
     SET_GAME_ANSWERWORDS(state, data){
-      console.log(data)
-      console.log(data.word)
-      console.log(data.nickName)
       state.gameAnswerWords.push(data)
+    },
+    SET_GAME_WORDRESULT(state, data){
+      state.gameWordResult = data
     },
     RESET_GAME_ANSWERWORDS(state){
       state.gameAnswerWords = []
@@ -384,6 +385,7 @@ const meetingStore = {
       commit('SET_GAME_STATUS', 0);
       commit('SET_GAME_TURN', 0);
       commit('SET_GAME_WORD', '');
+      commit('SET_GAME_WORDRESULT','');
       commit('SET_GAME_ISCORRECT',1);
       commit('RESET_GAME_ANSWERWORDS');
     },
@@ -917,6 +919,11 @@ const meetingStore = {
                 }
                 if(event.from.connectionId == state.publisher.stream.connection.connectionId){
                   commit('SET_GAME_ISCORRECT',event.data.isCorrect);
+                }
+              }
+              if(event.data.result){
+                if(event.from.connectionId == state.publisher.stream.connection.connectionId){
+                  commit('SET_GAME_WORDRESULT',event.data.result);
                 }
               }
               if(event.data.participantPublicId){

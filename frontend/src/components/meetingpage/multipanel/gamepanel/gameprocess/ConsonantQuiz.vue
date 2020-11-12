@@ -27,37 +27,15 @@
                 </button>
               </div>
             </div>
+          <div>
+            <p>{{this.gameWordResult}}</p>
+          </div>
           </div>
           <div v-else>
             통과
           </div> 
       </div>
       <loser-panel class="w-100" v-if="gameStatus == 3"/>
-      <!-- <div class="finishgame" v-if="gameStatus==3">
-        <div class="showName">
-          <div v-for="subscriber in subscribers" :key="subscriber.stream.connection.data">
-            <div v-if="subscriber.stream.connection.connectionId==participantPublicId">
-              {{subscriber.stream.connection.data.slice(15,-2)}} 패배!!
-            </div>
-          </div>
-          <div v-if="publisher.stream.connection.connectionId==participantPublicId">
-            {{publisher.stream.connection.data.slice(15,-2)}} 패배!!
-          </div>
-          <button
-            class="btn btn-yellow"
-            @click="changeMode(null)"
-          >
-            술게임 모드 끝내기
-          </button>
-          <button
-            class="btn btn-yellow"
-            @click="endGameSignal"
-          >
-            술게임 고르기
-          </button>
-
-        </div>
-      </div> -->
     </div>
 
 </template>
@@ -68,7 +46,7 @@ import LoserPanel from '@/components/meetingpage/multipanel/gamepanel/gameproces
 export default {
  name: "GamePanel",
   computed: {
-    ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameInitialWord','gameIsCorrect','participantPublicId','subscribers','publisher','gameAnswerWords']),
+    ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameInitialWord','gameIsCorrect','participantPublicId','subscribers','publisher','gameAnswerWords','gameWordResult']),
     ...mapGetters('meetingStore', ['notModeHost'])
   },
   data(){
@@ -89,14 +67,6 @@ export default {
       request.word=word;
       request.gameStatus=2;
       this.word = "";
-      var jsonRequest = JSON.stringify(request);
-      console.log(jsonRequest);
-      this.sendGameRequest(jsonRequest);
-    },
-     clickFinishgame(){
-      var request = new Object();
-      request.gameId=this.selectedGame;
-      request.gameStatus=4;
       var jsonRequest = JSON.stringify(request);
       console.log(jsonRequest);
       this.sendGameRequest(jsonRequest);
