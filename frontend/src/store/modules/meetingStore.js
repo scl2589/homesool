@@ -787,18 +787,6 @@ const meetingStore = {
               commit('SET_GAME_STATUS', event.data.gameStatus);
               
               // 공통
-              if (event.data.player){ // 이거 participantPublicId랑 중복됨.. 백에서 정리함 필요할 듯!
-                if (state.publisher.stream.connection.connectionId === event.data.player) {
-                  commit('SET_CURRENT_PLAYER', state.publisher);
-                } else {
-                  state.subscribers.forEach(subscriber => {
-                    if (subscriber.stream.connection.connectionId === event.data.player) {
-                      commit('SET_CURRENT_PLAYER', subscriber);
-                    }
-                  });
-                }
-              }
-
               if (event.data.participantPublicId){
                 if (state.publisher.stream.connection.connectionId === event.data.participantPublicId) {
                   commit('SET_CURRENT_PLAYER', state.publisher);
@@ -829,23 +817,10 @@ const meetingStore = {
                 if(state.selectedGame == 1){  //업다운
                   commit('SET_GAME_UPDOWN_INDEX',event.data.index)
                   commit('SET_GAME_UPDOWN_NUMBER',event.data.number)
-                  if(event.data.participantPublicId){
-                    commit('SET_GAME_PARTICIPANTPUBLICID',event.data.participantPublicId)
-                    //벌칙자의 닉네임도 찾아서 넣어줘야함
-                    for(let i=0; i<state.subscribers.length; i++){
-                      if(state.subscribers[i].stream.connection.connectionId == event.data.participantPublicId){
-                        commit('SET_PARTICIPANTPUBLICDATA',state.subscribers[i].stream.connection.data.slice(15,-2));
-                      }
-                    }
-                    if(state.publisher.session.connection.connectionId == event.data.participantPublicId){ //본인체크
-                      commit('SET_PARTICIPANTPUBLICDATA',state.publisher.session.connection.data.slice(15,-2));
-                    }
-                  }
                 }
                 if(state.selectedGame == 2){  //초성게임
                   commit('SET_GAME_INITIALWORD',event.data.initialWord);
                 }
-                
               }
               if(event.data.gameStatus == 2){
                 if(state.selectedGame == 1){  //업다운
@@ -875,6 +850,9 @@ const meetingStore = {
                     if(event.from.connectionId == state.publisher.stream.connection.connectionId){
                       commit('SET_GAME_ISCORRECT',event.data.isCorrect);
                     }
+                  }
+                  if(event.from.connectionId == state.publisher.stream.connection.connectionId){
+                    commit('SET_GAME_WORDRESULT',event.data.result);
                   }
                 }
                 if(state.selectedGame == 3){  //라이어게임
@@ -952,122 +930,9 @@ const meetingStore = {
                 }
               }
 
-              if (event.data.gameStatus == 4) {
-                dispatch('endGameProcess');
-                return;
-              }
-              commit('SET_GAME_STATUS', event.data.gameStatus);
-
-              //초기화
-              if(event.data.gameStatus == 0){
-                commit('SET_SELECTED_GAME', null);
-                commit('SET_GAME_STATUS', 0);
-                commit('SET_GAME_TURN', 0);
-                commit('SET_GAME_WORD', '');
-              }
-              if(event.data.gameStatus==3 && event.data.gameId != 4){
-                setTimeout(() => {
-                  commit('SET_GAME_STATUS', 4);
-                }, 5000);
-              }
+    
               
-              if(event.data.paneltyId){
-                commit('SET_GAME_PANELTY_ID',event.data.paneltyId);
-              }
 
-              if(event.data.turn >= 0) {
-                commit('SET_GAME_TURN', event.data.turn);
-              }
-              if(event.data.word) {
-                commit('SET_GAME_WORD', event.data.word);
-              }
-              if(event.data.liar) {
-                commit('SET_GAME_LIAR', event.data.liar);
-              }
-              if(event.data.player) {
-                commit('SET_GAME_PLAYER', event.data.player);
-              }
-              if(event.data.liarId){
-                commit('SET_GAME_LIAR',event.data.liarId);
-                //commit('SET_GAME_LIAR',event.data.liar);
-                //라이어의 닉네임
-                for(let i=0; i<state.subscribers.length; i++){
-                  if(state.subscribers[i].stream.connection.connectionId == event.data.liarId){
-                    commit('SET_GAME_LIAR_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
-                  }
-                }
-                if(state.publisher.session.connection.connectionId == event.data.liarId){ //본인체크
-                  commit('SET_GAME_LIAR_DATA',state.publisher.session.connection.data.slice(15,-2));
-                }
-              }
-              if(event.data.voteId){
-                commit('SET_GAME_VOTE_ID',event.data.voteId);
-                //당선자??의 닉네임도 찾아서 넣어줘야함
-                for(let i=0; i<state.subscribers.length; i++){
-                  if(state.subscribers[i].stream.connection.connectionId == event.data.voteId){
-                    commit('SET_GAME_VOTE_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
-                  }
-                }
-                if(state.publisher.session.connection.connectionId == event.data.voteId){ //본인체크
-                  commit('SET_GAME_VOTE_DATA',state.publisher.session.connection.data.slice(15,-2));
-                }
-              }
-              if(event.data.participantPublicId){
-                commit('SET_GAME_PARTICIPANT_ID',event.data.participantPublicId);
-                //벌칙자의 닉네임도 찾아서 넣어줘야함
-                for(let i=0; i<state.subscribers.length; i++){
-                  if(state.subscribers[i].stream.connection.connectionId == event.data.participantPublicId){
-                    commit('SET_GAME_PARTICIPANT_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
-                    //벌칙자 stream 생성
-                    //this.setPaneltyScreen();
-                  }
-                }
-                if(state.publisher.session.connection.connectionId == event.data.participantPublicId){ //본인체크
-                  commit('SET_GAME_PARTICIPANT_DATA',state.publisher.session.connection.data.slice(15,-2));
-                }
-              }
-              if(event.data.initialWord){
-                commit('SET_GAME_INITIALWORD',event.data.initialWord);
-              }
-              if(event.data.isCorrect == 2){
-                if (state.publisher.stream.connection.connectionId === event.from.connectionId) {
-                  let data = {
-                    nickName : state.publisher.stream.connection.data.slice(15,-2),
-                    word : event.data.word,
-                  }
-                  commit('SET_GAME_ANSWERWORDS', data);
-                } else {
-                  state.subscribers.forEach(subscriber => {
-                    if (subscriber.stream.connection.connectionId === event.from.connectionId) {
-                      let data = {
-                        nickName : subscriber.stream.connection.data.slice(15,-2),
-                        word : event.data.word,
-                      }
-                      commit('SET_GAME_ANSWERWORDS', data);
-                    }
-                  });
-                }
-                if(event.from.connectionId == state.publisher.stream.connection.connectionId){
-                  commit('SET_GAME_ISCORRECT',event.data.isCorrect);
-                }
-              }
-              if(event.data.result){
-                if(event.from.connectionId == state.publisher.stream.connection.connectionId){
-                  commit('SET_GAME_WORDRESULT',event.data.result);
-                }
-              }
-              if(event.data.participantPublicId){
-                commit('SET_GAME_PARTICIPANTPUBLICID',event.data.participantPublicId)
-              }
-              if(event.data.updown){
-                commit('SET_GAME_UPDOWN_RESULT',event.data.updown)
-              }
-              if(event.data.index >= 0){
-                commit('SET_GAME_UPDOWN_INDEX',event.data.index)
-              }
-              if(event.data.number >= 0){
-                commit('SET_GAME_UPDOWN_NUMBER',event.data.number)
-              }
               if (event.data.sentence) {
                 commit('SET_SENTENCE', event.data.sentence)
                 dispatch('recordVoice')

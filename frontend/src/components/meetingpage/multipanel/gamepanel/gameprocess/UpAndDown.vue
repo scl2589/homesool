@@ -7,7 +7,6 @@
           <div v-if="gameUpDownNumber >= 0">
               <p> 이전 번호 : {{this.gameUpDownNumber}}</p>
           </div>    
-          <div>{{this.participantPublicData}} 의 차례입니다</div>
           <div v-if="gameStatus==2">
             <p>{{gameUpDownResult}}</p>
           </div>
@@ -47,7 +46,7 @@ export default {
  },
   computed: {
     ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameUpDownResult','gameUpDownIndex',
-    'participantPublicId',
+    'notCurrentPlayer',
     'participantPublicData',
     'subscribers',
     'publisher',
