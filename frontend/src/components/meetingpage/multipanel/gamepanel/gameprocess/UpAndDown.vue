@@ -6,7 +6,7 @@
           <div v-if="gameUpDownNumber >= 0">
               <p> 이전 번호 : {{this.gameUpDownNumber}}</p>
           </div>    
-          <div>{{this.gameParticipantData}} 의 차례입니다</div>
+          <div>{{this.participantPublicData}} 의 차례입니다</div>
           <div v-if="gameStatus==2">
             <p>{{this.gameUpDownResult}}</p>
           </div>
@@ -45,7 +45,12 @@ export default {
      LoserPanel
  },
   computed: {
-    ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameUpDownResult','gameUpDownIndex','participantPublicId', 'gameParticipantData','subscribers','publisher','gameUpDownNumber']),
+    ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameUpDownResult','gameUpDownIndex',
+    'participantPublicId',
+    'participantPublicData',
+    'subscribers',
+    'publisher',
+    'gameUpDownNumber']),
     ...mapGetters('meetingStore', ['notModeHost'])
   },
   data(){
