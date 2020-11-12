@@ -791,7 +791,7 @@ const meetingStore = {
                 dispatch('endGameProcess');
               }
 
-              if(event.data.gameStatus == 1) {
+              else if(event.data.gameStatus == 1) {
                 //게임 시작(선택)
                 commit('SET_SELECTED_GAME', event.data.gameId);
                 commit('SET_GAME_STATUS', event.data.gameStatus);
@@ -804,7 +804,7 @@ const meetingStore = {
                   commit('SET_GAME_INITIALWORD',event.data.initialWord);
                 }
               }
-              if(event.data.gameStatus == 2){
+              else if(event.data.gameStatus == 2){
                 if(state.selectedGame == 1){  //업다운
                   commit('SET_GAME_UPDOWN_RESULT',event.data.updown)
                   commit('SET_GAME_UPDOWN_INDEX',event.data.index)
@@ -863,8 +863,11 @@ const meetingStore = {
                   }
                 }
               }
-              if(event.data.gameStatus == 3) {
-                if(state.selectedGame == 3){
+              else if(event.data.gameStatus == 3) {
+                if (state.selectedGame == 1) {
+                  commit('SET_GAME_UPDOWN_NUMBER',event.data.number)
+                }
+                else if(state.selectedGame == 3){
                    //라이어의 닉네임
                    for(let i=0; i<state.subscribers.length; i++){
                     if(state.subscribers[i].stream.connection.connectionId == event.data.liarId){
@@ -911,9 +914,6 @@ const meetingStore = {
                   }
                 }
               }
-
-    
-              
 
               if (event.data.sentence) {
                 commit('SET_SENTENCE', event.data.sentence)
