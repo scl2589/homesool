@@ -34,6 +34,7 @@ const meetingStore = {
     //chatting
     messages: [],
     isChatPanel: false,
+    secretName: null,
 
     // singing
     songs: null,
@@ -168,6 +169,9 @@ const meetingStore = {
     },
     SET_CLEARMESSAGES(state) {
       state.messages = [];
+    },
+    SET_SECRET_NAME(state, value) {
+      state.secretName = value
     },
 
     // singing
@@ -633,6 +637,37 @@ const meetingStore = {
           state.session.connect(state.ovToken, { clientData: enterData.nickName })
 					.then(() => {
             commit('SET_NICKNAME', enterData.nickName);
+            const adjectives = [
+              '사랑스러운', '매력적인', '매혹적인', '자신감있는', '헝클어진',
+              '귀여운', '우아한', '품격있는', '공정한', '더러운',
+              '추잡한', '고약한', '화려한', '매력적인', '멋진',
+              '잘생긴', '예쁜', '보기좋은', '담백한', '가정적인',
+              '아름다운', '친절한', '즐거운', '상냥한', '예의바른',
+              '완벽한', '꾀죄죄한', '지저분한', '빛나는', '날씬한',
+              '호리호리한', '흥미로운', '훌륭한', '명랑한', '쾌활한',
+              '터프한', '제멋대로인', '공격적인', '야심있는', '용감한',
+              '어설픈', '촌스러운', '서투른', '잔혹한', '잔인한',
+              '성실한', '단호한', '정직한', '질투하는', '신비한',
+              '성공한', '출세한', '이기적인', '이타적인', '재능있는',
+              '지혜로운', '재치 있는', '현명한', '슬기로운', '엉뚱한'
+            ]
+            const animals = [
+              '코끼리', '사자', '하마', '표범', '가젤',
+              '개미핥기', '치타', '기린', '얼룩말', '코뿔소',
+              '호랑이', '늑대', '판다', '코알라', '다람쥐',
+              '곰', '사슴', '원숭이', '너구리', '침팬지',
+              '미어캣', '낙타', '목도리도마뱀', '타조', '사막여우',
+              '전갈', '순록', '북극곰', '흰올빼미', '팽귄',
+              '북극여우', '바다코끼리', '돌고래', '가오리', '나비고기',
+              '상어', '문어', '오징어', '바다거북', '흰동가리',
+              '고래', '불가사리', '해마', '게', '독수리',
+              '갈매기', '큰부리새', '원앙', '부엉이', '홍학',
+              '두루미', '비둘기', '벌새', '사다새', '공작',
+              '참새', '고양이', '개', '푸들나방', '별코두더지'
+            ]
+            var sName = adjectives[Math.floor(Math.random() * adjectives.length)] + ' ' + animals[Math.floor(Math.random() * animals.length)]
+            commit('SET_SECRET_NAME', sName);
+
             state.session.publish(state.publisher);
 
             state.session.on('streamCreated', (event) => {
@@ -718,27 +753,14 @@ const meetingStore = {
             });
 
             state.session.on('signal:chat', (event) => {
+              let eventData = JSON.parse(event.data);
               let data = new Object()
               let time = new Date()
-              data.message = event.data
+              data.message = eventData.content;
               if (state.currentMode === 'anonymous') {
-                const animals = [
-                  '코끼리', '사자', '하마', '표범', '가젤',
-                  '개미핥기', '치타', '기린', '얼룩말', '코뿔소',
-                  '호랑이', '늑대', '판다', '코알라', '다람쥐',
-                  '곰', '사슴', '원숭이', '너구리', '침팬지',
-                  '미어캣', '낙타', '목도리도마뱀', '타조', '사막여우',
-                  '전갈', '순록', '북극곰', '흰올빼미', '팽귄',
-                  '북극여우', '바다코끼리', '돌고래', '가오리', '나비고기',
-                  '상어', '문어', '오징어', '바다거북', '흰동가리',
-                  '고래', '불가사리', '해마', '게', '독수리',
-                  '갈매기', '큰부리새', '원앙', '부엉이', '홍학',
-                  '두루미', '비둘기', '벌새', '사다새', '공작',
-                  '참새', '고양이', '개', '푸들나방', '별코두더지'
-                ]
-                data.sender = animals[event.from.connectionId.slice(-10, ).charCodeAt(0) % 60];
+                data.sender = eventData.secretName;
               } else {
-                data.sender = event.from.data.slice(15,-2)
+                data.sender = event.from.data.slice(15,-2);
               }
               data.time = moment(time).format('HH:mm')
               commit('SET_MESSAGES', data)
@@ -960,9 +982,13 @@ const meetingStore = {
         })
     },
     sendMessage({ state }, message) {
+      var messageData = {
+        content: message,
+        secretName: state.secretName
+      }
       state.session.signal({
         type: 'chat',
-        data: message,
+        data: JSON.stringify(messageData),
         to: [],
       })
         .then(() => {
