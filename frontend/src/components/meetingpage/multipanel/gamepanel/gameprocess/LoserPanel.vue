@@ -6,13 +6,16 @@
       @click.native="updateMainVideoStreamManager(loser)"
     />
     <div v-if="selectedGame == 1">
-
+      <p> 번호 : {{this.gameUpDownNumber}}</p>
+      <p> {{ loser.stream.connection.data.slice(15,-2) }} 당첨!!! </p>
     </div>
     <div v-if="selectedGame == 2">
       <p>{{ loser.stream.connection.data.slice(15,-2) }}님이 꼴찌 입니다!!!</p>
     </div>
     <div v-if="selectedGame == 3">
-
+      <p> 투표 결과 : {{this.gameVoteData}} </p>
+      <p> 라이어 : {{this.gameLiarData}} </p>
+      <p> 벌칙자 : {{ loser.stream.connection.data.slice(15,-2) }} </p>
     </div>
     <div v-if="selectedGame == 4">
       <p>{{ loser.stream.connection.data.slice(15,-2) }}님이 끝내 웃음을 참지 못했습니다.</p>
@@ -51,7 +54,7 @@ export default {
     UserVideo
   },
   computed: {
-    ...mapState('meetingStore', ['loser', 'selectedGame', 'penaltyId'])
+    ...mapState('meetingStore', ['loser', 'selectedGame', 'penaltyId', 'gameVoteData','gameLiarData', 'gameUpDownNumber'])
   }
 }
 </script>

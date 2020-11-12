@@ -31,41 +31,19 @@
             </div>
           </div> 
       </div>
-      <div class="endgame" v-if="gameStatus==3">
-          <h5> 게임이 종료되었습니다 </h5>
-          <h5> 벌칙자 : {{this.gameParticipantData}} </h5>
-      </div>
-      <div class="paneltygame" v-if="gameStatus==4">
-          <h5> 벌칙화면 </h5>
-            <user-video 
-              class="my-2 px-2 sub-video" 
-              :stream-manager="gamePaneltyPublisher" 
-              @click.native="updateMainVideoStreamManager(gamePaneltyPublisher)"
-            />
-          <div class="d-flex justify-content-around" v-if="publisher.session.connection.connectionId == participantPublicId">
-            <button
-              class="btn btn-yellow"
-              @click="changeMode(null)"
-            >
-              술게임 모드 끝내기
-            </button>
-            <button
-              class="btn btn-yellow"
-              @click="clickFinishgame()"
-            >
-              술게임 고르기
-            </button>
-        </div>
-       </div>
+      <loser-panel class="w-100" v-if="gameStatus == 3"/>
     </div>
-
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
+import LoserPanel from '@/components/meetingpage/multipanel/gamepanel/gameprocess/LoserPanel';
 
 export default {
  name: "GamePanel",
+ components:{
+     LoserPanel
+ },
   computed: {
     ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameUpDownResult','gameUpDownIndex','participantPublicId', 'gameParticipantData','subscribers','publisher','gameUpDownNumber']),
     ...mapGetters('meetingStore', ['notModeHost'])
