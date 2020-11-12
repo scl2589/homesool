@@ -898,6 +898,25 @@ const meetingStore = {
                 if (state.selectedGame == 1) {
                   commit('SET_GAME_UPDOWN_NUMBER',event.data.number)
                 }
+                else if(state.selectedGame == 2){
+                  if (state.publisher.stream.connection.connectionId === event.from.connectionId) {
+                    let data = {
+                      nickName : state.publisher.stream.connection.data.slice(15,-2),
+                      word : event.data.word,
+                    }
+                    commit('SET_GAME_ANSWERWORDS', data);
+                  } else {
+                    state.subscribers.forEach(subscriber => {
+                      if (subscriber.stream.connection.connectionId === event.from.connectionId) {
+                        let data = {
+                          nickName : subscriber.stream.connection.data.slice(15,-2),
+                          word : event.data.word,
+                        }
+                        commit('SET_GAME_ANSWERWORDS', data);
+                      }
+                    });
+                  }
+                }
                 else if(state.selectedGame == 3){
                    //라이어의 닉네임
                    for(let i=0; i<state.subscribers.length; i++){

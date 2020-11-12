@@ -93,7 +93,7 @@ public class LiarGameRunnable implements Runnable {
 
 			// 게임 시간 2분 진행
 			System.out.println(participants.size());
-			Thread.sleep(1000*30*participants.size());
+			Thread.sleep(1000*20*participants.size());
 			data.addProperty("turn", 2);
 			params.add("data", data);
 			for (Participant p : participants) {

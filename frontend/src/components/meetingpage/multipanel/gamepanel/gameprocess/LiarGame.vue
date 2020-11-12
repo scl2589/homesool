@@ -38,7 +38,7 @@
                 <h3>단어에 대해<br>서로 얘기해 주세요 </h3>
                 {{subscribers.length}}
                 <circular-count-down-timer
-                    :initial-value="(subscribers.length+1)*30"
+                    :initial-value="(subscribers.length+1)*20"
                     :show-minute="false"
                     :show-hour="false"
                     :size="150"

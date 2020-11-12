@@ -58,7 +58,7 @@ export default {
   },
   data(){
     return{
-      number: 0,
+      number: '',
     }
   },
   methods:{
@@ -71,7 +71,7 @@ export default {
       request.number=this.number;
       request.gameStatus=2;
       request.index=this.gameUpDownIndex;
-      this.number = 0;
+      this.number = '';
       var jsonRequest = JSON.stringify(request);
       console.log(jsonRequest);
       this.sendGameRequest(jsonRequest);
