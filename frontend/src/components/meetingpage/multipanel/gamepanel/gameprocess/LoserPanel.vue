@@ -26,10 +26,16 @@
     </div>
 
     <div>
-      <button class="btn btn-yellow mx-2">
+      <button
+        class="btn btn-yellow mx-2"
+        @click="changeMode(null)"
+      >
         술게임 끝내기
       </button>
-      <button class="btn btn-yellow mx-2">
+      <button
+        class="btn btn-yellow mx-2"
+        @click="selectNewGame"
+      >
         술게임 고르기
       </button>
     </div>
@@ -38,7 +44,7 @@
 
 <script>
 import UserVideo from '@/components/meetingpage/UserVideo';
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 export default {
   name: 'LoserPanel',
@@ -52,10 +58,19 @@ export default {
   },
   computed: {
     ...mapState('meetingStore', ['loser', 'selectedGame', 'penaltyId'])
+  },
+  methods: {
+    ...mapActions('meetingStore', ['changeMode', 'endGameProcess', 'sendGameRequest']),
+    selectNewGame() {
+      var request = new Object();
+      request.gameStatus=4;
+      var jsonRequest = JSON.stringify(request);
+      this.sendGameRequest(jsonRequest);
+    }
   }
 }
 </script>
 
-<style>
+<style scoped>
 
 </style>

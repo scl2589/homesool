@@ -1,13 +1,13 @@
 <template>
   <div class="panel">
-    <SmileLeadsToAlcohol v-if="selectedGame==4">
-    </SmileLeadsToAlcohol>
     <UpAndDown v-if="selectedGame==1">
     </UpAndDown>
     <ConsonantQuiz v-if="selectedGame==2">
     </ConsonantQuiz>
     <LiarGame v-if="selectedGame==3">
     </LiarGame>
+    <SmileLeadsToAlcohol v-if="selectedGame==4">
+    </SmileLeadsToAlcohol>
     <FindOutDrunken v-if="selectedGame==5">
     </FindOutDrunken>
   </div>
@@ -32,7 +32,6 @@ export default {
   components:{
     SmileLeadsToAlcohol,
     LiarGame,
-
     ConsonantQuiz,
     UpAndDown,
     FindOutDrunken,
