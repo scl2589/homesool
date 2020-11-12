@@ -13,16 +13,30 @@
           <br />
         </div>
         <div class="game-list">
-          <li><router-link class="my-3" :to="{name: 'SmileLeadsToAlcoholDescription'}">웃으면 술이와요</router-link></li>
-          <li><router-link :to="{ name: 'UpAndDownDescription' }">Up & Down</router-link></li>
-          <li><router-link :to="{ name: 'ConsonantQuizDescription' }">자음 퀴즈</router-link></li>
-          <li><router-link :to="{ name: 'LiarGameDescription' }">라이어 게임</router-link></li>
-          <li><router-link :to="{ name: 'FindOutDrunkenDescription' }">나술안취했어</router-link></li>
+          <li @click="selectDescription(1)">Up & Down</li>
+          <li @click="selectDescription(2)">자음 퀴즈</li>
+          <li @click="selectDescription(3)">라이어 게임</li>
+          <li @click="selectDescription(4)">웃으면 술이와요</li>
+          <li @click="selectDescription(5)">나술안취했어</li>
         </div>
       </div>
       <div class="col-8 my-1">
         <transition name="slide" mode="out-in">
-          <router-view></router-view>
+          <div v-if="selectedDescription == 1">
+            <UpAndDownDescription />
+          </div>
+          <div v-if="selectedDescription == 2">
+            <ConsonantQuizDescription />
+          </div>
+          <div v-if="selectedDescription == 3">
+            <LiarGameDescription />
+          </div>
+          <div v-if="selectedDescription == 4">
+            <SmileLeadsToAlcoholDescription />
+          </div>
+          <div v-if="selectedDescription == 5">
+            <FindOutDrunkenDescription />
+          </div>
         </transition>
       </div>
     </div>
@@ -32,10 +46,33 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import ConsonantQuizDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/ConsonantQuizDescription';
+import FindOutDrunkenDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/FindOutDrunkenDescription';
+import LiarGameDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/LiarGameDescription';
+import SmileLeadsToAlcoholDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/SmileLeadsToAlcoholDescription';
+import UpAndDownDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/UpAndDownDescription';
+
 export default {
   name: "GameSelectionPanel",
+  components: {
+    ConsonantQuizDescription,
+    FindOutDrunkenDescription,
+    LiarGameDescription,
+    SmileLeadsToAlcoholDescription,
+    UpAndDownDescription
+  },
+  data() {
+    return {
+      selectedDescription: null
+    }
+  },
   computed: {
     ...mapGetters('meetingStore', ['notModeHost'])
+  },
+  methods: {
+    selectDescription(value) {
+      this.selectedDescription = value;
+    }
   }
 };
 </script>

@@ -50,6 +50,7 @@ const meetingStore = {
     gamePlayer: '',
     loser: null,
     penaltyId: null,
+    sentence: null,
 
     gameLiarData:'',
     gameVoteId:'',
@@ -81,9 +82,6 @@ const meetingStore = {
 
     //capture
     screenshotInfo: null,
-
-    //game
-    sentence: null
   },
   getters: {
     notModeHost(state) {
@@ -241,8 +239,6 @@ const meetingStore = {
     SET_GAME_PANELTY_PUBLISHER(state,gamePaneltyPublisher){
       state.gamePaneltyPublisher = gamePaneltyPublisher
     },
-    
-
     SET_GAME_INITIALWORD(state, value){
       state.gameInitialWord = value
     },
@@ -270,7 +266,10 @@ const meetingStore = {
     SET_GAME_UPDOWN_NUMBER(state,value){
       state.gameUpDownNumber = value
     },
-    
+    SET_SENTENCE(state, data) {
+      state.sentence = data;
+    },
+
     // theme
     SET_THEME(state, theme) {
       state.theme = theme;
@@ -302,11 +301,6 @@ const meetingStore = {
     //screenshot
     SET_SCREENSHOT_INFO(state, data) {
       state.screenshotInfo = data;
-    },
-
-    //game
-    SET_SENTENCE(state, data) {
-      state.sentence = data;
     }
   },
   actions: {
@@ -379,18 +373,24 @@ const meetingStore = {
       commit('SET_GAME_STATUS', 0);
       commit('SET_GAME_TURN', 0);
       commit('SET_GAME_WORD', '');
+      commit('SET_GAME_LIAR', '');
+      commit('SET_GAME_PLAYER', '');
+      commit('SET_LOSER', null);
+      commit('SET_PENALTY_ID', null);
+      commit('SET_SENTENCE', null);
+
       commit('SET_GAME_ISCORRECT',1);
       commit('RESET_GAME_ANSWERWORDS');
     },
-    endGameSignal({ state }) {
-      state.session.signal({
-        type: 'endGame',
-        to: [],
-      })
-    },
-    endSnapshotMode() {
-      // 스냅샷 모드가 꺼졌을 경우 후처리해야할 부분
-    },
+    // endGameSignal({ state }) {
+    //   state.session.signal({
+    //     type: 'endGame',
+    //     to: [],
+    //   })
+    // },
+    // endSnapshotMode() {
+    //   // 스냅샷 모드가 꺼졌을 경우 후처리해야할 부분
+    // },
     toggleChatPanel({ state, commit }) {
       commit('SET_IS_CHATPANEL', !state.isChatPanel);
     },
@@ -755,15 +755,14 @@ const meetingStore = {
               data.time = moment(time).format('HH:mm')
               commit('SET_MESSAGES', data)
             });
-            state.session.on('signal:endGame',(event) =>{
-              console.log(event)
-              // endGameProcess 를 어떻게 부르죠??,,,
-              commit('SET_SELECTED_GAME', null);
-              commit('SET_GAME_STATUS', 0);
-              commit('SET_GAME_TURN', 0);
-              commit('SET_GAME_WORD', '');
-              commit('SET_GAME_ISCORRECT',1);
-            });
+            // state.session.on('signal:endGame',(event) =>{
+            //   console.log(event)
+            //   commit('SET_SELECTED_GAME', null);
+            //   commit('SET_GAME_STATUS', 0);
+            //   commit('SET_GAME_TURN', 0);
+            //   commit('SET_GAME_WORD', '');
+            //   commit('SET_GAME_ISCORRECT',1);
+            // });
             state.session.on('signal:theme', (event) => {
               commit('SET_THEME', event.data)
             });
@@ -818,6 +817,11 @@ const meetingStore = {
                   }
                 }
               }
+
+              if (event.data.gameStatus == 4) {
+                dispatch('endGameProcess');
+                return;
+              }
               commit('SET_GAME_STATUS', event.data.gameStatus);
 
               //초기화
@@ -828,12 +832,6 @@ const meetingStore = {
                 commit('SET_GAME_WORD', '');
               }
 
-              if(event.data.gameStatus==3 && event.data.gameId != 4){
-                setTimeout(() => {
-                  //commit('SET_GAME_STATUS', 4);
-                }, 5000);
-              }
-              
               if(event.data.paneltyId){
                 commit('SET_GAME_PANELTY_ID',event.data.paneltyId);
               }

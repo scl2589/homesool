@@ -10,14 +10,6 @@ import MyPage from '@/views/MyPage';
 import Analysis from '@/components/mypage/Analysis'
 import Calendar from '@/components/mypage/Calendar'
 
-// Game Selection
-import SmileLeadsToAlcoholDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/SmileLeadsToAlcoholDescription';
-import UpAndDownDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/UpAndDownDescription';
-import StrawberryGameDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/StrawberryGameDescription';
-import LiarGameDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/LiarGameDescription';
-import ConsonantQuizDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/ConsonantQuizDescription';
-import FindOutDrunkenDescription from '@/components/meetingpage/multipanel/gamepanel/gamedescription/FindOutDrunkenDescription'
-
 Vue.use(VueRouter);
 
 const routes = [
@@ -35,39 +27,6 @@ const routes = [
     path: '/meet/:sessionId',
     name: 'MeetingPage',
     component: MeetingPage,
-    children: [
-      // Game Selection
-      {
-        path: 'smile',
-        component: SmileLeadsToAlcoholDescription,
-        name: 'SmileLeadsToAlcoholDescription',
-      },
-      {
-        path: 'upanddown',
-        component: UpAndDownDescription,
-        name: 'UpAndDownDescription',
-      },
-      {
-        path: 'strawberry',
-        component: StrawberryGameDescription,
-        name: 'StrawberryGameDescription',
-      },
-      {
-        path: 'liar',
-        component: LiarGameDescription,
-        name: 'LiarGameDescription',
-      },
-      {
-        path: 'consonant',
-        component: ConsonantQuizDescription,
-        name: 'ConsonantQuizDescription',
-      },
-      {
-        path: 'drunken',
-        component: FindOutDrunkenDescription,
-        name: 'FindOutDrunkenDescription',
-      },
-    ],
   },
   {
     path: '/mypage',

@@ -33,7 +33,7 @@
           </div>
           <small>웃으면 안됩니다!</small>
         </div>
-        <loser-panel class="w-100" v-if="gameStatus == 3"/>
+        <loser-panel class="w-100 d-flex justify-content-center align-items-center" v-if="gameStatus == 3"/>
     </div>
 </template>
 

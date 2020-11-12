@@ -32,7 +32,7 @@
             통과
           </div> 
       </div>
-      <loser-panel class="w-100" v-if="gameStatus == 3"/>
+      <loser-panel class="w-100 d-flex justify-content-center align-items-center" v-if="gameStatus == 3"/>
       <!-- <div class="finishgame" v-if="gameStatus==3">
         <div class="showName">
           <div v-for="subscriber in subscribers" :key="subscriber.stream.connection.data">
