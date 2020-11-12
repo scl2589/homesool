@@ -2,16 +2,17 @@
     <div class="panel">
       <div class="startgame" v-if="gameStatus==1 || gameStatus==2">
         <div class="showWord">
-          <p>숫자를 맞춰 주세요 </p>
+          <p>숫자를 맞춰 주세요</p>
+          <div v-if="notCurrentPlayer">{{ notCurrentPlayer.stream.connection.data.slice(15,-2) }} 의 차례입니다</div>
           <div v-if="gameUpDownNumber >= 0">
               <p> 이전 번호 : {{this.gameUpDownNumber}}</p>
           </div>    
-          <div>{{this.gameParticipantData}} 의 차례입니다</div>
+          <div>{{this.participantPublicData}} 의 차례입니다</div>
           <div v-if="gameStatus==2">
-            <p>{{this.gameUpDownResult}}</p>
+            <p>{{gameUpDownResult}}</p>
           </div>
         </div>
-          <div class="chat-box p-2 d-flex flex-column h-50" v-if="publisher.stream.connection.connectionId == participantPublicId">      
+          <div class="chat-box p-2 d-flex flex-column h-50" v-if="!notCurrentPlayer">      
             <div class="footer d-flex mt-auto">
               <div class="col-10 px-1 py-0">
                 <input 
@@ -31,43 +32,26 @@
             </div>
           </div> 
       </div>
-      <div class="endgame" v-if="gameStatus==3">
-          <h5> 게임이 종료되었습니다 </h5>
-          <h5> 벌칙자 : {{this.gameParticipantData}} </h5>
-      </div>
-      <div class="paneltygame" v-if="gameStatus==4">
-          <h5> 벌칙화면 </h5>
-            <user-video 
-              class="my-2 px-2 sub-video" 
-              :stream-manager="gamePaneltyPublisher" 
-              @click.native="updateMainVideoStreamManager(gamePaneltyPublisher)"
-            />
-          <div class="d-flex justify-content-around" v-if="publisher.session.connection.connectionId == participantPublicId">
-            <button
-              class="btn btn-yellow"
-              @click="changeMode(null)"
-            >
-              술게임 모드 끝내기
-            </button>
-            <button
-              class="btn btn-yellow"
-              @click="clickFinishgame()"
-            >
-              술게임 고르기
-            </button>
-        </div>
-       </div>
+      <loser-panel class="w-100" v-if="gameStatus == 3"/>
     </div>
-
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
+import LoserPanel from '@/components/meetingpage/multipanel/gamepanel/gameprocess/LoserPanel';
 
 export default {
  name: "GamePanel",
+ components:{
+     LoserPanel
+ },
   computed: {
-    ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameUpDownResult','gameUpDownIndex','participantPublicId', 'gameParticipantData','subscribers','publisher','gameUpDownNumber']),
+    ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameUpDownResult','gameUpDownIndex',
+    'participantPublicId',
+    'participantPublicData',
+    'subscribers',
+    'publisher',
+    'gameUpDownNumber']),
     ...mapGetters('meetingStore', ['notModeHost'])
   },
   data(){

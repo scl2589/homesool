@@ -35,7 +35,7 @@
             통과
           </div> 
       </div>
-      <loser-panel class="w-100" v-if="gameStatus == 3"/>
+      <loser-panel class="w-100 d-flex justify-content-center align-items-center" v-if="gameStatus == 3"/>
     </div>
 
 </template>
@@ -46,7 +46,7 @@ import LoserPanel from '@/components/meetingpage/multipanel/gamepanel/gameproces
 export default {
  name: "GamePanel",
   computed: {
-    ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameInitialWord','gameIsCorrect','participantPublicId','subscribers','publisher','gameAnswerWords','gameWordResult']),
+    ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameInitialWord','gameIsCorrect','subscribers','publisher','gameAnswerWords','gameWordResult']),
     ...mapGetters('meetingStore', ['notModeHost'])
   },
   data(){

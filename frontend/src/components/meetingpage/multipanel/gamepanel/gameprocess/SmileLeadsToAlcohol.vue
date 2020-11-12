@@ -25,21 +25,27 @@
           </div>
         </div>
         <div class="startgame" v-if="gameStatus==2">
-          <div v-if="notGamePlayer">
-            <p>다른 사람의 차례입니다.</p>
+          <div v-if="notCurrentPlayer">
+            <user-video
+              class="w-50"
+              :stream-manager="notCurrentPlayer"
+            />
+            <p>{{ notCurrentPlayer.stream.connection.data.slice(15,-2) }}님의 차례입니다.</p>
           </div>
           <div v-else>
             <p><strong>{{ gameWord }}</strong>를 읽어주세요!</p>
           </div>
           <small>웃으면 안됩니다!</small>
         </div>
-        <loser-panel class="w-100" v-if="gameStatus == 3"/>
+        <loser-panel class="w-100 d-flex justify-content-center align-items-center" v-if="gameStatus == 3"/>
     </div>
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
 import LoserPanel from '@/components/meetingpage/multipanel/gamepanel/gameprocess/LoserPanel';
+import UserVideo from '@/components/meetingpage/UserVideo';
+
 export default {
   name: 'SmileLeadsToAlcohol',
   data() {
@@ -48,11 +54,12 @@ export default {
     }
   },
   components: {
-    LoserPanel
+    LoserPanel,
+    UserVideo
   },
   computed: {
     ...mapState('meetingStore', ['gameStatus', 'selectedGame', 'gameWord']),
-    ...mapGetters('meetingStore', ['notModeHost', 'notGamePlayer'])
+    ...mapGetters('meetingStore', ['notModeHost', 'notCurrentPlayer'])
   },
   watch: {
     gameStatus(value) {
@@ -81,9 +88,7 @@ export default {
       request.gameId=this.selectedGame;
       request.theme=theme;
       request.gameStatus=2;
-
       var jsonRequest = JSON.stringify(request);
-      console.log(jsonRequest);
       this.sendGameRequest(jsonRequest);
     },
   },

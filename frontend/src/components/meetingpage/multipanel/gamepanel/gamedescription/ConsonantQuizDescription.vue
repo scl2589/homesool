@@ -48,75 +48,13 @@
           <span class="sr-only">Next</span>
         </button>
       </div>
-      <div class="d-flex justify-content-between align-items-center mx-2 mt-auto">
-        <div class="penalty">
-          <!-- Default dropup button -->
-          <!-- <div class="btn-group dropup">
-            <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              벌칙 - {{ penalty }}
-            </button>
-            <div class="dropdown-menu">
-              <li class="dropdown-item" @click="changePenalty('술 한 잔 마시기')">
-                술 한 잔 마시기 
-              </li>
-              <li class="dropdown-item">
-                5분동안 음소거
-              </li>
-              <li class="dropdown-item">
-                5분동안 카메라 정지
-              </li>
-            </div>
-          </div> -->
-          <v-select
-            :items="items"
-            label="벌칙"
-            width="10px"
-            hide-details
-            dense
-            append-icon=""
-            solo
-          ></v-select>
-          
-        </div>
-        <div>
-          <button
-            class="btn-yellow rounded"
-            @click="clickStartGame()"
-          >
-            시작하기
-          </button>
-        </div>
-      </div>
     </div>
-
   </div>
 </template>
 
 <script>
-import {mapActions} from 'vuex';
 export default {
-  name: 'ConsonantQuiznDescription',
-  data() {
-    return {
-      penalty: null,
-      items: [
-        '술 한 잔 마시기', 
-        '5분동안 음소거',
-        '5분동안 카메라 정지'
-      ],
-    }
-  },
-  methods: {
-    ...mapActions('meetingStore', ['sendGameRequest']),
-    clickStartGame() {
-     var request = new Object();
-     request.gameId=2;
-     request.paneltyId=0;
-     request.gameStatus=1;
-     var jsonRequest = JSON.stringify(request);
-     this.sendGameRequest(jsonRequest);
-    },
-  }
+  name: 'ConsonantQuiznDescription'
 }
 </script>
 
@@ -126,7 +64,7 @@ p, h1, h2, h3, h4, h5, h6, button {
 }
 
 .consonant {
-  height: 100%;
+  /* height: 100%; */
   max-height: 45vh;
   background-color: black;
   border-left: 1px solid #707070;
