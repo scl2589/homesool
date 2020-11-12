@@ -45,8 +45,13 @@ export default {
      LoserPanel
  },
   computed: {
-    ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameUpDownResult','gameUpDownIndex', 'subscribers','publisher','gameUpDownNumber', 'currentPlayer']),
-    ...mapGetters('meetingStore', ['notModeHost', 'notCurrentPlayer'])
+    ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameUpDownResult','gameUpDownIndex',
+    'notCurrentPlayer',
+    'participantPublicData',
+    'subscribers',
+    'publisher',
+    'gameUpDownNumber']),
+    ...mapGetters('meetingStore', ['notModeHost'])
   },
   data(){
     return{

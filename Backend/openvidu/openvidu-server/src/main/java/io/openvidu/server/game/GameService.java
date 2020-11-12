@@ -244,6 +244,7 @@ public class GameService {
 		case INITIAL: // 자음 퀴즈
 			String word = data.get("word").getAsString();
 			String ansInitWord = initialWordMap.get(sessionId);
+			String result = "";
 			int isCorrect = 1;
 			// 길이 검증
 			if (word.length() == 2) {
@@ -259,9 +260,22 @@ public class GameService {
 							initialAnswerMap.get(sessionId).add(word);
 							initialAnswerUserMap.get(sessionId).remove(participant);
 						}
+						else {
+							result = "사전에 없는 단어입니다";
+						}
+					}
+					else {
+						result = "중복된 단어입니다";
 					}
 				}
+				else {
+					result = "초성이 다릅니다";
+				}
 			}
+			else {
+				result = "글자수를 맞춰주세요";
+			}
+			data.addProperty("result", result);
 			data.addProperty("isCorrect", isCorrect);
 			if (initialAnswerUserMap.get(sessionId).size() > 1) {
 				params.add("data", data);

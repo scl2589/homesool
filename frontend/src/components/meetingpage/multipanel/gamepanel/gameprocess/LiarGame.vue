@@ -40,6 +40,12 @@
               <div class="voteComplete" v-if="DidVote">
                 <p> 투표가 완료되었습니다 </p>
                 <h5> 결과 집계중 </h5>
+
+                <div class="wrapper">
+                  <div class="pie spinner"></div>
+                  <div class="pie filler"></div>
+                  <div class="mask"></div>
+                </div>
               </div>
               <div class="voteProcess" v-else>
                 <p>라이어한테 투표하세요 </p>
@@ -76,7 +82,7 @@ export default {
  },
   computed: {
     ...mapState('meetingStore', ['gameStatus', 'selectedGame', 'gameTurn', 'gameWord',
-                                'subscribers','gameLiar','myself','publisher','gameVoteData','gameLiarData']),
+                                'subscribers','gameLiar','myself','publisher']),
     ...mapGetters('meetingStore', ['notModeHost']),
   },
   data(){
@@ -92,7 +98,7 @@ export default {
       'endGameProcess',
     ]),
     clickSendTheme(theme){
-      alert("주제선택");
+      //alert("주제선택");
       var request = new Object();
       request.gameId=this.selectedGame;
       request.theme=theme;
