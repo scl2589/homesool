@@ -332,7 +332,7 @@ public class GameService {
 				// 공백 제거 후 비교
 				String drunk;
 				// 통과
-				if (answer.equals(sentence.replaceAll(" ", ""))) {
+				if (answer.equals(sentence.replaceAll("\\ |\\.|\\,|\\?", ""))) {
 					drunk = "1";
 				// 실패
 				} else {
