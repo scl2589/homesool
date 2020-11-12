@@ -34,6 +34,7 @@ const meetingStore = {
     //chatting
     messages: [],
     isChatPanel: false,
+    secretName: null,
 
     // singing
     songs: null,
@@ -44,25 +45,33 @@ const meetingStore = {
     // game
     selectedGame: null,
     gameStatus: 0,
+    penalty: '',
+    currentPlayer: null,
+    loser: null,
     gameTurn: 0,
     gameWord: '',
+
+    // liar game
     gameLiar:'',
     gameLiarData:'',
     gameVoteId:'',
     gameVoteData:'',  //걸린사람 이름
-    gameParticipantId:'', //벌칙자
-    gameParticipantData:'', //벌칙자이름
-    gamePaneltyId:0,
-    gamePaneltyOV:undefined,
-    gamePaneltySubscriber: [],
-    gamePaneltySession: undefined,
-    gamePaneltyStreamManager: undefined,
-    gamePaneltyPublisher: undefined,
-
-
+  
     gameInitialWord:'',
     gameIsCorrect: 1,
+    gameAnswerWords: [],
+    gameWordResult : '',
     participantPublicId:'',
+    participantPublicData:'',
+
+    // updown
+    gameUpDownResult:'',
+    gameUpDownIndex:0,
+    gameUpDownNumber:-1,
+
+    // 나술안취했어
+    sentence: null,
+    drunkenText: null,
 
     // theme
     theme: 'basic',
@@ -78,16 +87,23 @@ const meetingStore = {
 
     //capture
     screenshotInfo: null,
-
-    //game
-    sentence: null,
-    drunkenText: null
   },
   getters: {
     notModeHost(state) {
       if (state.modeHost) {
         if (state.publisher.stream.connection.connectionId !== state.modeHost.id) {
           return state.modeHost;
+        } else {
+          return false;
+        }
+      } else {
+        return true;
+      }
+    },
+    notCurrentPlayer(state) {
+      if (state.currentPlayer) {
+        if (state.currentPlayer.stream.connection.connectionId !== state.publisher.stream.connection.connectionId) {
+          return state.currentPlayer;
         } else {
           return false;
         }
@@ -155,6 +171,9 @@ const meetingStore = {
     SET_CLEARMESSAGES(state) {
       state.messages = [];
     },
+    SET_SECRET_NAME(state, value) {
+      state.secretName = value
+    },
 
     // singing
     SET_SELECTED_SONG(state, song) {
@@ -183,6 +202,15 @@ const meetingStore = {
     SET_GAME_WORD(state, value){
       state.gameWord = value
     },
+    SET_CURRENT_PLAYER(state, value) {
+      state.currentPlayer = value
+    },
+    SET_LOSER(state, value) {
+      state.loser = value
+    },
+    SET_PENALTY(state, value) {
+      state.penalty = value
+    },
     SET_GAME_LIAR(state, value){
       state.gameLiar = value
     },
@@ -192,53 +220,43 @@ const meetingStore = {
     SET_GAME_VOTE_ID(state, value){
       state.gameVoteId = value
     },
-    SET_GAME_PARTICIPANT_ID(state, value){
-      state.gameParticipantId = value
-    },
-    SET_GAME_PARTICIPANT_DATA(state, value){
-      state.gameParticipantData = value
-    },
     SET_GAME_VOTE_DATA(state, value){
       state.gameVoteData = value
     },
-    SET_GAME_PANELTY_ID(state,value){
-      state.gamePaneltyId = value
-    },
-    SET_GAME_PANELTY_SUBSCRIBER(state, subscriber){
-      state.gamePaneltySubscriber = subscriber
-    },
-    SET_GAME_PANELTY_OV(state,gamePaneltyOV){
-      state.gamePaneltyOV = gamePaneltyOV
-    },
-    SET_GAME_PANELTY_SESSION(state, gamePaneltySession){
-      state. gamePaneltySession =  gamePaneltySession
-    },
-    SET_GAME_PANELTY_STREAM_MANAGER(state,gamePaneltyStreamManager){
-      state.gamePaneltyStreamManager = gamePaneltyStreamManager
-    },
-    SET_GAME_PANELTY_PUBLISHER(state,gamePaneltyPublisher){
-      state.gamePaneltyPublisher = gamePaneltyPublisher
-    },
-    
-
     SET_GAME_INITIALWORD(state, value){
       state.gameInitialWord = value
     },
     SET_GAME_ISCORRECT(state, value){
       state.gameIsCorrect = value
     },
-    SET_GAME_PARTICIPANTPUBLICID(state, value){
-      state.participantPublicId = value
+    SET_GAME_ANSWERWORDS(state, data){
+      state.gameAnswerWords.push(data)
     },
-
+    SET_GAME_WORDRESULT(state, data){
+      state.gameWordResult = data
+    },
+    RESET_GAME_ANSWERWORDS(state){
+      state.gameAnswerWords = []
+    },
+    SET_GAME_UPDOWN_RESULT(state,value){
+      state.gameUpDownResult = value
+    },
+    SET_GAME_UPDOWN_INDEX(state,value){
+      state.gameUpDownIndex = value
+    },
+    SET_GAME_UPDOWN_NUMBER(state,value){
+      state.gameUpDownNumber = value
+    },
     SET_SENTENCE(state, data) {
       state.sentence = data;
     },
-
     SET_DRUNKEN_TEXT(state, data) {
       state.drunkenText = data
     },
-
+    SET_PARTICIPANTPUBLICDATA(state, data){
+      state.participantPublicData = data;
+    },
+    
     // theme
     SET_THEME(state, theme) {
       state.theme = theme;
@@ -270,7 +288,7 @@ const meetingStore = {
     //screenshot
     SET_SCREENSHOT_INFO(state, data) {
       state.screenshotInfo = data;
-    },
+    }
   },
   actions: {
     changeMode({ state, getters }, mode) {
@@ -337,21 +355,37 @@ const meetingStore = {
       commit('SET_SONGS', null);
       commit('SET_IS_SONG_ENDED', false);
     },
-    endGameProcess({ commit }) {
+    endGameProcess({ state, commit }) {
+      if (state.selectedGame == 1) {
+        // 업다운
+        commit('SET_GAME_UPDOWN_RESULT', '');
+        commit('SET_GAME_UPDOWN_INDEX', 0);
+        commit('SET_GAME_UPDOWN_NUMBER', -1);
+      } else if (state.selectedGame == 2) {
+        // 자음퀴즈
+        commit('SET_GAME_INITIALWORD', '');
+        commit('SET_GAME_ISCORRECT', 1);
+        commit('RESET_GAME_ANSWERWORDS');
+        commit('SET_GAME_WORDRESULT','');
+      } else if (state.selectedGame == 3) {
+        // 라이어
+        commit('SET_GAME_LIAR', '');
+        commit('SET_GAME_LIAR_DATA', '');
+        commit('SET_GAME_VOTE_ID', '');
+        commit('SET_GAME_VOTE_DATA', '');
+      } else if (state.selectedGame == 5) {
+        // 나술안취했어
+        commit('SET_SENTENCE', null);
+      }
+
+      // 공통
       commit('SET_SELECTED_GAME', null);
       commit('SET_GAME_STATUS', 0);
+      commit('SET_PENALTY', '');
+      commit('SET_CURRENT_PLAYER', null);
+      commit('SET_LOSER', null);
       commit('SET_GAME_TURN', 0);
       commit('SET_GAME_WORD', '');
-      commit('SET_GAME_ISCORRECT',1);
-    },
-    endGameSignal({ state }) {
-      state.session.signal({
-        type: 'endGame',
-        to: [],
-      })
-    },
-    endSnapshotMode() {
-      // 스냅샷 모드가 꺼졌을 경우 후처리해야할 부분
     },
     toggleChatPanel({ state, commit }) {
       commit('SET_IS_CHATPANEL', !state.isChatPanel);
@@ -607,10 +641,40 @@ const meetingStore = {
           state.session.connect(state.ovToken, { clientData: enterData.nickName })
 					.then(() => {
             commit('SET_NICKNAME', enterData.nickName);
+            const adjectives = [
+              '사랑스러운', '매력적인', '매혹적인', '자신감있는', '헝클어진',
+              '귀여운', '우아한', '품격있는', '공정한', '더러운',
+              '추잡한', '고약한', '화려한', '매력적인', '멋진',
+              '잘생긴', '예쁜', '보기좋은', '담백한', '가정적인',
+              '아름다운', '친절한', '즐거운', '상냥한', '예의바른',
+              '완벽한', '꾀죄죄한', '지저분한', '빛나는', '날씬한',
+              '호리호리한', '흥미로운', '훌륭한', '명랑한', '쾌활한',
+              '터프한', '제멋대로인', '공격적인', '야심있는', '용감한',
+              '어설픈', '촌스러운', '서투른', '잔혹한', '잔인한',
+              '성실한', '단호한', '정직한', '질투하는', '신비한',
+              '성공한', '출세한', '이기적인', '이타적인', '재능있는',
+              '지혜로운', '재치 있는', '현명한', '슬기로운', '엉뚱한'
+            ]
+            const animals = [
+              '코끼리', '사자', '하마', '표범', '가젤',
+              '개미핥기', '치타', '기린', '얼룩말', '코뿔소',
+              '호랑이', '늑대', '판다', '코알라', '다람쥐',
+              '곰', '사슴', '원숭이', '너구리', '침팬지',
+              '미어캣', '낙타', '목도리도마뱀', '타조', '사막여우',
+              '전갈', '순록', '북극곰', '흰올빼미', '팽귄',
+              '북극여우', '바다코끼리', '돌고래', '가오리', '나비고기',
+              '상어', '문어', '오징어', '바다거북', '흰동가리',
+              '고래', '불가사리', '해마', '게', '독수리',
+              '갈매기', '큰부리새', '원앙', '부엉이', '홍학',
+              '두루미', '비둘기', '벌새', '사다새', '공작',
+              '참새', '고양이', '개', '푸들나방', '별코두더지'
+            ]
+            var sName = adjectives[Math.floor(Math.random() * adjectives.length)] + ' ' + animals[Math.floor(Math.random() * animals.length)]
+            commit('SET_SECRET_NAME', sName);
+
             state.session.publish(state.publisher);
 
             state.session.on('streamCreated', (event) => {
-              console.log(event);
               let status = {
                 theme: state.theme,
                 currentMode: state.currentMode,
@@ -693,40 +757,19 @@ const meetingStore = {
             });
 
             state.session.on('signal:chat', (event) => {
+              let eventData = JSON.parse(event.data);
               let data = new Object()
               let time = new Date()
-              data.message = event.data
+              data.message = eventData.content;
               if (state.currentMode === 'anonymous') {
-                const animals = [
-                  '코끼리', '사자', '하마', '표범', '가젤',
-                  '개미핥기', '치타', '기린', '얼룩말', '코뿔소',
-                  '호랑이', '늑대', '판다', '코알라', '다람쥐',
-                  '곰', '사슴', '원숭이', '너구리', '침팬지',
-                  '미어캣', '낙타', '목도리도마뱀', '타조', '사막여우',
-                  '전갈', '순록', '북극곰', '흰올빼미', '팽귄',
-                  '북극여우', '바다코끼리', '돌고래', '가오리', '나비고기',
-                  '상어', '문어', '오징어', '바다거북', '흰동가리',
-                  '고래', '불가사리', '해마', '게', '독수리',
-                  '갈매기', '큰부리새', '원앙', '부엉이', '홍학',
-                  '두루미', '비둘기', '벌새', '사다새', '공작',
-                  '참새', '고양이', '개', '푸들나방', '별코두더지'
-                ]
-                data.sender = animals[event.from.connectionId.slice(-10, ).charCodeAt(0) % 60];
+                data.sender = eventData.secretName;
               } else {
-                data.sender = event.from.data.slice(15,-2)
+                data.sender = event.from.data.slice(15,-2);
               }
               data.time = moment(time).format('HH:mm')
               commit('SET_MESSAGES', data)
             });
-            state.session.on('signal:endGame',(event) =>{
-              console.log(event)
-              // endGameProcess 를 어떻게 부르죠??,,,
-              commit('SET_SELECTED_GAME', null);
-              commit('SET_GAME_STATUS', 0);
-              commit('SET_GAME_TURN', 0);
-              commit('SET_GAME_WORD', '');
-              commit('SET_GAME_ISCORRECT',1);
-            });
+
             state.session.on('signal:theme', (event) => {
               commit('SET_THEME', event.data)
             });
@@ -749,94 +792,161 @@ const meetingStore = {
             });
             
             state.session.on('signal:game', (event) => {
-              console.log(event.type)
-              console.log(event.penaltyId)
-              console.log(event.data)
-              if(event.data.gameStatus == 1){
-                //게임 시작
+              commit('SET_GAME_STATUS', event.data.gameStatus);
+              
+              // 공통
+              if (event.data.participantPublicId){
+                if (state.publisher.stream.connection.connectionId === event.data.participantPublicId) {
+                  commit('SET_CURRENT_PLAYER', state.publisher);
+                } else {
+                  state.subscribers.forEach(subscriber => {
+                    if (subscriber.stream.connection.connectionId === event.data.participantPublicId) {
+                      commit('SET_CURRENT_PLAYER', subscriber);
+                    }
+                  });
+                }
+              }
+
+              if(event.data.gameStatus == 0){
+                // 게임 초기화(고르기 화면으로)
+                let modeHost = {
+                  'id': event.from.connectionId,
+                  'name': event.from.data.slice(15,-2)
+                }
+                commit('SET_MODE_HOST', modeHost);
+                dispatch('endGameProcess');
+              }
+
+              else if(event.data.gameStatus == 1) {
+                //게임 시작(선택)
                 commit('SET_SELECTED_GAME', event.data.gameId);
                 commit('SET_GAME_STATUS', event.data.gameStatus);
-                console.log("isCorrect : " + state.gameIsCorrect)
+                commit('SET_PENALTY', event.data.panelty)
+                if(state.selectedGame == 1){  //업다운
+                  commit('SET_GAME_UPDOWN_INDEX',event.data.index)
+                  commit('SET_GAME_UPDOWN_NUMBER',event.data.number)
+                }
+                if(state.selectedGame == 2){  //초성게임
+                  commit('SET_GAME_INITIALWORD',event.data.initialWord);
+                }
               }
-              if(event.data.gameStatus == 0){
-                //게임 종료
-              }
-
-              if(event.data.paneltyId){
-                commit('SET_GAME_PANELTY_ID',event.data.paneltyId);
-              }
-
-              if(event.data.turn >= 0){
-                commit('SET_GAME_TURN',event.data.turn);
-              }
-              if(event.data.word){
-                commit('SET_GAME_WORD',event.data.word);
-              }
-              if(event.data.liarId){
-                commit('SET_GAME_LIAR',event.data.liarId);
-                //commit('SET_GAME_LIAR',event.data.liar);
-                //라이어의 닉네임
-                for(let i=0; i<state.subscribers.length; i++){
-                  if(state.subscribers[i].stream.connection.connectionId == event.data.voteId){
-                    commit('SET_GAME_LIAR_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
+              else if(event.data.gameStatus == 2){
+                if(state.selectedGame == 1){  //업다운
+                  commit('SET_GAME_UPDOWN_RESULT',event.data.updown)
+                  commit('SET_GAME_UPDOWN_INDEX',event.data.index)
+                  commit('SET_GAME_UPDOWN_NUMBER',event.data.number)
+                }
+                if(state.selectedGame == 2){  //초성게임
+                  if(event.data.isCorrect == 2){
+                    if (state.publisher.stream.connection.connectionId === event.from.connectionId) {
+                      let data = {
+                        nickName : state.publisher.stream.connection.data.slice(15,-2),
+                        word : event.data.word,
+                      }
+                      commit('SET_GAME_ANSWERWORDS', data);
+                    } else {
+                      state.subscribers.forEach(subscriber => {
+                        if (subscriber.stream.connection.connectionId === event.from.connectionId) {
+                          let data = {
+                            nickName : subscriber.stream.connection.data.slice(15,-2),
+                            word : event.data.word,
+                          }
+                          commit('SET_GAME_ANSWERWORDS', data);
+                        }
+                      });
+                    }
+                    if(event.from.connectionId == state.publisher.stream.connection.connectionId){
+                      commit('SET_GAME_ISCORRECT',event.data.isCorrect);
+                    }
+                  }
+                  if(event.from.connectionId == state.publisher.stream.connection.connectionId){
+                    commit('SET_GAME_WORDRESULT',event.data.result);
                   }
                 }
-                if(state.publisher.session.connection.connectionId == event.data.liar){ //본인체크
-                  commit('SET_GAME_LIAR_DATA',state.publisher.session.connection.data.slice(15,-2));
+                if(state.selectedGame == 3){  //라이어게임
+                  commit('SET_GAME_TURN', event.data.turn);
+                  commit('SET_GAME_WORD', event.data.word);
+                  commit('SET_GAME_LIAR', event.data.liarId);
                 }
-              }
-              if(event.data.voteId){
-                commit('SET_GAME_VOTE_ID',event.data.voteId);
-                //당선자??의 닉네임도 찾아서 넣어줘야함
-                for(let i=0; i<state.subscribers.length; i++){
-                  if(state.subscribers[i].stream.connection.connectionId == event.data.voteId){
-                    commit('SET_GAME_VOTE_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
-                  }
+                if(state.selectedGame == 4){  //웃으면 술이와요
+                  commit('SET_GAME_WORD', event.data.word);
+                  commit('SET_GAME_PLAYER', event.data.player);
                 }
-                if(state.publisher.session.connection.connectionId == event.data.liar){ //본인체크
-                  commit('SET_GAME_VOTE_DATA',state.publisher.session.connection.data.slice(15,-2));
-                }
-              }
-              if(event.data.participantId){
-                commit('SET_GAME_PARTICIPANT_ID',event.data.participantId);
-                //벌칙자의 닉네임도 찾아서 넣어줘야함
-                for(let i=0; i<state.subscribers.length; i++){
-                  if(state.subscribers[i].stream.connection.connectionId == event.data.participantId){
-                    commit('SET_GAME_PARTICIPANT_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
-                    //벌칙자 stream 생성
-                    this.setPaneltyScreen();
-                  }
-                }
-  
-                if(state.publisher.session.connection.connectionId == event.data.liar){ //본인체크
-                  commit('SET_GAME_PARTICIPANT_DATA',state.publisher.session.connection.data.slice(15,-2));
-                }
+                if(state.selectedGame == 5){  //나술안취했어
 
-                
-                
-              }
-              if(event.data.initialWord){
-                commit('SET_GAME_INITIALWORD',event.data.initialWord);
-              }
-              if(event.data.isCorrect){
-                console.log("-----iscorrect------")
-                
-                if(event.from.connectionId == state.publisher.stream.connection.connectionId){
-                  console.log(event.from.connectionId)
-                  console.log(state.publisher.stream.connection.connectionId)  
-                  commit('SET_GAME_ISCORRECT',event.data.isCorrect);
+                }
+                //게임공통
+                if(event.data.participantPublicId){
+                  commit('SET_GAME_PARTICIPANTPUBLICID',event.data.participantPublicId)
+                  //벌칙자의 닉네임도 찾아서 넣어줘야함
+                  for(let i=0; i<state.subscribers.length; i++){
+                    if(state.subscribers[i].stream.connection.connectionId == event.data.participantPublicId){
+                      commit('SET_PARTICIPANTPUBLICDATA',state.subscribers[i].stream.connection.data.slice(15,-2));
+                    }
+                  }
+                  if(state.publisher.session.connection.connectionId == event.data.participantPublicId){ //본인체크
+                    commit('SET_PARTICIPANTPUBLICDATA',state.publisher.session.connection.data.slice(15,-2));
+                  }
                 }
               }
-              if(event.data.participantPublicId){
-                commit('SET_GAME_PARTICIPANTPUBLICID',event.data.participantPublicId)
+              else if(event.data.gameStatus == 3) {
+                if (state.selectedGame == 1) {
+                  commit('SET_GAME_UPDOWN_NUMBER',event.data.number)
+                }
+                else if(state.selectedGame == 3){
+                   //라이어의 닉네임
+                   for(let i=0; i<state.subscribers.length; i++){
+                    if(state.subscribers[i].stream.connection.connectionId == event.data.liarId){
+                      commit('SET_GAME_LIAR_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
+                    }
+                  }
+                  if(state.publisher.session.connection.connectionId == event.data.liarId){ //본인체크
+                    commit('SET_GAME_LIAR_DATA',state.publisher.session.connection.data.slice(15,-2));
+                  }
+
+                  //최다 득표자의 닉네임
+                  commit('SET_GAME_VOTE_ID',event.data.voteId);
+                  for(let i=0; i<state.subscribers.length; i++){  //닉네임
+                    if(state.subscribers[i].stream.connection.connectionId == event.data.voteId){
+                      commit('SET_GAME_VOTE_DATA',state.subscribers[i].stream.connection.data.slice(15,-2));
+                    }
+                  }
+                  if(state.publisher.session.connection.connectionId == event.data.voteId){ //본인체크
+                    commit('SET_GAME_VOTE_DATA',state.publisher.session.connection.data.slice(15,-2));
+                  }
+                }
+                //게임 공통
+                commit('SET_GAME_STATUS', event.data.gameStatus);
+                if (event.data.participantPublicId){
+                  if (state.publisher.stream.connection.connectionId === event.data.participantPublicId) {
+                    commit('SET_LOSER', state.publisher);
+                  } else {
+                    state.subscribers.forEach(subscriber => {
+                      if (subscriber.stream.connection.connectionId === event.data.participantPublicId) {
+                        commit('SET_LOSER', subscriber);
+                      }
+                    });
+                  }
+                }
+                else{
+                  if (state.publisher.stream.connection.connectionId === event.from.connectionId) {
+                    commit('SET_LOSER', state.publisher);
+                  } else {
+                    state.subscribers.forEach(subscriber => {
+                      if (subscriber.stream.connection.connectionId === event.from.connectionId) {
+                        commit('SET_LOSER', subscriber);
+                      }
+                    });
+                  }
+                }
               }
+              
               if (event.data.sentence && event.data.gameStatus == 1) {
-                commit('SET_GAME_STATUS', 2)
-                // setTimeout(() => {
-                  commit('SET_SENTENCE', event.data.sentence)
-                // }, 1000);
-                dispatch('recordVoice')
+                commit('SET_GAME_STATUS', 2);
+                commit('SET_SENTENCE', event.data.sentence);
+                dispatch('recordVoice');
               }
+
               if (event.data.sentence && event.data.gameStatus == 3) {
                 commit('SET_SENTENCE', event.data.sentence)
               }
@@ -881,9 +991,13 @@ const meetingStore = {
         })
     },
     sendMessage({ state }, message) {
+      var messageData = {
+        content: message,
+        secretName: state.secretName
+      }
       state.session.signal({
         type: 'chat',
-        data: message,
+        data: JSON.stringify(messageData),
         to: [],
       })
         .then(() => {
@@ -988,48 +1102,6 @@ const meetingStore = {
         type: 'attachImage'
       })
     },
-    setPaneltyScreen({ state, commit, dispatch }){
-      if (state.isSharingMode) {
-        return
-      } 
-      // --- Get an OpenVidu object ---
-			const PaneltyOV = new OpenVidu();
-			// --- Init a session ---
-			const paneltySession = PaneltyOV.initSession();
-			// --- Specify the actions when events take place in the session ---
-			// On every new Stream received...
-      const paneltySubscribers = [];
-			paneltySession.on('streamCreated', ({ stream }) => {
-        const subscriber2 = paneltySession.subscribe(stream);
-				paneltySubscribers.push(subscriber2);
-			});
-			// On every Stream destroyed...
-			paneltySession.on('streamDestroyed', ({ stream }) => {
-				const index2 = paneltySubscribers.indexOf(stream.streamManager, 0);
-				if (index2 >= 0) {
-					paneltySubscribers.splice(index2, 1);
-				}
-			});
-        dispatch('getToken', state.mySessionId).then(token => {
-          let paneltyPublisher = PaneltyOV.initPublisher(undefined, {
-            audioSource: undefined, // The source of audio. If undefined default microphone
-            videoSource: undefined, // The source of video. If undefined default webcam
-            publishAudio: true,  	// Whether you want to start publishing with your audio unmuted or not
-            publishVideo: true,  	// Whether you want to start publishing with your video enabled or not
-            resolution: '640x480',  // The resolution of your video
-            frameRate: 30,			// The frame rate of your video
-            insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
-            mirror: true,       	// Whether to mirror your local video or not
-          });
-        paneltySession.publish(paneltyPublisher);
-        commit('SET_GAME_PANELTY_OV', PaneltyOV);
-        commit('SET_GAME_PANELTY_STREAM_MANAGER', paneltyPublisher);
-        commit('SET_GAME_PANELTY_PUBLISHER', paneltyPublisher);
-        commit('SET_GAME_PANELTY_SESSION', paneltySession);
-        commit('SET_GAME_PANELTY_SUBSCRIBER', paneltySubscribers);
-        commit('SET_OVTOKEN', token);
-      });
-    },
     saveScreenshotInfo({ commit }, data) {
       commit('SET_SCREENSHOT_INFO', data)
     },
@@ -1039,6 +1111,55 @@ const meetingStore = {
           console.log("SUCCESSFUL - uploading screenshot")
         })
         .catch((err) => {
+          console.log(err)
+        })
+    },
+    checkIsSmile({ state }) {
+      console.log(state.selectedGame);
+      let myVideo = document.getElementById('myVideo').childNodes[0].childNodes[1];
+      let canvas = document.createElement("CANVAS");
+      let ctx = canvas.getContext('2d');
+      canvas.width = myVideo.videoWidth;
+      canvas.height = myVideo.videoHeight;
+
+      ctx.fillRect(0, 0, myVideo.videoWidth, myVideo.videoHeight);
+      ctx.drawImage(myVideo , 0, 0, myVideo.videoWidth, myVideo.videoHeight);
+      
+      let converting = canvas.toDataURL("image/jpeg");
+      let arr = converting.split(',');
+      let mime = arr[0].match(/:(.*?);/)[1];
+      let bstr = atob(arr[1]);
+      let n = bstr.length;
+      let u8arr = new Uint8Array(n);
+      while(n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      let file = new File([u8arr], 'temp', {type:mime});
+      let frm = new FormData()
+      frm.append('files', file);
+
+      axios.post(
+        'https://k3a503.p.ssafy.io:5000/emotion',
+        frm,
+        {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+        .then(res => {
+          console.log(res);
+          if (res.data === 'smile') {
+            let request = {
+              gameStatus: 3
+            }
+            state.session.signal({
+              data: JSON.stringify(request),
+              to: [],
+              type: 'game'
+            })
+          }
+        })
+        .catch(err => {
           console.log(err)
         })
     },

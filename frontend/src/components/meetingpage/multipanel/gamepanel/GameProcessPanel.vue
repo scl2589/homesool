@@ -1,11 +1,13 @@
 <template>
   <div class="panel">
-    <SmileLeadsToAlcohol v-if="selectedGame==0">
-    </SmileLeadsToAlcohol>
+    <UpAndDown v-if="selectedGame==1">
+    </UpAndDown>
     <ConsonantQuiz v-if="selectedGame==2">
     </ConsonantQuiz>
     <LiarGame v-if="selectedGame==3">
     </LiarGame>
+    <SmileLeadsToAlcohol v-if="selectedGame==4">
+    </SmileLeadsToAlcohol>
     <FindOutDrunken v-if="selectedGame==5">
     </FindOutDrunken>
   </div>
@@ -17,6 +19,7 @@ import SmileLeadsToAlcohol from '@/components/meetingpage/multipanel/gamepanel/g
 import LiarGame from '@/components/meetingpage/multipanel/gamepanel/gameprocess/LiarGame'
 import FindOutDrunken  from '@/components/meetingpage/multipanel/gamepanel/gameprocess/FindOutDrunken'
 import ConsonantQuiz from '@/components/meetingpage/multipanel/gamepanel/gameprocess/ConsonantQuiz'
+import UpAndDown from '@/components/meetingpage/multipanel/gamepanel/gameprocess/UpAndDown'
 
 export default {
   name: 'GameProcessPanel',
@@ -29,8 +32,9 @@ export default {
   components:{
     SmileLeadsToAlcohol,
     LiarGame,
+    ConsonantQuiz,
+    UpAndDown,
     FindOutDrunken,
-    ConsonantQuiz
   },
 
   computed: {

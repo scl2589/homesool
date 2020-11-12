@@ -40,6 +40,12 @@
               <div class="voteComplete" v-if="DidVote">
                 <p> 투표가 완료되었습니다 </p>
                 <h5> 결과 집계중 </h5>
+
+                <div class="wrapper">
+                  <div class="pie spinner"></div>
+                  <div class="pie filler"></div>
+                  <div class="mask"></div>
+                </div>
               </div>
               <div class="voteProcess" v-else>
                 <p>라이어한테 투표하세요 </p>
@@ -61,50 +67,23 @@
               </div>
             </div>
         </div>
-        <div class="endgame" v-if="gameStatus==3">
-          <h5> 게임이 종료되었습니다 </h5>
-          <h5> 당첨자 : {{this.gameVoteData}} </h5>
-          <h5> 라이어 : {{this.gameLiarData}} </h5>
-          <h5> 벌칙자 : {{this.gameParticipantData}} </h5>
-        </div>
-        <div class="paneltygame" v-if="gameStatus==4">
-          <h5> 벌칙화면 </h5>
-            <user-video 
-              class="my-2 px-2 sub-video" 
-              :stream-manager="gamePaneltyPublisher" 
-              @click.native="updateMainVideoStreamManager(gamePaneltyPublisher)"
-            />
-          <div class="d-flex justify-content-around" v-if="!notModeHost">
-          <button
-            class="btn btn-yellow"
-            @click="changeMode(null)"
-          >
-            술게임 모드 끝내기
-          </button>
-          <button
-            class="btn btn-yellow"
-            @click="endGameProcess"
-          >
-            술게임 고르기
-          </button>
-        </div>
-        </div>
-    </div>
+        <loser-panel class="w-100" v-if="gameStatus == 3"/>
+  </div>
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
-import UserVideo from '../../../UserVideo';
+import LoserPanel from '@/components/meetingpage/multipanel/gamepanel/gameprocess/LoserPanel';
 
 export default {
  name: "GamePanel",
  components : {
-   UserVideo,
+   LoserPanel
  },
   computed: {
-    ...mapState('meetingStore', ['gameStatus', 'selectedGame', 'gameTurn', 'gameWord', 'gamePaneltySubscriber', 'gamePaneltyPublisher',
-                                'subscribers','gameLiar','myself','publisher','gameVoteData','gameParticipantData','gameLiarData']),
-    ...mapGetters('meetingStore', ['notModeHost'])
+    ...mapState('meetingStore', ['gameStatus', 'selectedGame', 'gameTurn', 'gameWord',
+                                'subscribers','gameLiar','myself','publisher']),
+    ...mapGetters('meetingStore', ['notModeHost']),
   },
   data(){
     return{
@@ -119,7 +98,7 @@ export default {
       'endGameProcess',
     ]),
     clickSendTheme(theme){
-      alert("주제선택");
+      //alert("주제선택");
       var request = new Object();
       request.gameId=this.selectedGame;
       request.theme=theme;
@@ -141,6 +120,15 @@ export default {
       console.log("투표"+jsonRequest);
       this.sendGameRequest(jsonRequest);
     },
+    sendEndgame(){
+      var request = new Object();
+      request.gameId=this.selectedGame;
+      request.gameStatus=4;
+
+      var jsonRequest = JSON.stringify(request);
+      console.log(jsonRequest);
+      this.sendGameRequest(jsonRequest);
+    }
   }
 }
 </script>

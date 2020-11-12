@@ -2,6 +2,7 @@ package com.ssafy.homesool.service;
 
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -24,15 +25,13 @@ public class RoomService {
 	private final MemberRepository memberRepository;
 
 	public RoomDto.RoomResponse add(InsertRoomInfo insertRoomInfo) {
-		String code;
 		
-		//무한 루프 안쓰고 싶은데..
+		String code;
+		// 무한루프는 그대로지만 HashSet 활용해서 DB 접근 최소화!
+		HashSet<String> set = new HashSet<>(roomRepository.findAllCode());
 		while (true) {
-			//랜덤코드 생성
 			code = Util.getRandomCode();
-			System.out.println(code);
-			//중복 체크
-			if(roomRepository.findOneByCode(code) == null) break;
+			if(!set.contains(code)) break;
 		}
 		Room room = Room.builder()
 				.hostId(insertRoomInfo.getHostId())

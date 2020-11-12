@@ -1,72 +1,86 @@
 <template>
     <div class="panel">
       <div class="startgame" v-if="gameStatus==1 || gameStatus==2">
-        <div class="answer">
-          <p v-for="word in gameAnswerWords" :key="word.word">
-            {{word.nickName}} : {{word.word}}
-          </p>
-        </div>
         <div class="showWord">
-          <p>{{this.gameInitialWord}}</p>
+          <p>숫자를 맞춰 주세요</p>
+          <div v-if="notCurrentPlayer">{{ notCurrentPlayer.stream.connection.data.slice(15,-2) }} 의 차례입니다</div>
+          <div v-if="gameUpDownNumber >= 0">
+              <p> 이전 번호 : {{this.gameUpDownNumber}}</p>
+          </div>    
+          <div v-if="gameStatus==2">
+            <p>{{gameUpDownResult}}</p>
+          </div>
         </div>
-          <div class="chat-box p-2 d-flex flex-column h-50"  v-if="gameIsCorrect == 1">      
+          <div class="chat-box p-2 d-flex flex-column h-50" v-if="!notCurrentPlayer">      
             <div class="footer d-flex mt-auto">
               <div class="col-10 px-1 py-0">
                 <input 
-                  @keyup.enter="clickSendWord(word)"
+                  @keyup.enter="clickSendNum()"
                   class="text-box"
-                  v-model="word"
+                  v-model="number"
                 >
               </div>
               <div class="col-2 p-0">
                 <button
                   class="send-btn"
-                  @click="clickSendWord(word)"
+                  @click="clickSendNum()"
                 >
                   <i class="fas fa-paper-plane"></i>
                 </button>
               </div>
             </div>
-          <div>
-            <p>{{this.gameWordResult}}</p>
-          </div>
-          </div>
-          <div v-else>
-            통과
           </div> 
       </div>
-      <loser-panel class="w-100 d-flex justify-content-center align-items-center" v-if="gameStatus == 3"/>
+      <loser-panel class="w-100" v-if="gameStatus == 3"/>
     </div>
-
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
 import LoserPanel from '@/components/meetingpage/multipanel/gamepanel/gameprocess/LoserPanel';
+
 export default {
  name: "GamePanel",
+ components:{
+     LoserPanel
+ },
   computed: {
-    ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameInitialWord','gameIsCorrect','subscribers','publisher','gameAnswerWords','gameWordResult']),
-    ...mapGetters('meetingStore', ['notModeHost'])
+    ...mapState('meetingStore', [
+      'gameStatus',
+      'selectedGame',
+      'gameUpDownResult',
+      'gameUpDownIndex',
+      'participantPublicData',
+      'subscribers',
+      'publisher',
+      'gameUpDownNumber'
+    ]),
+    ...mapGetters('meetingStore', ['notModeHost', 'notCurrentPlayer'])
   },
   data(){
     return{
-      word: "",
+      number: 0,
     }
-  },
-  components: {
-    LoserPanel
   },
   methods:{
        ...mapActions("meetingStore", [
-      "sendGameRequest",'changeMode','endGameSignal'
+      "sendGameRequest",
     ]),
-    clickSendWord(word){
+    clickSendNum(){
       var request = new Object();
       request.gameId=this.selectedGame;
-      request.word=word;
+      request.number=this.number;
       request.gameStatus=2;
-      this.word = "";
+      request.index=this.gameUpDownIndex;
+      this.number = 0;
+      var jsonRequest = JSON.stringify(request);
+      console.log(jsonRequest);
+      this.sendGameRequest(jsonRequest);
+    },
+     clickFinishgame(){
+      var request = new Object();
+      request.gameId=this.selectedGame;
+      request.gameStatus=4;
       var jsonRequest = JSON.stringify(request);
       console.log(jsonRequest);
       this.sendGameRequest(jsonRequest);
