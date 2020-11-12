@@ -57,11 +57,6 @@ const meetingStore = {
     gameParticipantId:'', //벌칙자
     gameParticipantData:'', //벌칙자이름
     gamePaneltyId:0,
-    gamePaneltyOV:undefined,
-    gamePaneltySubscriber: [],
-    gamePaneltySession: undefined,
-    gamePaneltyStreamManager: undefined,
-    gamePaneltyPublisher: undefined,
 
     gameInitialWord:'',
     gameIsCorrect: 1,
@@ -835,7 +830,7 @@ const meetingStore = {
 
               if(event.data.gameStatus==3 && event.data.gameId != 4){
                 setTimeout(() => {
-                  commit('SET_GAME_STATUS', 4);
+                  //commit('SET_GAME_STATUS', 4);
                 }, 5000);
               }
               
@@ -1083,48 +1078,6 @@ const meetingStore = {
         to: [],
         type: 'attachImage'
       })
-    },
-    setPaneltyScreen({ state, commit, dispatch }){
-      if (state.isSharingMode) {
-        return
-      } 
-      // --- Get an OpenVidu object ---
-			const PaneltyOV = new OpenVidu();
-			// --- Init a session ---
-			const paneltySession = PaneltyOV.initSession();
-			// --- Specify the actions when events take place in the session ---
-			// On every new Stream received...
-      const paneltySubscribers = [];
-			paneltySession.on('streamCreated', ({ stream }) => {
-        const subscriber2 = paneltySession.subscribe(stream);
-				paneltySubscribers.push(subscriber2);
-			});
-			// On every Stream destroyed...
-			paneltySession.on('streamDestroyed', ({ stream }) => {
-				const index2 = paneltySubscribers.indexOf(stream.streamManager, 0);
-				if (index2 >= 0) {
-					paneltySubscribers.splice(index2, 1);
-				}
-			});
-        dispatch('getToken', state.mySessionId).then(token => {
-          let paneltyPublisher = PaneltyOV.initPublisher(undefined, {
-            audioSource: undefined, // The source of audio. If undefined default microphone
-            videoSource: undefined, // The source of video. If undefined default webcam
-            publishAudio: true,  	// Whether you want to start publishing with your audio unmuted or not
-            publishVideo: true,  	// Whether you want to start publishing with your video enabled or not
-            resolution: '640x480',  // The resolution of your video
-            frameRate: 30,			// The frame rate of your video
-            insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
-            mirror: true,       	// Whether to mirror your local video or not
-          });
-        paneltySession.publish(paneltyPublisher);
-        commit('SET_GAME_PANELTY_OV', PaneltyOV);
-        commit('SET_GAME_PANELTY_STREAM_MANAGER', paneltyPublisher);
-        commit('SET_GAME_PANELTY_PUBLISHER', paneltyPublisher);
-        commit('SET_GAME_PANELTY_SESSION', paneltySession);
-        commit('SET_GAME_PANELTY_SUBSCRIBER', paneltySubscribers);
-        commit('SET_OVTOKEN', token);
-      });
     },
     saveScreenshotInfo({ commit }, data) {
       commit('SET_SCREENSHOT_INFO', data)
