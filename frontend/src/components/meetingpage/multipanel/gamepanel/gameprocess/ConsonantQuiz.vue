@@ -1,11 +1,6 @@
 <template>
     <div class="panel">
       <div class="startgame" v-if="gameStatus==1 || gameStatus==2">
-        <div class="answer">
-          <p v-for="word in gameAnswerWords" :key="word.word">
-            {{word.nickName}} : {{word.word}}
-          </p>
-        </div>
         <div class="showWord">
           <p>{{this.gameInitialWord}}</p>
         </div>
@@ -36,6 +31,11 @@
           </div> 
       </div>
       <loser-panel class="w-100 d-flex justify-content-center align-items-center" v-if="gameStatus == 3"/>
+      <div class="answerList">
+          <p v-for="word in gameAnswerWords" :key="word.word">
+            {{word.nickName}} : {{word.word}}
+          </p>
+      </div>
     </div>
 
 </template>
@@ -112,5 +112,10 @@ p{
 
 #chat-area {
   overflow-y: auto;
+}
+
+.answerList > p{
+  color:yellow;
+  font-size : 1rem;
 }
 </style>
