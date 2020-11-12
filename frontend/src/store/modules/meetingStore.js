@@ -34,6 +34,7 @@ const meetingStore = {
     //chatting
     messages: [],
     isChatPanel: false,
+    secretName: null,
 
     // singing
     songs: null,
@@ -64,7 +65,7 @@ const meetingStore = {
     gameIsCorrect: 1,
     gameAnswerWords: [],
     gameWordResult : '',
-   
+
     // updown
     gameUpDownResult:'',
     gameUpDownIndex:0,
@@ -72,6 +73,7 @@ const meetingStore = {
 
     // 나술안취했어
     sentence: null,
+    drunkenText: null,
 
     // theme
     theme: 'basic',
@@ -171,6 +173,9 @@ const meetingStore = {
     SET_CLEARMESSAGES(state) {
       state.messages = [];
     },
+    SET_SECRET_NAME(state, value) {
+      state.secretName = value
+    },
 
     // singing
     SET_SELECTED_SONG(state, song) {
@@ -247,8 +252,8 @@ const meetingStore = {
     SET_SENTENCE(state, data) {
       state.sentence = data;
     },
-    SET_PARTICIPANTPUBLICDATA(state, data){
-      state.participantPublicData = data;
+    SET_DRUNKEN_TEXT(state, data) {
+      state.drunkenText = data
     },
     SET_GAME_THEME(state, data){
       state.gameTheme = data;
@@ -638,6 +643,37 @@ const meetingStore = {
           state.session.connect(state.ovToken, { clientData: enterData.nickName })
 					.then(() => {
             commit('SET_NICKNAME', enterData.nickName);
+            const adjectives = [
+              '사랑스러운', '매력적인', '매혹적인', '자신감있는', '헝클어진',
+              '귀여운', '우아한', '품격있는', '공정한', '더러운',
+              '추잡한', '고약한', '화려한', '매력적인', '멋진',
+              '잘생긴', '예쁜', '보기좋은', '담백한', '가정적인',
+              '아름다운', '친절한', '즐거운', '상냥한', '예의바른',
+              '완벽한', '꾀죄죄한', '지저분한', '빛나는', '날씬한',
+              '호리호리한', '흥미로운', '훌륭한', '명랑한', '쾌활한',
+              '터프한', '제멋대로인', '공격적인', '야심있는', '용감한',
+              '어설픈', '촌스러운', '서투른', '잔혹한', '잔인한',
+              '성실한', '단호한', '정직한', '질투하는', '신비한',
+              '성공한', '출세한', '이기적인', '이타적인', '재능있는',
+              '지혜로운', '재치 있는', '현명한', '슬기로운', '엉뚱한'
+            ]
+            const animals = [
+              '코끼리', '사자', '하마', '표범', '가젤',
+              '개미핥기', '치타', '기린', '얼룩말', '코뿔소',
+              '호랑이', '늑대', '판다', '코알라', '다람쥐',
+              '곰', '사슴', '원숭이', '너구리', '침팬지',
+              '미어캣', '낙타', '목도리도마뱀', '타조', '사막여우',
+              '전갈', '순록', '북극곰', '흰올빼미', '팽귄',
+              '북극여우', '바다코끼리', '돌고래', '가오리', '나비고기',
+              '상어', '문어', '오징어', '바다거북', '흰동가리',
+              '고래', '불가사리', '해마', '게', '독수리',
+              '갈매기', '큰부리새', '원앙', '부엉이', '홍학',
+              '두루미', '비둘기', '벌새', '사다새', '공작',
+              '참새', '고양이', '개', '푸들나방', '별코두더지'
+            ]
+            var sName = adjectives[Math.floor(Math.random() * adjectives.length)] + ' ' + animals[Math.floor(Math.random() * animals.length)]
+            commit('SET_SECRET_NAME', sName);
+
             state.session.publish(state.publisher);
 
             state.session.on('streamCreated', (event) => {
@@ -723,27 +759,14 @@ const meetingStore = {
             });
 
             state.session.on('signal:chat', (event) => {
+              let eventData = JSON.parse(event.data);
               let data = new Object()
               let time = new Date()
-              data.message = event.data
+              data.message = eventData.content;
               if (state.currentMode === 'anonymous') {
-                const animals = [
-                  '코끼리', '사자', '하마', '표범', '가젤',
-                  '개미핥기', '치타', '기린', '얼룩말', '코뿔소',
-                  '호랑이', '늑대', '판다', '코알라', '다람쥐',
-                  '곰', '사슴', '원숭이', '너구리', '침팬지',
-                  '미어캣', '낙타', '목도리도마뱀', '타조', '사막여우',
-                  '전갈', '순록', '북극곰', '흰올빼미', '팽귄',
-                  '북극여우', '바다코끼리', '돌고래', '가오리', '나비고기',
-                  '상어', '문어', '오징어', '바다거북', '흰동가리',
-                  '고래', '불가사리', '해마', '게', '독수리',
-                  '갈매기', '큰부리새', '원앙', '부엉이', '홍학',
-                  '두루미', '비둘기', '벌새', '사다새', '공작',
-                  '참새', '고양이', '개', '푸들나방', '별코두더지'
-                ]
-                data.sender = animals[event.from.connectionId.slice(-10, ).charCodeAt(0) % 60];
+                data.sender = eventData.secretName;
               } else {
-                data.sender = event.from.data.slice(15,-2)
+                data.sender = event.from.data.slice(15,-2);
               }
               data.time = moment(time).format('HH:mm')
               commit('SET_MESSAGES', data)
@@ -857,19 +880,6 @@ const meetingStore = {
                 if(state.selectedGame == 5){  //나술안취했어
 
                 }
-                //게임공통
-                if(event.data.participantPublicId){
-                  commit('SET_GAME_PARTICIPANTPUBLICID',event.data.participantPublicId)
-                  //벌칙자의 닉네임도 찾아서 넣어줘야함
-                  for(let i=0; i<state.subscribers.length; i++){
-                    if(state.subscribers[i].stream.connection.connectionId == event.data.participantPublicId){
-                      commit('SET_PARTICIPANTPUBLICDATA',state.subscribers[i].stream.connection.data.slice(15,-2));
-                    }
-                  }
-                  if(state.publisher.session.connection.connectionId == event.data.participantPublicId){ //본인체크
-                    commit('SET_PARTICIPANTPUBLICDATA',state.publisher.session.connection.data.slice(15,-2));
-                  }
-                }
               }
               else if(event.data.gameStatus == 3) {
                 if (state.selectedGame == 1) {
@@ -922,10 +932,15 @@ const meetingStore = {
                   }
                 }
               }
+              
+              if (event.data.sentence && event.data.gameStatus == 1) {
+                commit('SET_GAME_STATUS', 2);
+                commit('SET_SENTENCE', event.data.sentence);
+                dispatch('recordVoice');
+              }
 
-              if (event.data.sentence) {
+              if (event.data.sentence && event.data.gameStatus == 3) {
                 commit('SET_SENTENCE', event.data.sentence)
-                dispatch('recordVoice')
               }
             });
 
@@ -968,9 +983,13 @@ const meetingStore = {
         })
     },
     sendMessage({ state }, message) {
+      var messageData = {
+        content: message,
+        secretName: state.secretName
+      }
       state.session.signal({
         type: 'chat',
-        data: message,
+        data: JSON.stringify(messageData),
         to: [],
       })
         .then(() => {
@@ -1136,19 +1155,19 @@ const meetingStore = {
           console.log(err)
         })
     },
-    recordVoice({state}) {
-      console.log(state)
+    recordVoice({ commit }) {
       const sdk = require("microsoft-cognitiveservices-speech-sdk");
       const speechConfig = sdk.SpeechConfig.fromSubscription("9bd552b2504c45e1802217ac626d6508", "koreacentral");
       speechConfig.speechRecognitionLanguage = "ko-KR";
       function fromMic() {
-          let audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
-          let recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
-          
-          console.log('Speak into your microphone.');
-          recognizer.recognizeOnceAsync(result => {
-              console.log(`RECOGNIZED: Text=${result.text}`);
-          });
+        let audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
+        let recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
+        
+        console.log('Speak into your microphone.');
+        recognizer.recognizeOnceAsync(result => {
+        console.log(`RECOGNIZED: Text=${result.text}`);
+        commit('SET_DRUNKEN_TEXT', result.text)
+        });
       }
       fromMic();
     }

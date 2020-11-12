@@ -50,7 +50,6 @@ export default {
       'selectedGame',
       'gameUpDownResult',
       'gameUpDownIndex',
-      'participantPublicData',
       'subscribers',
       'publisher',
       'gameUpDownNumber'

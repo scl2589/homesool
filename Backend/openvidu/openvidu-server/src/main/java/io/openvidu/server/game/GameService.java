@@ -173,12 +173,6 @@ public class GameService {
 			HashSet<Participant> pSet = new HashSet<Participant>(participants);
 			initialAnswerUserMap.put(message.get("sessionId").getAsString(), pSet);
 
-		} else if (gameId == DRUNKTEST) {
-			String sentence = DrunkTestUtil.sentences[(int) (Math.random() * DrunkTestUtil.sentences.length)];
-			
-			data.addProperty("sentence", sentence);
-			// 띄어쓰기 제거 후 저장
-			drunkTestMap.put(message.get("sessionId").getAsString(), sentence.replaceAll(" ", ""));
 		}
 		params.add("data", data);
 		// 브로드 캐스팅
@@ -323,23 +317,32 @@ public class GameService {
 			liarCountMap.put(sessionId, liarMap);
 			break;
 		case DRUNKTEST: // 나안취했어
-			String answer = drunkTestMap.get(sessionId);
-			String sentence = data.get("sentence").getAsString();
-			data.addProperty("sentence", sentence);
-			// 공백 제거 후 비교
-			String drunk;
-			// 통과
-			if (answer.equals(sentence.replaceAll(" ", ""))) {
-				drunk = "1";
-			// 실패
-			} else {
-				drunk = "2";
+			// 처음 요청
+			if(!data.has("sentence")) {
+				String sentence = DrunkTestUtil.sentences[(int) (Math.random() * DrunkTestUtil.sentences.length)];
+				data.addProperty("sentence", sentence);
+				// 띄어쓰기 제거 후 저장
+				drunkTestMap.put(message.get("sessionId").getAsString(), sentence.replaceAll(" ", ""));
 			}
-			data.addProperty("drunk", drunk);
-			data.addProperty("gameStatus", 3);
+			// 정답 검증 요청
+			else {
+				String answer = drunkTestMap.get(sessionId);
+				String sentence = data.get("sentence").getAsString();
+				data.addProperty("sentence", sentence);
+				// 공백 제거 후 비교
+				String drunk;
+				// 통과
+				if (answer.equals(sentence.replaceAll(" ", ""))) {
+					drunk = "1";
+				// 실패
+				} else {
+					drunk = "2";
+				}
+				data.addProperty("drunk", drunk);
+				data.addProperty("gameStatus", 3);
+				drunkTestMap.remove(sessionId);
+			}
 			params.add("data", data);
-			drunkTestMap.remove(sessionId);
-
 			for (Participant p : participants) {
 				rpcNotificationService.sendNotification(p.getParticipantPrivateId(),
 						ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
