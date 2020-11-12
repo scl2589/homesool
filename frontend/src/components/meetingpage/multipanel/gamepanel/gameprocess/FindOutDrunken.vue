@@ -2,13 +2,47 @@
   <div class="panel drunken">
     <div class="selectgame" v-if="gameStatus == 1">
       <div v-if="notModeHost">
-        <p>{{ notModeHost.name }}님이 주제를 고르는 중입니다.</p>
+        <p>{{ notModeHost.name }}님이 참가자를 고르는 중입니다.</p>
+      </div>
+      <div class="p-3" v-else>
+        <div>
+          <h5>참가자를 선택해주세요</h5>
+        </div>
+        <div class="d-flex row no-gutters mt-5">
+          <div class="col-6 box my-2 py-2">
+            <button 
+              class="btn"
+              @click="clickParticipant(publisher.stream.connection.connectionId)"
+            >
+              {{ publisher.stream.connection.data.slice(15, -2)}}
+            </button>
+          </div>
+          <div 
+            v-for="(subscriber, id) in subscribers" 
+            :key="id"
+            class="col-6 box my-2 py-2"
+          >
+            <button 
+              class="btn"
+              @click="clickParticipant(subscriber.stream.connection.connectionId)"
+            >
+              {{ subscriber.stream.connection.data.slice(15, -2)}}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
     <div>
       <div v-if="gameStatus == 2" class="p-3">
-        <div class="panel-title">
-          <p>문장을 읽어주세요.</p>
+        <div class="panel-title" v-if="notCurrentPlayer">
+          <user-video
+            class="w-50"
+            :stream-manager="notCurrentPlayer"
+          />
+          <p>{{ notCurrentPlayer.stream.connection.data.slice(15,-2) }}님이 문장을 읽는 중입니다.</p>
+        </div>
+        <div v-else class="panel-title">
+          <p>{{ publisher.stream.connection.data.slice(15,-2) }}님 문장을 바로 읽어주세요.</p>
         </div>
         <div>
           <p>{{sentence}}</p>
@@ -18,32 +52,45 @@
         </div>
       </div>
     </div>
-    <div v-if="gameStatus===3">
+    <div v-if="gameStatus==3">
       <h1>결과</h1>
-      <p>{{sentence}}</p>
+      <user-video
+        class="w-50"
+        :stream-manager="loser"
+        v-if="loser"
+      />
+      <p>읽은 문장: {{sentence}}</p>
+      <p v-if="notCurrentPlayer">
+        {{ notCurrentPlayer.stream.connection.data.slice(15,-2) }}은 {{findDrunken}}
+      </p>
+      <p v-else>
+        당신은 {{findDrunken}}
+      </p>
     </div>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from "vuex";
+import UserVideo from '@/components/meetingpage/UserVideo';
 
 export default {
   name: "GamePanel",
+  components: {
+    UserVideo
+  },
   computed: {
     ...mapState("meetingStore", [
       "gameStatus",
       "selectedGame",
-      "gameTurn",
-      "gameWord",
       "subscribers",
-      "gameLiar",
-      "myself",
       "publisher",
       "sentence",
-      "drunkenText"
+      "drunkenText",
+      'participantPublicId',
+      'loser'
     ]),
-    ...mapGetters("meetingStore", ["notModeHost"]),
+    ...mapGetters("meetingStore", ["notModeHost", "notCurrentPlayer", "findDrunken"]),
   },
   data() {
     return {
@@ -59,12 +106,20 @@ export default {
   },
   methods: {
     ...mapActions("meetingStore", ["sendGameRequest"]),
+    clickParticipant(id) {
+      var request = new Object();
+      request.gameId = 5;
+      request.participantPublicId = id;
+      request.gameStatus = 2;
+      var jsonRequest = JSON.stringify(request);
+      this.sendGameRequest(jsonRequest);
+    },
     sendResult( ){
       var request = new Object();
       request.gameId = 5;
       request.gameStatus = 2;
       request.sentence = this.drunkenText;
-      request.paneltyId = 0;
+      request.participantPublicId = this.participantPublicId;
       var jsonRequest = JSON.stringify(request);
       this.sendGameRequest(jsonRequest)
     }
@@ -92,7 +147,7 @@ export default {
   color: yellow;
 }
 
-p, h1, h2, h3, h4, h5, h6 {
+p, h1, h2, h3, h4, h5, h6, button {
   color: white;
 }
 </style>
