@@ -1,8 +1,8 @@
 <template>
 <div v-if="streamManager">
 	<div class="container">
-		<div v-if="!($route.name==='HomePage') && streamManager && publisher">
-			<div class="drink-overlay" v-if="streamManager.stream.connection.connectionId==publisher.stream.connection.connectionId">
+		<div v-if="!($route.name==='HomePage')">
+			<div class="drink-overlay" v-if="isPublisher">
 				<img class="drink-minus" src="@/assets/images/minus.png" alt="한잔 덜 마셨어요" @click="updateUserDrinkRecord(-1)"> 
 				<img class="drink" :src="require(`@/assets/images/${currentDrink}.png`)" alt="${currentDrink}">
 				<img class="drink-plus" src="@/assets/images/plus.png" alt="한잔 더 마셨어요" @click="updateUserDrinkRecord(1)">
@@ -14,7 +14,7 @@
 		<ov-video :stream-manager="streamManager"/>
 	</div>
 	<div v-if="!($route.name==='HomePage')">
-		<p>{{user.drinks[0]}}</p>
+		<!-- <p>{{userManager.stream.connection.data.slice(15,-2)}}</p> -->
 	</div>
 </div>
 </template>
@@ -29,6 +29,7 @@ export default {
 	},
 	props: {
 		streamManager: Object,
+		isPublisher : Boolean,
 	},
 	computed: {
 		...mapState('meetingStore', ['currentMode','user','currentDrink','publisher']),
@@ -44,11 +45,6 @@ export default {
 			const { connection } = this.streamManager.stream;
 			return JSON.parse(connection.data);
 		},
-	},
-	data(){
-		return{
-			imgsrc: "@/assets/images/soju.png",
-		}
 	},
 };
 </script>
