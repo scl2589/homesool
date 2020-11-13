@@ -18,7 +18,6 @@ const meetingStore = {
     nickName: null,
     mySessionId: null,
     roomId: null,
-    myself: null,
     totalDrink : 0,
 
     // openvidu
@@ -150,9 +149,6 @@ const meetingStore = {
     },
     SET_NICKNAME(state, nickName) {
       state.nickName = nickName;
-    },
-    SET_MYSELF(state, subscriber) {
-      state.myself = subscriber;
     },
     SET_MYSESSIONID(state, sessionId) {
       state.mySessionId = sessionId;
@@ -531,7 +527,6 @@ const meetingStore = {
       const subscribers = [];
 			session.on('streamCreated', ({ stream }) => {
         const subscriber = session.subscribe(stream);
-        commit('SET_MYSELF', subscriber)
 				subscribers.push(subscriber);
 			});
 			// On every Stream destroyed...
@@ -565,22 +560,35 @@ const meetingStore = {
 		},
 		leaveSession ({ state, commit }) {
 			// --- Leave the session by calling 'disconnect' method over the Session object ---
-			if (state.session) state.session.disconnect();
-      commit('SET_OV', undefined);
-      commit('SET_SESSION', undefined);
-      commit('SET_SUBSCRIBERS', []);
-      commit('SET_MAINSTREAMMANAGER', undefined);
-      commit('SET_PUBLISHER', undefined);
-      commit('SET_MYSESSIONID', null);
+			if (state.session) {
+        state.session.disconnect();
+        commit('SET_OV', undefined);
+        commit('SET_SESSION', undefined);
+        commit('SET_SUBSCRIBERS', []);
+        commit('SET_MAINSTREAMMANAGER', undefined);
+        commit('SET_PUBLISHER', undefined);
+        commit('SET_MYSESSIONID', null);
+        commit('SET_CLEARMESSAGES');
+        commit('SET_OVTOKEN', null);
+      }
+
+      if (state.screenSession) {
+        state.screenSession.disconnect();
+        commit('SET_SCREEN_OV', undefined);
+        commit('SET_SCREEN_SESSION', undefined);
+        commit('SET_SCREEN_SUBSCRIBERS', []);
+        commit('SET_SCREEN_MAINSTREAMMANAGER', undefined);
+        commit('SET_SCREEN_PUBLISHER', undefined);
+        commit('SET_SCREEN_OVTOKEN', null);
+      }
+
+      commit('SET_CURRENT_MODE', null);
+      commit('SET_MODE_HOST', null);
+      commit('SET_GOT_WASTED', null);
+      commit('SET_IS_CHATPANEL', false);
       commit('SET_CLEARMESSAGES');
-      commit('SET_OVTOKEN', null);
-      if (state.screenSession) state.screenSession.disconnect();
-      commit('SET_SCREEN_OV', undefined);
-      commit('SET_SCREEN_SESSION', undefined);
-      commit('SET_SCREEN_SUBSCRIBERS', []);
-      commit('SET_SCREEN_MAINSTREAMMANAGER', undefined);
-      commit('SET_SCREEN_PUBLISHER', undefined);
-      commit('SET_SCREEN_OVTOKEN', null);
+      commit('SET_THEME', 'basic');
+      commit('SET_NICKNAME', null);
 		},
 		updateMainVideoStreamManager ({ state, commit }, stream) {
 			if (state.mainStreamManager === stream) return;
