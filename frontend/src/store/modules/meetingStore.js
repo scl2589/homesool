@@ -122,6 +122,16 @@ const meetingStore = {
       } else {
         return false
       }
+    },
+    getImgsrc(state){
+      if(state.currentDrink == '소주')
+				return require("@/assets/images/soju.png")
+			else if(state.currentDrink == '맥주')
+				return require("@/assets/images/beer.png")
+			else if(state.currentDrink == '와인')
+				return require("@/assets/images/wine.png")
+			else
+				return require("@/assets/images/other.png")
     }
   },
   mutations: {
@@ -1240,6 +1250,9 @@ const meetingStore = {
           console.log(err)
         })
     },
+    changeCurrentDrink({ commit }, currentDrink) {
+      commit('SET_CURRENT_DRINK',currentDrink )
+    }
   }
 }
 
