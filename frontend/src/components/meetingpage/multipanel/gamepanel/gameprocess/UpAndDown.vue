@@ -15,6 +15,7 @@
             </p>
             <p v-else>
               <img src="@/assets/images/negativevote.png">
+              <br><span class="result color-gray">{{gameUpDownResult}}</span>
             </p>
           </div>
           <div v-if="notCurrentPlayer">
