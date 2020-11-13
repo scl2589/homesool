@@ -1,11 +1,12 @@
 <template>
   <div id="wrapregister">
-    <info />
+    <info :username="user.name" :useremail="user.email" :userdrinks="user.drinks" />
   </div>
 </template>
 
 <script>
 import Info from "@/components/Info.vue";
+import { mapState } from 'vuex';
 export default {
   name: "RegisterPage",
   components: {
@@ -13,6 +14,9 @@ export default {
   },
   data: () => {
     return {};
+  },
+  computed: {
+    ...mapState(['user'])
   },
   methods: {},
 };

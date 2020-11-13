@@ -1,11 +1,4 @@
 <template>
-<!-- <div id="session-header">
-        <h1 id="session-title">{{ mySessionId }}</h1>
-        <input class="btn btn-large btn-danger" type="button" id="buttonLeaveSession" @click="leaveSession" value="Leave session">
-    </div> -->
-    <!-- <div id="main-video" class="col-md-6">
-      <user-video :stream-manager="mainStreamManager"/>
-    </div> -->
   <div>
     <div v-if="!isSharingMode">
       <div class="d-flex justify-content-center align-items-center mt-3">
@@ -20,6 +13,7 @@
             :class="{ 'col-12': one, 'col-6' : two, 'col-4' : three, 'col-3' : eight, 'col-2' : twelve }" 
             id="myVideo"
             :stream-manager="publisher" 
+            :isPublisher="isPublisher"
             @click.native="updateMainVideoStreamManager(publisher)"
           />
           <user-video 
@@ -90,6 +84,8 @@ export default {
       twelve: false,
       participants: null,
       sharer: null,
+      isPublisher : true,
+      //userName : this.publisher.stream.connection.data.slice(15,-2),
     }
   },
   computed: {
@@ -237,6 +233,9 @@ export default {
     theme() {
       this.$forceUpdate();
     },
+    publisher(){
+      this.$forceUpdate();
+    },
     subscribers: {
       handler() {
         if (this.isSharingMode === false) {
@@ -273,7 +272,7 @@ export default {
         video.classList.add("height70")
       })
     }
-  }
+  },
 }
 </script>
 

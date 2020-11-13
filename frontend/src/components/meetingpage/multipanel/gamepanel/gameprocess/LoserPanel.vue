@@ -21,7 +21,9 @@
       <p>{{ loser.stream.connection.data.slice(15,-2) }}님이 끝내 웃음을 참지 못했습니다.</p>
     </div>
     <div v-if="selectedGame == 5">
-
+      <h1>결과</h1>
+      <p>읽은 문장: {{sentence}}</p>
+      <p>{{ loser.stream.connection.data.slice(15,-2) }}은 {{findDrunken}}</p>
     </div>
 
     <div>
@@ -47,7 +49,7 @@
 
 <script>
 import UserVideo from '@/components/meetingpage/UserVideo';
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'LoserPanel',
@@ -59,7 +61,16 @@ export default {
     UserVideo
   },
   computed: {
-    ...mapState('meetingStore', ['loser', 'selectedGame', 'penalty', 'gameVoteData','gameLiarData', 'gameUpDownNumber'])
+    ...mapState('meetingStore', [
+      'loser',
+      'selectedGame',
+      'penalty',
+      'gameVoteData',
+      'gameLiarData',
+      'gameUpDownNumber',
+      'sentence'
+    ]),
+    ...mapGetters('meetingStore', ['findDrunken'])
   },
   methods: {
     ...mapActions('meetingStore', ['changeMode', 'endGameProcess', 'sendGameRequest']),
