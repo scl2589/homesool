@@ -187,7 +187,7 @@ export default {
         alert('먼저 로그인을 해주세요!')
         return false;
       }
-      this.createSessionId();
+      this.createSessionId(this.nickName);
       this.changeMeetingDialog(true);
     },
     guestbtn() {
@@ -195,7 +195,7 @@ export default {
         alert('먼저 로그인을 해주세요!')
         return false;
       }
-      this.checkSessionId(this.inputSessionId)
+      this.checkSessionId(this.inputSessionId, this.nickName)
         .then(() => {
           this.changeMeetingDialog(true);
         })

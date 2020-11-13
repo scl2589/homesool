@@ -37,6 +37,7 @@ public class RoomService {
 				.hostId(insertRoomInfo.getHostId())
 				.startTime(insertRoomInfo.getStartTime())
 				.code(code)
+				.roomName(insertRoomInfo.getRoomName())
 				.build();
 		return RoomMapper.INSTANCE.toResponse(
 				roomRepository.save(room)
@@ -49,13 +50,13 @@ public class RoomService {
 		return roomRepository.save(room);
 	}
 
-	public long addMember(String code, long userId) {
+	public long addMember(String code, long userId, String nickName, int ishost) {
 		
 		Room room = roomRepository.findOneByCode(code);
 		// Room Not Found or Room is closed
 		if(room == null || room.getEndTime() != null) 
 			throw new RoomNotFoundException(code);
-		Member member = new Member(room.getRoomId(), userId);
+		Member member = new Member(room.getRoomId(), userId, nickName, ishost);
 		return memberRepository.save(member).getRoomId();
 	}
 

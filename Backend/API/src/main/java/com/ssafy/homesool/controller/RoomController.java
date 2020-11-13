@@ -10,6 +10,7 @@ import org.mariadb.jdbc.internal.logging.Logger;
 import org.mariadb.jdbc.internal.logging.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -30,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 
 import com.ssafy.homesool.dto.PhotoDto;
 import com.ssafy.homesool.dto.RoomDto;
+import com.ssafy.homesool.dto.UserDto;
 import com.ssafy.homesool.entity.Room;
 import com.ssafy.homesool.entity.Member;
 import com.ssafy.homesool.service.PhotoService;
@@ -61,7 +63,7 @@ public class RoomController {
 		//방 생성
 		RoomDto.RoomResponse roomResponse = roomService.add(insertRoomInfo);
 		//멤버 목록에 추가
-		roomService.addMember(roomResponse.getCode(), insertRoomInfo.getHostId());
+		roomService.addMember(roomResponse.getCode(), insertRoomInfo.getHostId(), insertRoomInfo.getHostNickName(),1);
 		return new ResponseEntity<>(roomResponse, HttpStatus.OK);
 	}
 	
@@ -91,9 +93,10 @@ public class RoomController {
 	})
 	private ResponseEntity<Long> addMember(
 		@ApiParam(value = "방 코드",required = true, example = "A1B2C3D4E5") @PathVariable String code,
-		@ApiParam(value = "유저 id",required = true, example = "1404739104") @PathVariable long userId){
+		@ApiParam(value = "유저 id",required = true, example = "1404739104") @PathVariable long userId,
+		@ApiParam(value = "유저 닉네임",required = true, example = "지은") @RequestBody RoomDto.UpdateMemberInfo updateMemberInfo){
 		logger.debug(String.format("add Member {%d} in {%s} 호출",userId,code));
-		return new ResponseEntity<>(roomService.addMember(code,userId),HttpStatus.OK);
+		return new ResponseEntity<>(roomService.addMember(code,userId,updateMemberInfo.getNickName(),2),HttpStatus.OK);
 	}
 	
 	@PostMapping("photo")
@@ -156,5 +159,4 @@ public class RoomController {
 			}
 			return new ResponseEntity<>(photoRequest.getImg(), HttpStatus.OK);
 	}
-	
 }

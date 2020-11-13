@@ -27,4 +27,10 @@ public class Member implements Serializable{
 	@Id
 	@Column(nullable = false, updatable = false)
 	private long userId;
+	
+	@Column(nullable = true)
+	private String nickname;
+	
+	@Column(nullable = false)
+	private int ishost;
 }

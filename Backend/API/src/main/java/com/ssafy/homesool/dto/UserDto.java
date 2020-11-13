@@ -71,6 +71,12 @@ public class UserDto {
 		@ApiModelProperty(value = "Photo Sources", example = ""
 				+ "[\"http:/k3a503.p.ssafy.io/images/fileName\"]")
 		private List<String> srcs = new ArrayList<>();
+		
+		@ApiModelProperty(value = "Room Host Records", example = "")
+		private String host;
+		
+		@ApiModelProperty(value = "Room User Records", example = "")
+		private List<String> users = new ArrayList<>();
 	}
 	
 	@Builder

@@ -496,11 +496,12 @@ const meetingStore = {
     changeMeetingLogDialog({ commit }, value) {
       commit('SET_MEETINGLOG_DIALOG', value);
     },
-    createSessionId({ rootGetters, commit, dispatch }) {
+    createSessionId({ rootGetters, commit, dispatch }, nickName) {
       const ct = new Date();
       const createData = {
         "hostId": rootGetters.getId,
-        "startTime": moment(ct).format('YYYY-MM-DDTHH:mm:ss')
+        "startTime": moment(ct).format('YYYY-MM-DDTHH:mm:ss'),
+        "hostNickName" : nickName,
       };
       axios.post(SERVER.URL + SERVER.ROUTES.room, createData, rootGetters.config)
         .then(res => {
@@ -511,8 +512,11 @@ const meetingStore = {
           console.log(err.response.data)
         })
     },
-    checkSessionId({ rootGetters, commit, dispatch }, sessionId) {
-      axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${sessionId}/with/${rootGetters.getId}`, null, rootGetters.config)
+    checkSessionId({ rootGetters, commit, dispatch }, sessionId, nickName) {
+      const createData = {
+        "nickname" : nickName
+      };
+      axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${sessionId}/with/${rootGetters.getId}`, createData, rootGetters.config)
         .then(res => {
           commit('SET_ROOMID', res.data);
           dispatch('joinSession', sessionId);
@@ -521,6 +525,19 @@ const meetingStore = {
         .catch(err => {
           console.log(err.response.data)
           alert('초대코드가 유효하지 않습니다.')
+        })
+    },
+    updateUserNickname({ rootGetters, commit, dispatch , state}) {
+      const createData = {
+        "nickname" : state.mainStreamManager.stream.connection.data.slice(15,-2),
+      };
+      axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${state.mySessionId}/with/${rootGetters.getId}`, createData, rootGetters.config,)
+        .then(res => {
+          commit('SET_ROOMID', res.data.roomId);
+          dispatch('joinSession', res.data.code);
+        })
+        .catch(err => {
+          console.log(err.response.data)
         })
     },
 

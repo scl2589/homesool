@@ -21,6 +21,7 @@ import com.ssafy.homesool.entity.UserDrink;
 import com.ssafy.homesool.entity.UserRecord;
 import com.ssafy.homesool.exception.UserNotFoundException;
 import com.ssafy.homesool.mapper.UserMapper;
+import com.ssafy.homesool.repository.MemberRepository;
 import com.ssafy.homesool.repository.PhotoRepository;
 import com.ssafy.homesool.repository.UserDrinkRepository;
 import com.ssafy.homesool.repository.UserRecordRepository;
@@ -33,7 +34,8 @@ public class UserService {
 	private final UserDrinkRepository userDrinkRepository;
 	private final UserRecordRepository userRecordRepository;
 	private final PhotoRepository photoRepository;
-
+	private final MemberRepository memberRepository;
+	
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RestTemplate restTemplate = new RestTemplate(); // could not autowired
 	private final Gson gson;
@@ -132,12 +134,15 @@ public class UserService {
 	public UserDto.UserRecordDetail getRecord(long userId, long roomId) {
 		UserRecordDetail userRecordDetail = new UserRecordDetail();
 		
+		
 		userRecordDetail.setRecords(
 				UserMapper.INSTANCE.toRecord(
 						userRecordRepository.findAllByUserIdAndRoomId(userId,roomId)));
 		
 		userRecordDetail.setSrcs(photoRepository.findSrcByroomId(roomId));
 		
+		userRecordDetail.setHost(memberRepository.findHostnameByroomId(roomId));
+		userRecordDetail.setUsers(memberRepository.findNicknameByroomId(roomId));
 		return userRecordDetail;
 	}
 	

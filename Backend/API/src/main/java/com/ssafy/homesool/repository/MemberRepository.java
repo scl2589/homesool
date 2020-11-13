@@ -13,4 +13,13 @@ import com.ssafy.homesool.entity.Member;
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
+	@Query(value = "select nickname from member "
+			+ "where room_id = :roomId and ishost = 2 ",
+			nativeQuery = true)
+	List<String> findNicknameByroomId(@Param("roomId") long roomId);
+	
+	@Query(value = "select nickname from member "
+			+ "where room_id = :roomId and ishost = 1 ",
+			nativeQuery = true)
+	String findHostnameByroomId(@Param("roomId") long roomId);
 }
