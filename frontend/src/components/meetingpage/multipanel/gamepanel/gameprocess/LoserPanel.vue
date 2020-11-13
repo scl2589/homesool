@@ -1,9 +1,11 @@
 <template>
   <div class="d-flex flex-column justify-content-center align-items-center" v-if="loser">
+    <img class="w-50" :src="smileURL" alt="" v-if="selectedGame == 4 && smileURL">
     <user-video
       class="w-50"
       :stream-manager="loser"
       @click.native="updateMainVideoStreamManager(loser)"
+      v-if="selectedGame != 4"
     />
     <div v-if="selectedGame == 1">
       <p> 번호 : {{this.gameUpDownNumber}}</p>
@@ -68,7 +70,8 @@ export default {
       'gameVoteData',
       'gameLiarData',
       'gameUpDownNumber',
-      'sentence'
+      'sentence',
+      'smileURL'
     ]),
     ...mapGetters('meetingStore', ['findDrunken'])
   },

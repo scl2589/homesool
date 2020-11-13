@@ -157,7 +157,9 @@ export default {
               var ct = new Date()
               var file_name =  moment(ct).format('YYYY-MM-DDTHH-mm-ss')
               var file = this.dataURLtoFile(converting, file_name + '.jpg')
-              storageRef.child('snapshot_' + this.mySessionId).child(file.name).put(file)
+              const uploadTask = storageRef.child(this.mySessionId).child('snapshot').child(file.name).put(file)
+              promises.push(uploadTask)
+              
               Promise.all(promises).then(() => {
                 this.attachImage(file_name)
                 var imageInfo = {

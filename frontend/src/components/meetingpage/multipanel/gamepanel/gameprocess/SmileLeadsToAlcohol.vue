@@ -31,6 +31,7 @@
               :stream-manager="notCurrentPlayer"
             />
             <p>{{ notCurrentPlayer.stream.connection.data.slice(15,-2) }}님의 차례입니다.</p>
+            <p>주어진 단어: {{ gameWord }}</p>
           </div>
           <div v-else>
             <p><strong>{{ gameWord }}</strong>를 읽어주세요!</p>

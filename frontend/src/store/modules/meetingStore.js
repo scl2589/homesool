@@ -5,6 +5,7 @@ import axios from 'axios';
 import { OpenVidu } from 'openvidu-browser';
 import moment from 'moment';
 import Swal from 'sweetalert2'
+import firebase from 'firebase'
 
 const OPENVIDU_SERVER_SECRET = "MY_SECRET";
 
@@ -71,6 +72,9 @@ const meetingStore = {
     gameUpDownResult:'',
     gameUpDownIndex:0,
     gameUpDownNumber:-1,
+
+    // 웃으면술이와요
+    smileURL: null,
 
     // 나술안취했어
     sentence: null,
@@ -289,6 +293,9 @@ const meetingStore = {
     SET_GOT_WASTED(state, value) {
       state.gotWasted = value
     },
+    SET_SMILE_URL(state, value) {
+      state.smileURL = value
+    },
 
     // theme
     SET_THEME(state, theme) {
@@ -406,6 +413,8 @@ const meetingStore = {
         commit('SET_GAME_LIAR_DATA', '');
         commit('SET_GAME_VOTE_ID', '');
         commit('SET_GAME_VOTE_DATA', '');
+      } else if (state.selectedGame == 4) {
+        commit('SET_SMILE_URL', null);
       } else if (state.selectedGame == 5) {
         // 나술안취했어
         commit('SET_SENTENCE', null);
@@ -951,7 +960,6 @@ const meetingStore = {
                 }
                 if(state.selectedGame == 4){  //웃으면 술이와요
                   commit('SET_GAME_WORD', event.data.word);
-                  commit('SET_GAME_PLAYER', event.data.player);
                 }
                 if(state.selectedGame == 5){  //나술안취했어
 
@@ -1001,6 +1009,9 @@ const meetingStore = {
                   if(state.publisher.session.connection.connectionId == event.data.voteId){ //본인체크
                     commit('SET_GAME_VOTE_DATA',state.publisher.session.connection.data.slice(15,-2));
                   }
+                }
+                else if (state.selectedGame == 4) {
+                  commit('SET_SMILE_URL', event.data.smileURL);
                 }
                 else if (state.selectedGame == 5) {
                   if (event.data.sentence) {
@@ -1061,12 +1072,10 @@ const meetingStore = {
             });
 
             state.session.on('signal:attachImage', (event) => {
-              setTimeout(() => {
-                var image = document.createElement('img')  
-                image.src = "https://firebasestorage.googleapis.com/v0/b/homesuli.appspot.com/o/snapshot_" + state.mySessionId + "%2F" + event.data + ".jpg?alt=media&token=942e1b59-2774-4d79-b0e7-098d76168b49"
-                image.style.maxWidth="90%"
-                document.getElementById('preview').appendChild(image)
-              }, 1500);
+              var image = document.createElement('img')  
+              image.src = `https://firebasestorage.googleapis.com/v0/b/homesuli.appspot.com/o/${state.mySessionId}%2Fsnapshot%2F${event.data}.jpg?alt=media&token=942e1b59-2774-4d79-b0e7-098d76168b49`
+              image.style.maxWidth="90%"
+              document.getElementById('preview').appendChild(image)
             });
 
             state.session.on('streamDestroyed', (event) => {
@@ -1215,7 +1224,7 @@ const meetingStore = {
     },
     checkIsSmile({ state }) {
       console.log(state.selectedGame);
-      let myVideo = document.getElementById('myVideo').childNodes[0].childNodes[1];
+      let myVideo = document.getElementById('myVideo').childNodes[1];
       let canvas = document.createElement("CANVAS");
       let ctx = canvas.getContext('2d');
       canvas.width = myVideo.videoWidth;
@@ -1233,7 +1242,10 @@ const meetingStore = {
       while(n--) {
         u8arr[n] = bstr.charCodeAt(n);
       }
-      let file = new File([u8arr], 'temp', {type:mime});
+
+      var ct = new Date()
+      var file_name = moment(ct).format('YYYY-MM-DDTHH-mm-ss')
+      let file = new File([u8arr], file_name+'.jpg', {type:mime});
       let frm = new FormData()
       frm.append('files', file);
 
@@ -1246,15 +1258,23 @@ const meetingStore = {
         }
       })
         .then(res => {
-          console.log(res);
           if (res.data === 'smile') {
-            let request = {
-              gameStatus: 3
-            }
-            state.session.signal({
-              data: JSON.stringify(request),
-              to: [],
-              type: 'game'
+            // 웃었을 때 사진 보내기
+            const promises = []
+            var storageRef = firebase.storage().ref()             
+            const uploadTask = storageRef.child(state.mySessionId).child('smile').child(file.name).put(file)
+            promises.push(uploadTask)
+
+            Promise.all(promises).then(() => {
+              let request = {
+                gameStatus: 3,
+                smileURL: `https://firebasestorage.googleapis.com/v0/b/homesuli.appspot.com/o/${state.mySessionId}%2Fsmile%2F${file.name}?alt=media&token=33af6b41-d6d6-400b-9016-91a86d90bbea`
+              }
+              state.session.signal({
+                data: JSON.stringify(request),
+                to: [],
+                type: 'game'
+              })
             })
           }
         })
