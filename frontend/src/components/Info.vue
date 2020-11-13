@@ -112,6 +112,11 @@ export default {
       newLiquor: null
     }
   },
+  props: {
+    username: String,
+    useremail: String,
+    userdrinks: Object
+  },
   computed: {
     ...mapGetters(['getId'])
   },
@@ -163,13 +168,17 @@ export default {
         headers: {'X-AUTH-TOKEN' : this.$store.state.token}
       })
         .then(() => {
-          console.log("가입 완료")
           this.$router.push('/')
         })
         .catch((err) => {
           console.log(err)
         })
     }
+  },
+  mounted() {
+    this.signupData.name = this.username;
+    this.signupData.email = this.useremail;
+    this.signupData.drinks = this.userdrinks;
   }
 };
 </script>
