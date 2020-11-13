@@ -13,10 +13,12 @@ const meetingStore = {
   state: {
     // pre meeting 
     meetingDialog: false,
+    meetingLogDialog: false,
     currentDrink: null,
     nickName: null,
     mySessionId: null,
     roomId: null,
+    myself: null,
 
     // openvidu
     OV: undefined,
@@ -49,6 +51,8 @@ const meetingStore = {
     loser: null,
     gameTurn: 0,
     gameWord: '',
+    participantPublicId:'',
+    participantPublicData:'',
 
     // liar game
     gameLiar:'',
@@ -72,7 +76,6 @@ const meetingStore = {
     sentence: null,
     drunkenText: null,
     drunk: null,
-    gotWasted: false,
 
     // theme
     theme: 'basic',
@@ -127,11 +130,17 @@ const meetingStore = {
     SET_MEETING_DIALOG(state, value) {
       state.meetingDialog = value;
     },
+    SET_MEETINGLOG_DIALOG(state, value) {
+      state.meetingLogDialog = value;
+    },
     SET_CURRENT_DRINK(state, drinkId) {
       state.currentDrink = drinkId;
     },
     SET_NICKNAME(state, nickName) {
       state.nickName = nickName;
+    },
+    SET_MYSELF(state, subscriber) {
+      state.myself = subscriber;
     },
     SET_MYSESSIONID(state, sessionId) {
       state.mySessionId = sessionId;
@@ -266,9 +275,6 @@ const meetingStore = {
     SET_DRUNK(state, data) {
       state.drunk = data
     },
-    SET_GOT_WASTED(state, value) {
-      state.gotWasted = value
-    },
     
     // theme
     SET_THEME(state, theme) {
@@ -389,8 +395,6 @@ const meetingStore = {
       } else if (state.selectedGame == 5) {
         // 나술안취했어
         commit('SET_SENTENCE', null);
-        commit('SET_DRUNK', null);
-        commit('SET_DRUNKEN_TEXT', null);
       }
 
       // 공통
@@ -466,6 +470,9 @@ const meetingStore = {
     changeMeetingDialog({ commit }, value) {
       commit('SET_MEETING_DIALOG', value);
     },
+    changeMeetingLogDialog({ commit }, value) {
+      commit('SET_MEETINGLOG_DIALOG', value);
+    },
     createSessionId({ rootGetters, commit, dispatch }) {
       const ct = new Date();
       const createData = {
@@ -506,6 +513,7 @@ const meetingStore = {
       const subscribers = [];
 			session.on('streamCreated', ({ stream }) => {
         const subscriber = session.subscribe(stream);
+        commit('SET_MYSELF', subscriber)
 				subscribers.push(subscriber);
 			});
 			// On every Stream destroyed...
@@ -643,7 +651,7 @@ const meetingStore = {
         state.publisher.publishAudio(true) 
       }
     },
-    enterSession({ state, rootGetters, getters, commit, dispatch }, enterData) {
+    enterSession({ state, rootGetters, commit, dispatch }, enterData) {
       commit('SET_CURRENT_DRINK', enterData.currentDrink);
       const drinkData = {
         "liquorLimit": 0,
@@ -887,14 +895,10 @@ const meetingStore = {
                 }
                 if(state.selectedGame == 4){  //웃으면 술이와요
                   commit('SET_GAME_WORD', event.data.word);
+                  commit('SET_GAME_PLAYER', event.data.player);
                 }
                 if(state.selectedGame == 5){  //나술안취했어
-                  if (event.data.sentence) {
-                    commit('SET_SENTENCE', event.data.sentence);
-                    if (!getters.notCurrentPlayer) {
-                      dispatch('recordVoice');
-                    }
-                  }
+
                 }
               }
               else if(event.data.gameStatus == 3) {
@@ -942,17 +946,6 @@ const meetingStore = {
                     commit('SET_GAME_VOTE_DATA',state.publisher.session.connection.data.slice(15,-2));
                   }
                 }
-                else if (state.selectedGame == 5) {
-                  if (event.data.sentence) {
-                    commit('SET_SENTENCE', event.data.sentence);
-                    commit('SET_DRUNK', event.data.drunk);
-
-                    if (!getters.notCurrentPlayer && event.data.drunk == 2) {
-                      commit('SET_GOT_WASTED', true);
-                    }
-                  }
-                }
-
                 //게임 공통
                 if (event.data.participantPublicId){
                   if (state.publisher.stream.connection.connectionId === event.data.participantPublicId) {
@@ -976,6 +969,18 @@ const meetingStore = {
                     });
                   }
                 }
+              }
+              
+              if (event.data.sentence && event.data.gameStatus == 2) {
+                commit('SET_SENTENCE', event.data.sentence);
+                if (state.publisher.stream.connection.connectionId === event.data.participantPublicId) {
+                  dispatch('recordVoice');
+                }
+              }
+
+              if (event.data.sentence && event.data.gameStatus == 3) {
+                commit('SET_SENTENCE', event.data.sentence)
+                commit('SET_DRUNK', event.data.drunk)
               }
             });
 
@@ -1209,42 +1214,7 @@ const meetingStore = {
         });
       }
       fromMic();
-    },
-    offGotWasted({ commit }) {
-      commit('SET_GOT_WASTED', false);
-    },
-    updateUserDrinkRecord({ state, rootGetters , commit }, num) {
-      let user = rootGetters.getUser;
-      let currentDrinkNum = 0;
-      for(let i=0; i<user.drinks.length; i++){
-        if(user.drinks[i].liquorName==state.currentDrink){
-          if(user.drinks[i].liquorNum){
-            user.drinks[i].liquorNum += num;
-            currentDrinkNum = user.drinks[i].liquorNum;
-          }
-          else{ //데이터가 없을 때
-            if(num == 1){
-              console.log("진입")
-              user.drinks[i].liquorNum = 1;
-              currentDrinkNum = 1;
-            }
-          }
-        }
-      }
-      commit('setUser', user, { root:true });
-      const drinkData = {
-        "liquorLimit": currentDrinkNum,
-        "liquorName": state.currentDrink,
-        "recordId": 0
-      }
-      axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
-        .then(() => {
-          console.log("SUCCESSFUL - uploading user record")
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-    },
+    }
   }
 }
 
