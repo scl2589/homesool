@@ -20,8 +20,8 @@
           <user-video 
             class="my-2 px-2" 
             :class="{ 'col-12': one, 'col-6' : two, 'col-4' : three, 'col-3' : eight, 'col-2' : twelve }" 
-            v-for="(sub, index) in subscribers" 
-            :key="index" 
+            v-for="sub in subscribers" 
+            :key="sub.stream.connection.connectionId" 
             :stream-manager="sub"
             :isLeftPanel="true"
             @click.native="updateMainVideoStreamManager(sub)"
@@ -54,8 +54,8 @@
             />
             <user-video 
               class="my-2 px-2 sub-video" 
-              v-for="(sub, index) in participants" 
-              :key="index" 
+              v-for="sub in participants" 
+              :key="sub.stream.connection.connectionId" 
               :stream-manager="sub" 
               @click.native="updateMainVideoStreamManager(sub)"
             />
