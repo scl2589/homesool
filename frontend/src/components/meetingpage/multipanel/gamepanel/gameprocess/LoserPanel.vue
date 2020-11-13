@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column justify-content-center align-items-center h-95" v-if="loser">
+  <div class="d-flex flex-column justify-content-center align-items-center h-100" v-if="loser">
     <div class="w-100" v-if="selectedGame==2">
       <div class="answerList mb-2">
         <p 
@@ -19,6 +19,14 @@
         </div>
       </div>
     </div>
+    <div class="w-100 mt-3" v-if="selectedGame==3">
+      <div v-if="gameVoteData===gameLiarData">
+        <h3 class="result3"><span class="color-yellow">시민</span> 승!!!</h3>
+      </div>
+      <div v-else>
+        <h3 class="result3"><span class="color-yellow">라이어</span> 승!!!</h3>
+      </div>
+    </div>
     <img class="w-50" :src="smileURL" alt="" v-if="selectedGame == 4 && smileURL">
     <user-video
       class="w-50"
@@ -34,10 +42,10 @@
     <div class="w-100" v-if="selectedGame == 2">
       <p><span class="color-yellow">{{ loser.stream.connection.data.slice(15,-2).slice(0, 10) }}</span>님이 <u>꼴찌</u> 입니다!!!</p>
     </div>
-    <div v-if="selectedGame == 3">
-      <p> 투표 결과 : {{this.gameVoteData}} </p>
-      <p> 라이어 : {{this.gameLiarData}} </p>
-      <p> 벌칙자 : {{ loser.stream.connection.data.slice(15,-2) }} </p>
+    <div class="w-100 mt-auto d-flex row no-gutters" v-if="selectedGame == 3">
+      <p class="col-4"> <span class="color-gray">최다득표자 :</span> {{this.gameVoteData}} </p>
+      <p class="col-4"> <span class="color-gray">라이어 :</span> {{this.gameLiarData}} </p>
+      <p class="col-4"> <span class="color-gray">벌칙자 :</span> {{ loser.stream.connection.data.slice(15,-2).slice(0, 6) }} </p>
     </div>
     <div v-if="selectedGame == 4">
       <p><span class="color-yellow">{{ loser.stream.connection.data.slice(15,-2) }}</span>님이 끝내 웃음을 참지 못했습니다.</p>
@@ -52,7 +60,7 @@
       <p>벌칙은 <span class="color-yellow">{{ penalty }}</span> 입니다.</p>
     </div>
 
-    <div class="w-100">
+    <div class="w-100 mb-3">
       <button
         class="btn btn-sm btn-yellow mx-2"
         @click="changeMode(null)"
@@ -150,6 +158,10 @@ p {
 
 .w-20 {
   width: 20% !important;
+}
+
+.result3 {
+  color: white;
 }
 
 </style>
