@@ -72,7 +72,7 @@ const meetingStore = {
     sentence: null,
     drunkenText: null,
     drunk: null,
-    gotWasted: false,
+    gotWasted: null,
 
     // theme
     theme: 'basic',
@@ -947,8 +947,8 @@ const meetingStore = {
                     commit('SET_SENTENCE', event.data.sentence);
                     commit('SET_DRUNK', event.data.drunk);
 
-                    if (!getters.notCurrentPlayer && event.data.drunk == 2) {
-                      commit('SET_GOT_WASTED', true);
+                    if (event.data.drunk == 2) {
+                      commit('SET_GOT_WASTED', state.currentPlayer.stream.connection.connectionId);
                     }
                   }
                 }
@@ -1211,7 +1211,7 @@ const meetingStore = {
       fromMic();
     },
     offGotWasted({ commit }) {
-      commit('SET_GOT_WASTED', false);
+      commit('SET_GOT_WASTED', null);
     },
     updateUserDrinkRecord({ state, rootGetters , commit }, num) {
       let user = rootGetters.getUser;

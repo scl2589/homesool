@@ -14,6 +14,7 @@
             id="myVideo"
             :stream-manager="publisher" 
             :isPublisher="isPublisher"
+            :isLeftPanel="true"
             @click.native="updateMainVideoStreamManager(publisher)"
           />
           <user-video 
@@ -21,7 +22,8 @@
             :class="{ 'col-12': one, 'col-6' : two, 'col-4' : three, 'col-3' : eight, 'col-2' : twelve }" 
             v-for="(sub, index) in subscribers" 
             :key="index" 
-            :stream-manager="sub" 
+            :stream-manager="sub"
+            :isLeftPanel="true"
             @click.native="updateMainVideoStreamManager(sub)"
           />
         </div>
