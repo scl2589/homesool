@@ -1216,7 +1216,11 @@ const meetingStore = {
     saveScreenshot({ state, rootGetters }) {
       axios.post(SERVER.URL + SERVER.ROUTES.photo, state.screenshotInfo, rootGetters.config)
         .then(() => {
-          console.log("SUCCESSFUL - uploading screenshot")
+          state.session.signal({
+            data: 'hostleave',
+            to: [],
+            type: 'mode'
+          })
         })
         .catch((err) => {
           console.log(err)
