@@ -9,7 +9,7 @@
     />
     <div v-if="selectedGame == 1">
       <p> 번호 : {{this.gameUpDownNumber}}</p>
-      <p> {{ loser.stream.connection.data.slice(15,-2) }} 당첨!!! </p>
+      <p> <span class="color-yellow">{{ loser.stream.connection.data.slice(15,-2) }}</span> 당첨!!! </p>
     </div>
     <div v-if="selectedGame == 2">
       <p>{{ loser.stream.connection.data.slice(15,-2) }}님이 꼴찌 입니다!!!</p>
@@ -29,7 +29,7 @@
     </div>
 
     <div>
-      <p>벌칙은 {{ penalty }} 입니다.</p>
+      <p>벌칙은 <span class="color-yellow">{{ penalty }}</span> 입니다.</p>
     </div>
 
     <div>
@@ -88,5 +88,8 @@ export default {
 </script>
 
 <style scoped>
+p {
+  color: white;
+}
 
 </style>

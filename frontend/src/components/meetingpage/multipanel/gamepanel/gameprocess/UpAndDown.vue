@@ -1,23 +1,36 @@
 <template>
     <div class="panel">
-      <div class="startgame" v-if="gameStatus==1 || gameStatus==2">
-        <div class="showWord">
-          <p>숫자를 맞춰 주세요</p>
-          <div v-if="notCurrentPlayer">{{ notCurrentPlayer.stream.connection.data.slice(15,-2) }} 의 차례입니다</div>
+      <div class="startgame h-100 d-flex flex-column justify-content-between" v-if="gameStatus==1 || gameStatus==2">
+        <div class="showWord h-100 d-flex flex-column justify-content-between">
+          <p class="text-white description-title">숫자를 맞춰 주세요</p>
+
           <div v-if="gameUpDownNumber >= 0">
-              <p> 이전 번호 : {{this.gameUpDownNumber}}</p>
-          </div>    
+            <p class="previous color-gray"> 이전 번호 : {{this.gameUpDownNumber}}</p>
+          </div>
+          <!-- up인지 down인지에 따라 이미지 변경 -->
           <div v-if="gameStatus==2">
-            <p>{{gameUpDownResult}}</p>
+            <p v-if="gameUpDownResult==='up'">
+              <img src="@/assets/images/positivevote.png">
+              <br><span class="result color-gray">{{gameUpDownResult}}</span>
+            </p>
+            <p v-else>
+              <img src="@/assets/images/negativevote.png">
+            </p>
+          </div>
+          <div v-if="notCurrentPlayer">
+            <p class="turn">
+              <span class="color-yellow">{{ notCurrentPlayer.stream.connection.data.slice(15,-2) }}</span>의 차례입니다
+            </p>
           </div>
         </div>
           <div class="chat-box p-2 d-flex flex-column h-50" v-if="!notCurrentPlayer">      
             <div class="footer d-flex mt-auto">
               <div class="col-10 px-1 py-0">
                 <input 
-                  @keyup.enter="clickSendNum()"
                   class="text-box"
+                  @keyup.enter="clickSendNum()"
                   v-model="number"
+                  autofocus
                 >
               </div>
               <div class="col-2 p-0">
@@ -36,6 +49,7 @@
 </template>
 
 <script>
+import Swal from 'sweetalert2'
 import { mapState, mapActions, mapGetters } from 'vuex'
 import LoserPanel from '@/components/meetingpage/multipanel/gamepanel/gameprocess/LoserPanel';
 
@@ -54,7 +68,7 @@ export default {
       'publisher',
       'gameUpDownNumber'
     ]),
-    ...mapGetters('meetingStore', ['notModeHost', 'notCurrentPlayer'])
+    ...mapGetters('meetingStore', ['notModeHost', 'notCurrentPlayer']),
   },
   data(){
     return{
@@ -66,15 +80,23 @@ export default {
       "sendGameRequest",
     ]),
     clickSendNum(){
-      var request = new Object();
-      request.gameId=this.selectedGame;
-      request.number=this.number;
-      request.gameStatus=2;
-      request.index=this.gameUpDownIndex;
-      this.number = '';
-      var jsonRequest = JSON.stringify(request);
-      console.log(jsonRequest);
-      this.sendGameRequest(jsonRequest);
+      if (this.number >= 1 && this.number <= 100) {
+        var request = new Object();
+        request.gameId=this.selectedGame;
+        request.number=this.number;
+        request.gameStatus=2;
+        request.index=this.gameUpDownIndex;
+        this.number = '';
+        var jsonRequest = JSON.stringify(request);
+        console.log(jsonRequest);
+        this.sendGameRequest(jsonRequest);
+      } else {
+        Swal.fire({
+          icon: 'warning',
+          html: '숫자를 다시 입력해주세요.<br>1과 100 사이의 숫자여야 합니다.',
+        })
+      }
+
     },
      clickFinishgame(){
       var request = new Object();
@@ -99,9 +121,22 @@ export default {
   padding : 30px;
 }
 
-p{
-  color:yellow;
-  font-size : 3.3rem;
+.description-title {
+  font-size: 2.2rem;
+} 
+
+p {
+  margin: 10px;
+}
+
+img {
+  max-width: 20%;
+  max-height: 20%;
+}
+
+.turn{
+  color:white;
+  font-size : 1.8rem;
 }
 
 .chat-box {
@@ -125,5 +160,21 @@ p{
 
 #chat-area {
   overflow-y: auto;
+}
+
+input {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+input:focus {
+  outline: none;
+}
+
+.previous {
+  font-size: 1.2rem;
+}
+
+.result {
+  font-size: 1.5rem;
 }
 </style>
