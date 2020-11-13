@@ -19,6 +19,7 @@ const meetingStore = {
     mySessionId: null,
     roomId: null,
     myself: null,
+    totalDrink : 0,
 
     // openvidu
     OV: undefined,
@@ -124,6 +125,16 @@ const meetingStore = {
       } else {
         return false
       }
+    },
+    getImgsrc(state){
+      if(state.currentDrink == '소주')
+				return require("@/assets/images/soju.png")
+			else if(state.currentDrink == '맥주')
+				return require("@/assets/images/beer.png")
+			else if(state.currentDrink == '와인')
+				return require("@/assets/images/wine.png")
+			else
+				return require("@/assets/images/other.png")
     }
   },
   mutations: {
@@ -148,6 +159,9 @@ const meetingStore = {
     },
     SET_ROOMID(state, roomId) {
       state.roomId = roomId;
+    },
+    SET_TOTAL_DRINK(state, value){
+      state.totalDrink += value;
     },
 
     // Openvidu
@@ -654,13 +668,41 @@ const meetingStore = {
     },
     enterSession({ state, rootGetters, commit, dispatch }, enterData) {
       commit('SET_CURRENT_DRINK', enterData.currentDrink);
+      let user = rootGetters.getUser;
+      //다른 애들도 넣어주자
+      for(let i=0; i<user.drinks.length; i++){
+        if(!(user.drinks[i].liquorName==state.currentDrink)){
+          let drinkData = {
+            "liquorLimit": 0,
+            "liquorName": user.drinks[i].liquorName,
+            "recordId": 0
+          }
+          axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
+              .then(res => {
+                console.log("SUCCESSFUL - uploading user record")
+                //alert(res.data);
+                user.drinks[i].liquorId = res.data;
+                user.drinks[i].liquorNum = 0;
+              })
+              .catch((err) => {
+                console.log(err)
+          })
+        }
+      }
       const drinkData = {
         "liquorLimit": 0,
         "liquorName": enterData.currentDrink,
         "recordId": 0
       }
       axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
-        .then(() => {
+        .then(res => {
+          for(let i=0; i<user.drinks.length; i++){  //현재 DB ID 저장
+            if(user.drinks[i].liquorName==state.currentDrink){
+              user.drinks[i].liquorNum = 0;
+              user.drinks[i].liquorId = res.data;
+            }
+          }
+          commit('setUser', user, { root:true });
           state.session.connect(state.ovToken, { clientData: enterData.nickName })
 					.then(() => {
             commit('SET_NICKNAME', enterData.nickName);
@@ -1231,20 +1273,16 @@ const meetingStore = {
       commit('SET_GOT_WASTED', null);
     },
     updateUserDrinkRecord({ state, rootGetters , commit }, num) {
+      commit('SET_TOTAL_DRINK', num);
       let user = rootGetters.getUser;
       let currentDrinkNum = 0;
+      let currentDrinkId = 0;   //DB상 ID
       for(let i=0; i<user.drinks.length; i++){
         if(user.drinks[i].liquorName==state.currentDrink){
-          if(user.drinks[i].liquorNum){
+          if(user.drinks[i].liquorId){ //데이터가 있을 때
             user.drinks[i].liquorNum += num;
             currentDrinkNum = user.drinks[i].liquorNum;
-          }
-          else{ //데이터가 없을 때
-            if(num == 1){
-              console.log("진입")
-              user.drinks[i].liquorNum = 1;
-              currentDrinkNum = 1;
-            }
+            currentDrinkId = user.drinks[i].liquorId;
           }
         }
       }
@@ -1252,7 +1290,7 @@ const meetingStore = {
       const drinkData = {
         "liquorLimit": currentDrinkNum,
         "liquorName": state.currentDrink,
-        "recordId": 0
+        "recordId": currentDrinkId,
       }
       axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
         .then(() => {
@@ -1262,6 +1300,9 @@ const meetingStore = {
           console.log(err)
         })
     },
+    changeCurrentDrink({ commit }, currentDrink) {
+      commit('SET_CURRENT_DRINK',currentDrink )
+    }
   }
 }
 
