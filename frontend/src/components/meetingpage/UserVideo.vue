@@ -19,14 +19,14 @@
 		</div>
 		<div class="overlay-drunken d-flex justify-content-center align-items-center w-100" v-if="gotWasted && streamManager.stream.connection.connectionId === gotWasted && isLeftPanel && currentMode !== 'anonymous'">
 			<img width="10%" src="@/assets/images/drunken.png" alt="">
-			<p class="mb-0 mx-2 text-black">나는 고주망태입니다.</p>
+			<p class="mb-0 mx-2 black">나는 고주망태입니다.</p>
 			<img width="10%" src="@/assets/images/drunken.png" alt="">
 		</div>
-		<ov-video :stream-manager="streamManager"/>
+		<div class="overlay-name d-flex justify-content-center align-items-center" v-if="isLeftPanel && nickName">
+			<p class="black">{{ clientData }}</p>
+		</div>
 	</div>
-	<div v-if="!($route.name==='HomePage')">
-		<!-- <p>{{userManager.stream.connection.data.slice(15,-2)}}</p> -->
-	</div>
+	<ov-video :stream-manager="streamManager"/>
 </div>
 </template>
 
@@ -44,7 +44,7 @@ export default {
 		isLeftPanel: Boolean
 	},
 	computed: {
-		...mapState('meetingStore', ['currentMode','gotWasted','currentDrink','publisher','totalDrink']),
+		...mapState('meetingStore', ['currentMode','gotWasted','currentDrink','publisher','totalDrink', 'nickName']),
 		...mapState(['user']),
 		...mapGetters("meetingStore", ['getImgsrc']),
 		clientData () {
@@ -96,6 +96,15 @@ p {
   height: 100%;
   z-index: 10;
   background-color: rgba(0,0,0,1); /*dim the background*/
+}
+
+.overlay-name{
+  position: absolute;
+  bottom: 0%;
+  left: 0%;
+  width: 100%;
+  height: 10%;
+  z-index: 12;
 }
 
 .overlay-drunken{
