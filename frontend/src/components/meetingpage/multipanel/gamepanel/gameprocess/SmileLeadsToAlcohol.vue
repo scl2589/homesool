@@ -59,7 +59,7 @@ export default {
     UserVideo
   },
   computed: {
-    ...mapState('meetingStore', ['gameStatus', 'selectedGame', 'gameWord']),
+    ...mapState('meetingStore', ['gameStatus', 'selectedGame', 'gameWord', 'session']),
     ...mapGetters('meetingStore', ['notModeHost', 'notCurrentPlayer'])
   },
   watch: {
@@ -95,7 +95,15 @@ export default {
   },
 
   beforeDestroy() {
-    clearInterval(this.checkSmile)
+    clearInterval(this.checkSmile);
+    var request = new Object();
+    request.gameStatus=3;
+    this.session.signal({
+      data: JSON.stringify(request),
+      to: [],
+      type: 'game'
+    })
+    
   }
 }
 </script>
