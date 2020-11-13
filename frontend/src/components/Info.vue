@@ -112,6 +112,11 @@ export default {
       newLiquor: null
     }
   },
+  props: {
+    username: String,
+    useremail: String,
+    userdrinks: Object
+  },
   computed: {
     ...mapGetters(['getId'])
   },
@@ -158,18 +163,26 @@ export default {
       this.signupData.drinks.splice(index, 1)
     },
     clickSignup() {
-      axios.put(SERVER.URL + SERVER.ROUTES.user + '/' + this.getId, this.signupData, 
-      {
-        headers: {'X-AUTH-TOKEN' : this.$store.state.token}
-      })
-        .then(() => {
-          console.log("가입 완료")
-          this.$router.push('/')
+      if (this.signupData.drinks.length) {
+        axios.put(SERVER.URL + SERVER.ROUTES.user + '/' + this.getId, this.signupData, 
+        {
+          headers: {'X-AUTH-TOKEN' : this.$store.state.token}
         })
-        .catch((err) => {
-          console.log(err)
-        })
+          .then(() => {
+            this.$router.push('/')
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+      } else {
+        alert('한 종류 이상의 주량을 등록해주세요!');
+      }
     }
+  },
+  mounted() {
+    this.signupData.name = this.username;
+    this.signupData.email = this.useremail;
+    this.signupData.drinks = this.userdrinks;
   }
 };
 </script>

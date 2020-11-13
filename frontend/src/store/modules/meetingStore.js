@@ -13,6 +13,7 @@ const meetingStore = {
   state: {
     // pre meeting 
     meetingDialog: false,
+    meetingLogDialog: false,
     currentDrink: null,
     nickName: null,
     mySessionId: null,
@@ -76,6 +77,7 @@ const meetingStore = {
     sentence: null,
     drunkenText: null,
     drunk: null,
+    gotWasted: null,
 
     // theme
     theme: 'basic',
@@ -139,6 +141,9 @@ const meetingStore = {
     // pre meeting
     SET_MEETING_DIALOG(state, value) {
       state.meetingDialog = value;
+    },
+    SET_MEETINGLOG_DIALOG(state, value) {
+      state.meetingLogDialog = value;
     },
     SET_CURRENT_DRINK(state, drinkId) {
       state.currentDrink = drinkId;
@@ -479,6 +484,9 @@ const meetingStore = {
     },
     changeMeetingDialog({ commit }, value) {
       commit('SET_MEETING_DIALOG', value);
+    },
+    changeMeetingLogDialog({ commit }, value) {
+      commit('SET_MEETINGLOG_DIALOG', value);
     },
     createSessionId({ rootGetters, commit, dispatch }) {
       const ct = new Date();
@@ -981,6 +989,17 @@ const meetingStore = {
                     commit('SET_GAME_VOTE_DATA',state.publisher.session.connection.data.slice(15,-2));
                   }
                 }
+                else if (state.selectedGame == 5) {
+                  if (event.data.sentence) {
+                    commit('SET_SENTENCE', event.data.sentence);
+                    commit('SET_DRUNK', event.data.drunk);
+
+                    if (event.data.drunk == 2) {
+                      commit('SET_GOT_WASTED', state.currentPlayer.stream.connection.connectionId);
+                    }
+                  }
+                }
+
                 //게임 공통
                 if (event.data.participantPublicId){
                   if (state.publisher.stream.connection.connectionId === event.data.participantPublicId) {
@@ -1249,6 +1268,9 @@ const meetingStore = {
         });
       }
       fromMic();
+    },
+    offGotWasted({ commit }) {
+      commit('SET_GOT_WASTED', null);
     },
     updateUserDrinkRecord({ state, rootGetters , commit }, num) {
       commit('SET_TOTAL_DRINK', num);

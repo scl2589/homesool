@@ -46,7 +46,7 @@
               <div class="penalty">
                 <v-select
                   v-model="penalty"
-                  :items="items"
+                  :items="penalties"
                   label="벌칙"
                   width="10px"
                   hide-details
@@ -102,10 +102,20 @@ export default {
         '댄스댄스',
         '직접 입력'
       ],
+      notDrunkenItems: [
+        '나는 고주망태'
+      ]
     }
   },
   computed: {
-    ...mapGetters('meetingStore', ['notModeHost'])
+    ...mapGetters('meetingStore', ['notModeHost']),
+    penalties() {
+      if (this.selectedGameId == 5) {
+        return this.notDrunkenItems;
+      } else {
+        return this.items;
+      }
+    }
   },
   methods: {
     ...mapActions('meetingStore', ['sendGameRequest']),

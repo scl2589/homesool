@@ -1,6 +1,6 @@
 <template>
 <div v-if="streamManager">
-	<div class="container">
+	<div class="drink-container">
 		<div v-if="!($route.name==='HomePage')">
 			<div class="drink-overlay" v-if="isPublisher">
 				<img class="drink-minus" src="@/assets/images/minus.png" alt="한잔 덜 마셨어요" @click="updateUserDrinkRecord(-1)"> 
@@ -16,6 +16,11 @@
 		</div>
 		<div class="overlay d-flex justify-content-center align-items-center" v-if="currentMode === 'anonymous'">
 			<img height="100%" src="@/assets/images/host.png" alt="">
+		</div>
+		<div class="overlay-drunken d-flex justify-content-center align-items-center w-100" v-if="gotWasted && streamManager.stream.connection.connectionId === gotWasted && isLeftPanel && currentMode !== 'anonymous'">
+			<img width="10%" src="@/assets/images/drunken.png" alt="">
+			<p class="mb-0 mx-2 text-black">나는 고주망태입니다.</p>
+			<img width="10%" src="@/assets/images/drunken.png" alt="">
 		</div>
 		<ov-video :stream-manager="streamManager"/>
 	</div>
@@ -35,10 +40,11 @@ export default {
 	},
 	props: {
 		streamManager: Object,
-		isPublisher : Boolean,
+		isPublisher: Boolean,
+		isLeftPanel: Boolean
 	},
 	computed: {
-		...mapState('meetingStore', ['currentMode','user','currentDrink','publisher','totalDrink']),
+		...mapState('meetingStore', ['currentMode','gotWasted','currentDrink','publisher','totalDrink']),
 		...mapState(['user']),
 		...mapGetters("meetingStore", ['getImgsrc']),
 		clientData () {
@@ -46,8 +52,17 @@ export default {
 			return clientData;
 		},
 	},
+	watch: {
+		gotWasted(value) {
+			if (value) {
+				setTimeout(() => {
+					this.offGotWasted();
+				}, 120000);
+			}
+		}
+	},
 	methods: {
-		...mapActions('meetingStore', ['updateUserDrinkRecord', 'changeCurrentDrink']),
+		...mapActions('meetingStore', ['updateUserDrinkRecord','offGotWasted', 'changeCurrentDrink']),
 		getConnectionData() {
 			const { connection } = this.streamManager.stream;
 			return JSON.parse(connection.data);
@@ -83,13 +98,22 @@ p {
   background-color: rgba(0,0,0,1); /*dim the background*/
 }
 
+.overlay-drunken{
+  position: absolute;
+  bottom: 30%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
+
 .drink-overlay{
  position: absolute;
- top: 0;
+ top: 25%;
  bottom: 0;
  left: 0;
  right: 0;
- height: 100%;
+ height: 50%;
  opacity: 1;
  transition: .3s ease;
 }
@@ -159,13 +183,14 @@ p {
 	z-index: 30;
 }
 
-.container:hover .drink{
+
+.drink-container:hover .drink{
 	opacity: 0.8;
 }
-.container:hover .drink-minus{
+.drink-container:hover .drink-minus{
 	opacity: 0.4;
 }
-.container:hover .drink-plus{
+.drink-container:hover .drink-plus{
 	opacity: 0.4;
 }
 </style>
