@@ -1,10 +1,32 @@
 <template>
     <div class="panel">
-      <div class="startgame" v-if="gameStatus==1 || gameStatus==2">
+      <div class="startgame h-100 d-flex flex-column justify-content-between" v-if="gameStatus==1 || gameStatus==2">
         <div class="showWord">
-          <p>{{this.gameInitialWord}}</p>
+          <p class="color-gray">{{this.gameInitialWord}}</p>
         </div>
-          <div class="chat-box p-2 d-flex flex-column h-50"  v-if="gameIsCorrect == 1">      
+        <div class="answerList">
+          <p 
+            v-if="gameAnswerWords.length"
+            class="other-user"
+          >
+            ⭐다른 유저의 정답⭐
+          </p>
+          <div class="d-flex row no-gutters">
+            <p 
+              class="color-gray col-4"
+              v-for="word in gameAnswerWords" 
+              :key="word.word"
+            >
+              <span class="color-gray">{{word.nickName}}</span> <span class="color-gray">:</span> {{word.word}}
+            </p>
+          </div>
+        </div>
+        <div class="p-2 d-flex flex-column"  v-if="gameIsCorrect == 1"> 
+          <div>
+            <!-- If it is repeated word or is not in a dictionary -->
+            <div>
+              <p class="color-yellow">{{this.gameWordResult}}</p>
+            </div> 
             <div class="footer d-flex mt-auto">
               <div class="col-10 px-1 py-0">
                 <input 
@@ -22,20 +44,14 @@
                 </button>
               </div>
             </div>
-          <div>
-            <p>{{this.gameWordResult}}</p>
-          </div>
-          </div>
-          <div v-else>
-            통과
-          </div> 
+          </div>      
+        </div>
+        <div v-else>
+          <p class="color-yellow pass">통과</p>
+        </div> 
+
       </div>
       <loser-panel class="w-100 d-flex justify-content-center align-items-center" v-if="gameStatus == 3"/>
-      <div class="answerList">
-          <p v-for="word in gameAnswerWords" :key="word.word">
-            {{word.nickName}} : {{word.word}}
-          </p>
-      </div>
     </div>
 
 </template>
@@ -86,9 +102,16 @@ export default {
   padding : 30px;
 }
 
-p{
-  color:yellow;
-  font-size : 3.3rem;
+.showWord > p {
+  font-size: 2.2rem;
+}
+
+.other-user {
+  color: white;
+}
+
+.pass {
+  font-size: 1.8rem;
 }
 
 .chat-box {
@@ -114,8 +137,7 @@ p{
   overflow-y: auto;
 }
 
-.answerList > p{
-  color:yellow;
-  font-size : 1rem;
+input:focus {
+  outline: none;
 }
 </style>

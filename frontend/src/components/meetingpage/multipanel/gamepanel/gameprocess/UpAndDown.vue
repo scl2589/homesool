@@ -167,6 +167,7 @@ input {
   padding-left: 10px;
   padding-right: 10px;
 }
+
 input:focus {
   outline: none;
 }

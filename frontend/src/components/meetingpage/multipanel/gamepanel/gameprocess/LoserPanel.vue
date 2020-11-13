@@ -1,18 +1,38 @@
 <template>
-  <div class="d-flex flex-column justify-content-center align-items-center" v-if="loser">
+  <div class="d-flex flex-column justify-content-center align-items-center h-95" v-if="loser">
+    <div class="w-100" v-if="selectedGame==2">
+      <div class="answerList mb-2">
+        <p 
+          v-if="gameAnswerWords.length"
+          class="other-user"
+        >
+          ⭐다른 유저의 정답⭐
+        </p>
+        <div class="d-flex row no-gutters answers">
+          <p 
+            class="col-4 answer2"
+            v-for="word in gameAnswerWords" 
+            :key="word.word"
+          >
+            {{word.nickName.slice(0,6)}} : {{word.word}}
+          </p>
+        </div>
+      </div>
+    </div>
     <img class="w-50" :src="smileURL" alt="" v-if="selectedGame == 4 && smileURL">
     <user-video
       class="w-50"
+      :class="{'w-45': game2, 'w-35':six, 'w-20':nine}"
       :stream-manager="loser"
       @click.native="updateMainVideoStreamManager(loser)"
       v-if="selectedGame != 4"
     />
     <div v-if="selectedGame == 1">
       <p> 번호 : {{this.gameUpDownNumber}}</p>
-      <p> <span class="color-yellow">{{ loser.stream.connection.data.slice(15,-2) }}</span> 당첨!!! </p>
+      <p><span class="color-yellow">{{ loser.stream.connection.data.slice(15,-2) }}</span> 당첨!!! </p>
     </div>
-    <div v-if="selectedGame == 2">
-      <p>{{ loser.stream.connection.data.slice(15,-2) }}님이 꼴찌 입니다!!!</p>
+    <div class="w-100" v-if="selectedGame == 2">
+      <p><span class="color-yellow">{{ loser.stream.connection.data.slice(15,-2).slice(0, 10) }}</span>님이 <u>꼴찌</u> 입니다!!!</p>
     </div>
     <div v-if="selectedGame == 3">
       <p> 투표 결과 : {{this.gameVoteData}} </p>
@@ -20,7 +40,7 @@
       <p> 벌칙자 : {{ loser.stream.connection.data.slice(15,-2) }} </p>
     </div>
     <div v-if="selectedGame == 4">
-      <p>{{ loser.stream.connection.data.slice(15,-2) }}님이 끝내 웃음을 참지 못했습니다.</p>
+      <p><span class="color-yellow">{{ loser.stream.connection.data.slice(15,-2) }}</span>님이 끝내 웃음을 참지 못했습니다.</p>
     </div>
     <div v-if="selectedGame == 5">
       <h1>결과</h1>
@@ -28,19 +48,19 @@
       <p>{{ loser.stream.connection.data.slice(15,-2) }}은 {{findDrunken}}</p>
     </div>
 
-    <div>
+    <div class="w-100">
       <p>벌칙은 <span class="color-yellow">{{ penalty }}</span> 입니다.</p>
     </div>
 
-    <div>
+    <div class="w-100">
       <button
-        class="btn btn-yellow mx-2"
+        class="btn btn-sm btn-yellow mx-2"
         @click="changeMode(null)"
       >
         술게임 끝내기
       </button>
       <button
-        class="btn btn-yellow mx-2"
+        class="btn btn-sm btn-yellow mx-2"
         @click="selectNewGame"
       >
         술게임 고르기
@@ -57,6 +77,28 @@ export default {
   name: 'LoserPanel',
   data() {
     return {
+      game2: false,
+      six: false,
+      nine: false
+    }
+  },
+  watch: {
+    gameAnswerWords() {
+      if (this.gameAnswerWords.length <= 3) {
+        this.six = false
+        this.nine = false
+      } else if (this.gameAnswerwords.length <= 6) {
+        this.six = true
+        this.nine = false
+      } else {
+        this.nine = true
+        this.six = false
+      }
+    },
+    selectedGame() {
+      if (this.selectedGame === 2) {
+        this.game2 = true
+      }
     }
   },
   components: {
@@ -71,7 +113,8 @@ export default {
       'gameLiarData',
       'gameUpDownNumber',
       'sentence',
-      'smileURL'
+      'smileURL',
+      'gameAnswerWords'
     ]),
     ...mapGetters('meetingStore', ['findDrunken'])
   },
@@ -90,6 +133,23 @@ export default {
 <style scoped>
 p {
   color: white;
+  margin: 5px 0 0 0;
+}
+
+.answers {
+  border-bottom: 1px solid white;
+}
+
+.answer2 {
+  font-size: 0.8em;
+}
+
+.w-35 {
+  width: 35% !important;
+}
+
+.w-20 {
+  width: 20% !important;
 }
 
 </style>
