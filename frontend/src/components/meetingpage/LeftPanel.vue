@@ -1,11 +1,4 @@
 <template>
-<!-- <div id="session-header">
-        <h1 id="session-title">{{ mySessionId }}</h1>
-        <input class="btn btn-large btn-danger" type="button" id="buttonLeaveSession" @click="leaveSession" value="Leave session">
-    </div> -->
-    <!-- <div id="main-video" class="col-md-6">
-      <user-video :stream-manager="mainStreamManager"/>
-    </div> -->
   <div>
     <div v-if="!isSharingMode">
       <div class="d-flex justify-content-center align-items-center mt-3">

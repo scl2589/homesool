@@ -11,6 +11,11 @@
 		<div class="overlay d-flex justify-content-center align-items-center" v-if="currentMode === 'anonymous'">
 			<img height="100%" src="@/assets/images/host.png" alt="">
 		</div>
+		<div class="overlay-drunken d-flex justify-content-center align-items-center w-100" v-if="gotWasted && currentMode !== 'anonymous'">
+			<img width="10%" src="@/assets/images/drunken.png" alt="">
+			<p class="mb-0 mx-2">나는 고주망태입니다.</p>
+			<img width="10%" src="@/assets/images/drunken.png" alt="">
+		</div>
 		<ov-video :stream-manager="streamManager"/>
 	</div>
 	<div v-if="!($route.name==='HomePage')">
@@ -32,15 +37,23 @@ export default {
 		isPublisher : Boolean,
 	},
 	computed: {
-		...mapState('meetingStore', ['currentMode','user','currentDrink','publisher']),
-		...mapState(['user']),
+		...mapState('meetingStore', ['currentMode', 'gotWasted', 'user','currentDrink','publisher']),
 		clientData () {
 			const { clientData } = this.getConnectionData();
 			return clientData;
 		},
 	},
+	watch: {
+		gotWasted(value) {
+			if (value) {
+				setTimeout(() => {
+					this.offGotWasted();
+				}, 120000);
+			}
+		}
+	},
 	methods: {
-		...mapActions('meetingStore', ['updateUserDrinkRecord']),
+		...mapActions('meetingStore', ['updateUserDrinkRecord', 'offGotWasted']),
 		getConnectionData () {
 			const { connection } = this.streamManager.stream;
 			return JSON.parse(connection.data);
@@ -61,6 +74,15 @@ p {
   height: 100%;
   z-index: 10;
   background-color: rgba(0,0,0,1); /*dim the background*/
+}
+
+.overlay-drunken{
+  position: absolute;
+  top: 10%;
+  left: 0%;
+  width: 100%;
+  height: 10%;
+  z-index: 10;
 }
 
 .drink-overlay{
