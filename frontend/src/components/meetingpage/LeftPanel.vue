@@ -12,7 +12,8 @@
             class="my-2 px-2" 
             :class="{ 'col-12': one, 'col-6' : two, 'col-4' : three, 'col-3' : eight, 'col-2' : twelve }" 
             id="myVideo"
-            :stream-manager="publisher"
+            :stream-manager="publisher" 
+            :isPublisher="isPublisher"
             @click.native="updateMainVideoStreamManager(publisher)"
           />
           <user-video 
@@ -83,6 +84,8 @@ export default {
       twelve: false,
       participants: null,
       sharer: null,
+      isPublisher : true,
+      //userName : this.publisher.stream.connection.data.slice(15,-2),
     }
   },
   computed: {
@@ -230,6 +233,9 @@ export default {
     theme() {
       this.$forceUpdate();
     },
+    publisher(){
+      this.$forceUpdate();
+    },
     subscribers: {
       handler() {
         if (this.isSharingMode === false) {
@@ -266,7 +272,7 @@ export default {
         video.classList.add("height70")
       })
     }
-  }
+  },
 }
 </script>
 

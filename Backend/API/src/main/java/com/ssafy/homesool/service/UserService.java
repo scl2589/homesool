@@ -49,10 +49,17 @@ public class UserService {
 		// DB에 parent id가 없으면 새로 저장
 		if (!userRepository.existsById(kakaoUserDto.getId())) {
 			response.setNew(true);
-			save(kakaoUserDto.getId(), // id
-				kakaoUserDto.getKakaoAccount().getProfile().getNickname(), // name
-				kakaoUserDto.getKakaoAccount().getEmail() // email
-			);
+			try {
+				save(kakaoUserDto.getId(), // id
+					kakaoUserDto.getKakaoAccount().getProfile().getNickname(), // name
+					kakaoUserDto.getKakaoAccount().getEmail() // email
+				);
+			} catch (Exception e) {
+				save(kakaoUserDto.getId(), // id
+					kakaoUserDto.getKakaoAccount().getProfile().getNickname(), // name
+					""
+				);
+			}
 		}
 		response.setToken(jwtTokenProvider.createToken(kakaoUserDto.getId()));
 		return response;
