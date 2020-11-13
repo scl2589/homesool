@@ -700,7 +700,6 @@ const meetingStore = {
           axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
               .then(res => {
                 console.log("SUCCESSFUL - uploading user record")
-                //alert(res.data);
                 user.drinks[i].liquorId = res.data;
                 user.drinks[i].liquorNum = 0;
               })
@@ -766,7 +765,8 @@ const meetingStore = {
                 modeHost: state.modeHost,
                 selectedSong: state.selectedSong,
                 selectedGame: state.selectedGame,
-                gameStatus: state.gameStatus
+                isSongEnded: state.isSongEnded,
+                isSharingMode: state.isSharingMode
               }
               state.session.signal({
                 type: 'status',
@@ -780,9 +780,8 @@ const meetingStore = {
               if (!state.currentMode && !state.modeHost) {
                 commit('SET_THEME', status.theme);
                 commit('SET_MODE_HOST', status.modeHost);
-                commit('SET_SELECTED_SONG', status.selectedSong);
-                commit('SET_SELECTED_GAME', status.selectedGame);
-                commit('SET_GAME_STATUS', status.gameStatus);
+                commit('SET_IS_SHARING_MODE', status.isSharingMode);
+
                 if (status.currentMode === 'anonymous') {
                   setTimeout(() => {
                     let pitchs = ['0.76', '0.77', '0.78', '0.79', '0.80', '1.3', '1.4', '1.5', '1.6', '1.7']
@@ -791,7 +790,22 @@ const meetingStore = {
                     commit('SET_IS_CHATPANEL', true);
                   }, 1000);
                 } else if (status.currentMode === 'snapshot') {
+                  Swal.fire({
+                    icon: 'info',
+                    text: '스냅샷이 진행 중입니다. 잠시만 기다려주세요😊'
+                  });
                   return;
+                } else if (status.currentMode === 'game') {
+                  if (status.selectedGame) {
+                    Swal.fire({
+                      icon: 'info',
+                      text: '술게임이 진행 중입니다. 잠시만 기다려주세요😊'
+                    });
+                    return;
+                  }
+                } else if (status.currentMode === 'singing') {
+                  commit('SET_SELECTED_SONG', status.selectedSong);
+                  commit('SET_IS_SONG_ENDED', status.isSongEnded);
                 }
                 commit('SET_CURRENT_MODE', status.currentMode);
               }
@@ -1063,7 +1077,6 @@ const meetingStore = {
             });
 
             state.session.on('signal:share', (event) => {
-              console.log("EVENT.DATA", event.data)
               if ( event.data === "F") {
                 commit('SET_IS_SHARING_MODE', false)
               } else {
