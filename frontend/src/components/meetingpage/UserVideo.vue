@@ -38,7 +38,7 @@ export default {
 		isPublisher : Boolean,
 	},
 	computed: {
-		...mapState('meetingStore', ['currentMode','user','currentDrink','publisher']),
+		...mapState('meetingStore', ['currentMode','user','currentDrink','publisher','totalDrink']),
 		...mapState(['user']),
 		...mapGetters("meetingStore", ['getImgsrc']),
 		clientData () {
