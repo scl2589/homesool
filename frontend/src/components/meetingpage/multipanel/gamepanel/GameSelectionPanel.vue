@@ -9,7 +9,7 @@
     <div class="d-flex row no-gutters" v-else>
       <div class="col-4 game-selection my-1">
         <div class="top">
-          <h6 class="mt-5">술게임을 골라주세요!</h6>
+          <h6 class="mt-5 d-flex justify-content-center">술게임을<br>골라주세요!</h6>
           <br />
         </div>
         <div class="game-list">
@@ -121,7 +121,10 @@ export default {
     ...mapActions('meetingStore', ['sendGameRequest']),
     clickStartGame() {
       if (!this.penalty || this.penalty === '직접 입력') {
-        alert('벌칙을 선택해주세요!');
+        Swal.fire({
+          icon: 'warning',
+          html: '벌칙을 선택해주세요',
+        })
         return;
       }
       var request = new Object();
@@ -170,7 +173,8 @@ h3,
 h4,
 h5,
 h6,
-p {
+p,
+li {
   color: white;
 }
 
@@ -191,21 +195,11 @@ li{
 
 li:hover {
   background-color: #d2d2d2;
-}
-
-.router-link-active, li > a {
-  font-size: 0.8em;
-  text-decoration: none;
-  color: white;
+  color: black;
 }
 
 li:hover > a {
   color: black;
-}
-
-.router-link-exact-active {
-  color: #ECFF1E;
-  text-shadow: 1px 1px 2px rgb(0, 0, 0, 0.7);
 }
 
 .game-selection {
@@ -249,5 +243,9 @@ li:hover > a {
   background-color: black;
   border-left: 1px solid #707070;
   border-radius: 15px;
+}
+
+.penalty {
+  max-width: 70%;
 }
 </style>
