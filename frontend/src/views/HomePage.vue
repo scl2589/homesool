@@ -22,7 +22,7 @@
         max-width="600px"
         v-if="user && publisher"
       >
-        <v-card>
+        <v-card v-if="user.drinks.length">
           <v-card-title>
             <h3>입장하기</h3>
           </v-card-title>
@@ -119,6 +119,19 @@
               Enter
             </v-btn>
           </v-card-actions>
+        </v-card>
+        <v-card v-else>
+          <div class="d-flex flex-column justify-content-center align-items-center">
+            <p>마이페이지에서 주량을 등록해주세요!</p>
+            
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="clickClose"
+            >
+              Close
+            </v-btn>
+          </div>
         </v-card>
       </v-dialog>
     </v-row>
