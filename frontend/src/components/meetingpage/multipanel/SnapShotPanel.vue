@@ -27,16 +27,20 @@
           <button 
             class="btn btn-yellow"
             @click="changeMode('snapshot')"
+            v-if="!notModeHost"
           >
             재촬영
           </button>
+          <div v-else></div>
           <h3>Snapshot</h3>
           <button
             class="btn btn-yellow"
             @click="savePhoto"
+            v-if="!notModeHost"
           >  
             저장
           </button>
+          <div v-else></div>
         </div>
         <div class="box">
           <div class="spacer"></div>
@@ -187,7 +191,7 @@ export default {
       var a = document.createElement('a');
       // toDataURL defaults to png, so we need to request a jpeg, then convert for file download.
       a.href = this.captured.toDataURL("image/jpeg").replace("image/jpeg", "image/octet-stream");
-      a.download = 'file.jpg';
+      a.download = 'snapshot.jpg';
       a.click();
 
       // 백에 저장
