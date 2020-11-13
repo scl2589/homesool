@@ -779,6 +779,7 @@ const meetingStore = {
                     let pitchs = ['0.76', '0.77', '0.78', '0.79', '0.80', '1.3', '1.4', '1.5', '1.6', '1.7']
                     let pitch = pitchs[Math.floor(Math.random() * pitchs.length)]
                     state.publisher.stream.applyFilter("GStreamerFilter", {"command": `pitch pitch=${pitch}`});
+                    commit('SET_IS_CHATPANEL', true);
                   }, 1000);
                 } else if (status.currentMode === 'snapshot') {
                   return;
@@ -810,6 +811,7 @@ const meetingStore = {
                 let pitch = pitchs[Math.floor(Math.random() * pitchs.length)]
                 state.publisher.stream.applyFilter("GStreamerFilter", {"command": `pitch pitch=${pitch}`});
                 commit('SET_CURRENT_MODE', mode);
+                commit('SET_IS_CHATPANEL', true);
                 Swal.fire({
                   icon: 'success',
                   text: '진실의 방 모드가 켜졌습니다!'
