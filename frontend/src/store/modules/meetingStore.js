@@ -290,7 +290,10 @@ const meetingStore = {
     SET_DRUNK(state, data) {
       state.drunk = data
     },
-    
+    SET_GOT_WASTED(state, value) {
+      state.gotWasted = value
+    },
+
     // theme
     SET_THEME(state, theme) {
       state.theme = theme;
