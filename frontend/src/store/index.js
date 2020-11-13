@@ -48,6 +48,7 @@ export default new Vuex.Store({
     },
     setUser(state, payload) {
       state.user = payload;
+      console.log(state.user);
     },
     setId(state, payload) {
       state.id = payload;
