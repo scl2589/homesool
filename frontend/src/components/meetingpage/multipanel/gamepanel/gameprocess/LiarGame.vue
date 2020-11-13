@@ -89,8 +89,16 @@ export default {
    LoserPanel
  },
   computed: {
-    ...mapState('meetingStore', ['gameStatus', 'selectedGame', 'gameTurn', 'gameWord',
-                                'subscribers','gameLiar','myself','publisher','gameTheme']),
+    ...mapState('meetingStore', [
+      'gameStatus',
+      'selectedGame',
+      'gameTurn',
+      'gameWord',
+      'subscribers',
+      'gameLiar',
+      'publisher',
+      'gameTheme'
+    ]),
     ...mapGetters('meetingStore', ['notModeHost']),
 
   },

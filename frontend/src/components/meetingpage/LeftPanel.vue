@@ -1,11 +1,4 @@
 <template>
-<!-- <div id="session-header">
-        <h1 id="session-title">{{ mySessionId }}</h1>
-        <input class="btn btn-large btn-danger" type="button" id="buttonLeaveSession" @click="leaveSession" value="Leave session">
-    </div> -->
-    <!-- <div id="main-video" class="col-md-6">
-      <user-video :stream-manager="mainStreamManager"/>
-    </div> -->
   <div>
     <div v-if="!isSharingMode">
       <div class="d-flex justify-content-center align-items-center mt-3">
@@ -19,7 +12,7 @@
             class="my-2 px-2" 
             :class="{ 'col-12': one, 'col-6' : two, 'col-4' : three, 'col-3' : eight, 'col-2' : twelve }" 
             id="myVideo"
-            :stream-manager="publisher" 
+            :stream-manager="publisher"
             @click.native="updateMainVideoStreamManager(publisher)"
           />
           <user-video 
