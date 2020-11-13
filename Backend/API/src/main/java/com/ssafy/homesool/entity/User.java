@@ -28,7 +28,7 @@ public class User {
 	@Column(nullable = false, length = 50)
 	private String name;
 	
-	@Column(nullable = false, updatable = false, length = 50)
+	@Column(nullable = false, length = 50)
 	private String email;
 	
 	@OneToMany(
