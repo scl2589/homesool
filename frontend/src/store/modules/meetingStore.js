@@ -76,6 +76,7 @@ const meetingStore = {
     sentence: null,
     drunkenText: null,
     drunk: null,
+    gotWasted: null,
 
     // theme
     theme: 'basic',
@@ -946,6 +947,17 @@ const meetingStore = {
                     commit('SET_GAME_VOTE_DATA',state.publisher.session.connection.data.slice(15,-2));
                   }
                 }
+                else if (state.selectedGame == 5) {
+                  if (event.data.sentence) {
+                    commit('SET_SENTENCE', event.data.sentence);
+                    commit('SET_DRUNK', event.data.drunk);
+
+                    if (event.data.drunk == 2) {
+                      commit('SET_GOT_WASTED', state.currentPlayer.stream.connection.connectionId);
+                    }
+                  }
+                }
+
                 //게임 공통
                 if (event.data.participantPublicId){
                   if (state.publisher.stream.connection.connectionId === event.data.participantPublicId) {
@@ -1214,7 +1226,42 @@ const meetingStore = {
         });
       }
       fromMic();
-    }
+    },
+    offGotWasted({ commit }) {
+      commit('SET_GOT_WASTED', null);
+    },
+    updateUserDrinkRecord({ state, rootGetters , commit }, num) {
+      let user = rootGetters.getUser;
+      let currentDrinkNum = 0;
+      for(let i=0; i<user.drinks.length; i++){
+        if(user.drinks[i].liquorName==state.currentDrink){
+          if(user.drinks[i].liquorNum){
+            user.drinks[i].liquorNum += num;
+            currentDrinkNum = user.drinks[i].liquorNum;
+          }
+          else{ //데이터가 없을 때
+            if(num == 1){
+              console.log("진입")
+              user.drinks[i].liquorNum = 1;
+              currentDrinkNum = 1;
+            }
+          }
+        }
+      }
+      commit('setUser', user, { root:true });
+      const drinkData = {
+        "liquorLimit": currentDrinkNum,
+        "liquorName": state.currentDrink,
+        "recordId": 0
+      }
+      axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
+        .then(() => {
+          console.log("SUCCESSFUL - uploading user record")
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
   }
 }
 
