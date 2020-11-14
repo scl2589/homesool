@@ -1,5 +1,8 @@
 package com.ssafy.homesool.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -16,12 +19,14 @@ import com.ssafy.homesool.dto.KakaoUserDto;
 import com.ssafy.homesool.dto.LoginDto;
 import com.ssafy.homesool.dto.UserDto;
 import com.ssafy.homesool.dto.UserDto.UserRecordDetail;
+import com.ssafy.homesool.dto.UserDto.UserRecordStatistics;
 import com.ssafy.homesool.entity.User;
 import com.ssafy.homesool.entity.UserDrink;
 import com.ssafy.homesool.entity.UserRecord;
 import com.ssafy.homesool.exception.UserNotFoundException;
 import com.ssafy.homesool.mapper.UserMapper;
 import com.ssafy.homesool.repository.PhotoRepository;
+import com.ssafy.homesool.repository.RoomRepository;
 import com.ssafy.homesool.repository.UserDrinkRepository;
 import com.ssafy.homesool.repository.UserRecordRepository;
 import com.ssafy.homesool.repository.UserRepository;
@@ -33,6 +38,7 @@ public class UserService {
 	private final UserDrinkRepository userDrinkRepository;
 	private final UserRecordRepository userRecordRepository;
 	private final PhotoRepository photoRepository;
+	private final RoomRepository roomRepository;
 
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RestTemplate restTemplate = new RestTemplate(); // could not autowired
@@ -143,5 +149,31 @@ public class UserService {
 	
 	public void withdrawal(long userId) {
 		userRepository.deleteById(userId);
+	}
+
+	public UserDto.UserRecordStatistics getStatistics(long userId) {
+		UserRecordStatistics urs = new UserRecordStatistics();
+		
+		// 총 음주량 저장
+		urs.setRecordStatistics(
+				UserMapper.INSTANCE.toRecord(
+						userRecordRepository.getStatistics(userId)));
+		
+		// 날짜별 음주량 리스트
+		List<UserDto.UserRecord3> ur3List = new ArrayList<>();
+		// 최근 10번의 음주 날짜 가져오기
+		List<String> drinkDayList = roomRepository.get10days(userId);
+		
+		for(String date : drinkDayList) {
+			UserDto.UserRecord3 ur3 = new UserDto.UserRecord3();
+			// 날짜 저장
+			ur3.setDate(date);
+			// 날짜별 음주량
+			ur3.setUserRecord(UserMapper.INSTANCE.toRecord(
+					userRecordRepository.getStatisticsByDate(userId, date)));
+			ur3List.add(ur3);
+		}
+		urs.setRecordStatistics10days(ur3List);
+		return urs;
 	}
 }

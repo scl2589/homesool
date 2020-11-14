@@ -23,4 +23,12 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 	
 	@Query(value = "select r.code from room r", nativeQuery = true)
 	List<String> findAllCode();
+	
+	@Query(value = "select DATE_FORMAT(start_time ,'%Y-%m-%d') date "
+			+ "from room r join user_record ur on r.room_id = ur.room_id "
+			+ "where user_id = :userId "
+			+ "group by DATE_FORMAT(start_time ,'%Y-%m-%d') "
+			+ "limit 10",
+			nativeQuery = true)
+	List<String> get10days(@Param("userId") long userId);
 }
