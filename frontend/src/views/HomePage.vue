@@ -290,12 +290,13 @@ $buttonheight: 50px;
       margin: 0 auto;
       display: block;
       padding: 10%;
-      height: 70%;
+      max-height: 40vh;
+      max-width: 20vw;
     }
     button {
       display: block;
       height: $buttonheight;
-      font-size: $buttonheight / 2;
+      font-size: 1.2em;
       margin: 0 auto;
       width: 40%;
       border-radius: 5px;
@@ -305,7 +306,7 @@ $buttonheight: 50px;
       display: block;
       width: auto;
       height: $buttonheight;
-      font-size: $buttonheight / 2;
+      font-size: 1.2em;
       margin: 0 auto;
       background-color: transparent;
       border: 2px solid rgba(255, 255, 255, 0.5);
@@ -335,13 +336,11 @@ $buttonheight: 50px;
     position: relative;
     height: 100%;
     width: 25%;
-    // background-color:red;
   }
   #guest {
     position: relative;
     height: 100%;
     width: 25%;
-    // background-color:yellow;
     button {
       margin-top: 3%;
     }

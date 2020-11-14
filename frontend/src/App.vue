@@ -1,19 +1,21 @@
 <template>
   <v-app id="app">
     <div id="nav" v-if="!meetingpages.includes($route.name)">
-    <!-- <div id="nav" v-if="$route.name!=='MeetingPage'"> -->
-      <!-- <span id="logo">술이술이홈술이</span> -->
-      <img id="logo" src="@/assets/images/basic_title.png" alt="술이술이홈술이">
+      <img 
+        class="pointer"
+        id="logo" 
+        src="@/assets/images/basic_title.png" 
+        alt="술이술이홈술이 로고"
+        @click="clickLogo"
+      >
       <span id="login" v-if="!token">
         <button id="kakao_login" @click="login()">
-            <img id="kakao_img" src="@/assets/images/kakao_login_large.png"/>
-            <!-- <img id="kakao_img" src="@/assets/images/kakao.png" />
-            <span id="kakao_font">로그인</span> -->
+          <img id="kakao_img" src="@/assets/images/kakao_login_large.png"/>
         </button>
       </span>
-      <span v-else id="afterlogin">
-        <button @click="clickMyPage" >마이페이지</button>
-        <button @click="clickLogout" >로그아웃</button>
+      <span class="d-flex justify-content-between align-items-center h-100" v-else id="afterlogin">
+        <p class="color-white mr-3 mb-0 pointer" @click="clickMyPage" >마이페이지</p>
+        <p class="color-white mr-2 mb-0 pointer" @click="clickLogout" >로그아웃</p>
       </span>
     </div>
     <router-view/>
@@ -50,6 +52,9 @@ export default {
   },
   methods : {
     ...mapActions(['getMyInfo']),
+    clickLogo() {
+      this.$router.push('/')
+    },
     login(){
       window.Kakao.Auth.login({
         success: this.kakaoLoginStore,
@@ -92,25 +97,24 @@ $header-margin:5px;
 #nav {
   height:$header-height + 2 * $header-margin;
   padding: $header-margin;
-  // padding: $header-height;
+  p {
+    font-size: 1.2rem;
+    .pointer {
+      cursor:pointer;
+    }
+  }
   #logo{
     padding: auto 0;
     float:left;
     height:$header-height;
   }
   #kakao_img {
-    // float:right;
     float: left;
     position: inherit;
     height: $header-height;
-    // height: $header-height - 2 * $header-margin;
   }
   #kakao_login{
     float:right;
-    // login 2
-    // color: #333;
-    // background-color: #ffe500;
-    // border-radius: $header-height / 6;
   }
   #kakao_font {
     padding-right: 5px;
@@ -130,15 +134,8 @@ $header-margin:5px;
   }
   #afterlogin{
     float:right;
-    // line-height: $header-height / 3 * 2;
-    button{
-      background-color: rgba(255, 255, 255, 0.50);
-      // height: $header-height / 3 * 2;
-      vertical-align:middle;
-      border-radius: $header-height / 6;
-      padding: $header-margin;
-      margin: $header-margin;
-      color:white;
+    .pointer {
+      cursor: pointer;
     }
   }
 }
