@@ -3,6 +3,7 @@ package com.ssafy.homesool.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ssafy.homesool.entity.Room;
 import com.ssafy.homesool.entity.UserDrink;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -76,7 +77,11 @@ public class UserDto {
 		
 		@ApiModelProperty(value = "Room User Records", example = "")
 		private List<String> users = new ArrayList<>();
+		
+		@ApiModelProperty(value = "Room Info", example = "")
+		private Room roomInfo;
 	}
+	
 	@Builder
 	@Data
 	@AllArgsConstructor
