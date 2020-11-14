@@ -450,6 +450,8 @@ const meetingStore = {
       } else if (state.selectedGame == 5) {
         // 나술안취했어
         commit('SET_SENTENCE', null);
+        commit('SET_DRUNKEN_TEXT', null);
+        commit('SET_DRUNK', null)
       }
 
       // 공통

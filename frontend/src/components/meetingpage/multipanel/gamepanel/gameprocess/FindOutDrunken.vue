@@ -1,51 +1,47 @@
 <template>
   <div class="panel drunken">
-    <div class="selectgame" v-if="gameStatus == 1">
-      <div v-if="notModeHost">
-        <p>{{ notModeHost.name }}님이 참가자를 고르는 중입니다.</p>
+    <div class="h-100 d-flex justify-content-center align-items-center flex-column selectgame" v-if="gameStatus == 1">
+      <div class="h-100 d-flex justify-content-center align-items-center" v-if="notModeHost">
+        <p class="select-participant">
+          <span class="color-yellow">{{ notModeHost.name }}</span>님이 참가자를 고르는 중입니다.
+        </p>
       </div>
-      <div class="p-3" v-else>
-        <div>
-          <h5>참가자를 선택해주세요</h5>
+      <div class="p-3 h-100" v-else>
+        <div class="d-flex justify-content-center align-items-center">
+          <p class="select-participant">참가자를 선택해주세요</p>
         </div>
-        <div class="d-flex row no-gutters mt-5">
-          <div class="col-6 box my-2 py-2">
+        <div class="d-flex justify-space-around  row no-gutters mt-5">
             <button 
-              class="btn"
+              class="btn-yellow rounded"
               @click="clickParticipant(publisher.stream.connection.connectionId)"
             >
               {{ publisher.stream.connection.data.slice(15, -2)}}
             </button>
-          </div>
-          <div 
-            v-for="(subscriber, id) in subscribers" 
-            :key="id"
-            class="col-6 box my-2 py-2"
-          >
-            <button 
-              class="btn"
+             <button 
+              class="btn-yellow rounded"
               @click="clickParticipant(subscriber.stream.connection.connectionId)"
+              v-for="(subscriber, id) in subscribers" 
+              :key="id"
             >
               {{ subscriber.stream.connection.data.slice(15, -2)}}
             </button>
           </div>
-        </div>
       </div>
     </div>
-    <div>
-      <div v-if="gameStatus == 2" class="p-3">
+    <div class="h-100" v-if="gameStatus == 2">
+      <div class="p-3 h-100 d-flex justify-content-between flex-column">
         <div class="panel-title" v-if="notCurrentPlayer">
           <user-video
-            class="w-50"
+            class="w-50 video"
             :stream-manager="notCurrentPlayer"
           />
-          <p>{{ notCurrentPlayer.stream.connection.data.slice(15,-2) }}님이 문장을 읽는 중입니다.</p>
+          <p><span class="color-yellow">{{ notCurrentPlayer.stream.connection.data.slice(15,-2) }}</span>님이 문장을 읽는 중입니다.</p>
         </div>
         <div v-else class="panel-title">
-          <p>{{ publisher.stream.connection.data.slice(15,-2) }}님 문장을 바로 읽어주세요.</p>
+          <p><span class="color-yellow">{{ publisher.stream.connection.data.slice(15,-2) }}</span>님 문장을 바로 읽어주세요.</p>
         </div>
         <div>
-          <p>{{sentence}}</p>
+          <p class="sentence">{{sentence}}</p>
         </div>
         <div>
           <p v-if="drunkenText">{{drunkenText}}</p>
@@ -137,5 +133,30 @@ export default {
 
 p, h1, h2, h3, h4, h5, h6, button {
   color: white;
+}
+
+.select-participant {
+  font-size: 2.2rem;
+}
+
+
+.btn-yellow {
+  margin-bottom: 10px;
+  opacity: 0.8;
+  transition: 0.3s;
+  width: 40%;
+}
+
+.btn-yellow:hover {
+  opacity: 1;
+}
+
+.sentence {
+  font-size: 1.0rem;
+}
+
+.video {
+  margin-left: auto;
+  margin-right: auto;
 }
 </style>
