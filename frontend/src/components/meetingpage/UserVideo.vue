@@ -47,6 +47,7 @@ export default {
 		...mapState('meetingStore', ['currentMode','gotWasted','currentDrink','publisher','totalDrink', 'nickName']),
 		...mapState(['user']),
 		...mapGetters("meetingStore", ['getImgsrc']),
+
 		clientData () {
 			const { clientData } = this.getConnectionData();
 			return clientData;
