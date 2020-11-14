@@ -9,6 +9,8 @@ import cookies from 'vue-cookies';
 
 import SERVER from '@/api/api';
 import meetingStore from '@/store/modules/meetingStore';
+import mypageStore from '@/store/modules/mypageStore';
+
 
 Vue.use(Vuex);
 
@@ -48,7 +50,6 @@ export default new Vuex.Store({
     },
     setUser(state, payload) {
       state.user = payload;
-      console.log(state.user);
     },
     setId(state, payload) {
       state.id = payload;
@@ -105,5 +106,6 @@ export default new Vuex.Store({
   },
   modules: {
     meetingStore: meetingStore,
+    mypageStore: mypageStore,
   },
 });

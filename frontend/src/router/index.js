@@ -4,6 +4,7 @@ import store from "../store";
 
 import HomePage from '@/views/HomePage';
 import RegisterPage from '@/views/RegisterPage';
+import ProfilePage from '@/views/ProfilePage';
 import MeetingPage from '@/views/MeetingPage';
 // MyPage
 import MyPage from '@/views/MyPage';
@@ -22,6 +23,11 @@ const routes = [
     path: '/register',
     name: 'RegisterPage',
     component: RegisterPage,
+  },
+  {
+    path: '/profile',
+    name: 'ProfilePage',
+    component: ProfilePage,
   },
   {
     path: '/meet/:sessionId',
