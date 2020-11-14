@@ -101,8 +101,8 @@ public class UserController {
 		return new ResponseEntity<>(roomService.get(userId),HttpStatus.OK);
 	}
 	
-	@GetMapping("{userId}/statistics")
-	@ApiOperation(value = "음주 기록 조회", notes = "음주 기록 통계를 날짜별로 보여준다.", response = UserDto.UserRecordStatistics.class)
+	@GetMapping("{userId}/statistics10days")
+	@ApiOperation(value = "음주 기록 조회", notes = "음주 기록 통계를 날짜별로 보여준다.", response = UserDto.UserRecord3.class)
 	@ApiResponses(value = {
 		@ApiResponse(code = 200, message = "OK"),
 		@ApiResponse(code = 400, message = "Bad Request"),
@@ -110,7 +110,22 @@ public class UserController {
 		@ApiResponse(code = 403, message = "Forbidden"),
 		@ApiResponse(code = 404, message = "Not Found")
 	})
-	private ResponseEntity<UserDto.UserRecordStatistics> getStatistics(
+	private ResponseEntity<List<UserDto.UserRecord3>>  getStatistics10days(
+		@ApiParam(value = "유저 id",required = true, example = "1404739104") @PathVariable long userId){
+		logger.debug(String.format("get Statistics {%d} 호출",userId));
+		return new ResponseEntity<>(userService.getStatistics10days(userId),HttpStatus.OK);
+	}
+	
+	@GetMapping("{userId}/statistics")
+	@ApiOperation(value = "음주 기록 조회", notes = "음주 기록 통계를 날짜별로 보여준다.", response = UserDto.UserRecord2.class)
+	@ApiResponses(value = {
+		@ApiResponse(code = 200, message = "OK"),
+		@ApiResponse(code = 400, message = "Bad Request"),
+		@ApiResponse(code = 401, message = "Unauthorized"),
+		@ApiResponse(code = 403, message = "Forbidden"),
+		@ApiResponse(code = 404, message = "Not Found")
+	})
+	private ResponseEntity<List<UserDto.UserRecord2>> getStatistics(
 		@ApiParam(value = "유저 id",required = true, example = "1404739104") @PathVariable long userId){
 		logger.debug(String.format("get Statistics {%d} 호출",userId));
 		return new ResponseEntity<>(userService.getStatistics(userId),HttpStatus.OK);
