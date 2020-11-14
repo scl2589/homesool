@@ -9,6 +9,32 @@ import firebase from 'firebase'
 
 const OPENVIDU_SERVER_SECRET = "MY_SECRET";
 
+const ToastEnter = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: false,
+  background: '#A0C4FF',
+  onOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
+
+const ToastLeave = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: false,
+  background: '#FFADAD',
+  onOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
+
 const meetingStore = {
   namespaced: true,
   state: {
@@ -96,6 +122,8 @@ const meetingStore = {
 
     //capture
     screenshotInfo: null,
+
+    isNewbie: true,
   },
   getters: {
     notModeHost(state) {
@@ -328,6 +356,10 @@ const meetingStore = {
     //screenshot
     SET_SCREENSHOT_INFO(state, data) {
       state.screenshotInfo = data;
+    },
+
+    SET_IS_NEWBIE(state, value) {
+      state.isNewbie = value
     }
   },
   actions: {
@@ -525,7 +557,7 @@ const meetingStore = {
     },
 
     // openvidu
-    joinSession ({ commit, dispatch }, mySessionId) {
+    joinSession ({ state, commit, dispatch }, mySessionId) {
       commit('SET_MYSESSIONID', mySessionId);
 			// --- Get an OpenVidu object ---
 			const OV = new OpenVidu();
@@ -536,14 +568,30 @@ const meetingStore = {
       const subscribers = [];
 			session.on('streamCreated', ({ stream }) => {
         const subscriber = session.subscribe(stream);
-				subscribers.push(subscriber);
+        subscribers.push(subscriber);
+        if (!state.isNewbie && !stream.connection.data.includes('screen')) {
+          ToastEnter.fire({
+            html: `<span style="color: #0764FF">🎉${stream.connection.data.slice(15, -2)}</span><span>님이 입장하였습니다🎉</span>`
+          })
+        }
+
+        if (!state.isNewbie && stream.connection.data.includes('screen') && state.publisher.stream.connection.data.slice(15, -2) !== stream.connection.data.slice(15, -8)) {
+          ToastEnter.fire({
+            html: `<span style="color: #0764FF">🤘${stream.connection.data.slice(15, -8)}</span><span>님이 화면공유를 시작했습니다🤘</span>`
+          })
+        }
 			});
 			// On every Stream destroyed...
 			session.on('streamDestroyed', ({ stream }) => {
 				const index = subscribers.indexOf(stream.streamManager, 0);
 				if (index >= 0) {
 					subscribers.splice(index, 1);
-				}
+        }
+        if (!stream.connection.data.includes('screen')) {
+          ToastLeave.fire({
+            html: `<span style="color: #FFFCFA">✋${stream.connection.data.slice(15, -2)}</span><span>님이 퇴장하였습니다✋</span>`
+          })
+        }
 			});
 			// --- Connect to the session with a valid user token ---
 			// 'getToken' method is simulating what your server-side should do.
@@ -1141,14 +1189,14 @@ const meetingStore = {
       const screenSubscribers = [];
 			screenSession.on('streamCreated', ({ stream }) => {
         const subscriber2 = screenSession.subscribe(stream);
-				screenSubscribers.push(subscriber2);
+        screenSubscribers.push(subscriber2);
 			});
 			// On every Stream destroyed...
 			screenSession.on('streamDestroyed', ({ stream }) => {
 				const index2 = screenSubscribers.indexOf(stream.streamManager, 0);
 				if (index2 >= 0) {
 					screenSubscribers.splice(index2, 1);
-				}
+        }
 			});
       dispatch('getToken', state.mySessionId).then(token2 => {
         let screenPublisher = screenOV.initPublisher(undefined, {
@@ -1352,6 +1400,9 @@ const meetingStore = {
     },
     changeCurrentDrink({ commit }, currentDrink) {
       commit('SET_CURRENT_DRINK',currentDrink )
+    },
+    changeIsNewbie({ commit }) {
+      commit('SET_IS_NEWBIE', false);
     }
   }
 }

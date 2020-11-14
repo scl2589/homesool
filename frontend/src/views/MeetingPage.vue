@@ -311,10 +311,9 @@ export default {
 
         let newMessage = this.messages[this.messages.length - 1]
         Toast.fire({
-          text: `${newMessage.sender}: ${newMessage.message}`
+          // html: `<span style="color: #0764FF">${newMessage.sender}</span><span>: ${newMessage.message}</span>`
+          html: `<span style="color: #0764FF">${newMessage.sender}</span><span>님이 메시지를 보냈습니다</span>`
         })
-
-        
       }
     }
   },
@@ -328,7 +327,8 @@ export default {
       'clickMuteAudio',
       'startShareScreen',
       'stopShareScreen',
-      'changeMode'
+      'changeMode',
+      'changeIsNewbie'
     ]),
     toggleBGM() {
       if (this.currentBGM.paused) {
@@ -411,6 +411,10 @@ export default {
       this.currentBGM.src = require('@/assets/musics/' + this.playList[this.bgmIndex]);
       this.currentBGM.play();
     })
+
+    setTimeout(() => {
+      this.changeIsNewbie();
+    }, 3000);
   },
 
   beforeRouteLeave (to, from, next) {
