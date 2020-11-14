@@ -46,6 +46,6 @@ public class Room {
 		this.endTime = endTime;
 	}
 	
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String roomName;
 }

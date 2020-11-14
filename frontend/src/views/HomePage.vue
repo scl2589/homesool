@@ -52,6 +52,19 @@
                 
                 <v-col
                   cols="12"
+                  v-if="ishost"
+                >
+                  <v-text-field
+                    v-model="roomName"
+                    hint="방 제목을 입력해주세요 :)"
+                    persistent-hint
+                    required
+                    :rules="[v => !!v || '필수항목입니다.']"
+                  ></v-text-field>
+                </v-col>
+
+                <v-col
+                  cols="12"
                 >
                   <v-text-field
                     v-model="nickName"
@@ -157,6 +170,8 @@ export default {
       currentDrink: null,
       valid: true,
       lazy:false,
+      ishost:false,
+      roomName : null,
     };
   },
   computed: {
@@ -168,6 +183,7 @@ export default {
     user(value) {
       if (value) {
         this.nickName = value.name;
+        this.roomName = `${this.nickName}의 방입니다`
       }
     }
   },
@@ -180,7 +196,9 @@ export default {
       'clickMuteVideo',
       'clickMuteAudio',
       'enterSession',
-      'changeMeetingDialog'
+      'changeMeetingDialog',
+      'updateHostInfo',
+      'updateUserNickname'
     ]),
     hostbtn() {
       if (!this.getId) {
@@ -188,6 +206,8 @@ export default {
         return false;
       }
       this.createSessionId(this.nickName);
+      //주최한다는 새로운 변수 추가
+      this.ishost = true;
       this.changeMeetingDialog(true);
     },
     guestbtn() {
@@ -195,8 +215,14 @@ export default {
         alert('먼저 로그인을 해주세요!')
         return false;
       }
-      this.checkSessionId(this.inputSessionId, this.nickName)
+      var hostData = {
+        inputSessionId: this.inputSessionId,
+        nickName: this.nickName
+      }
+      this.checkSessionId(hostData)
         .then(() => {
+          //주최 안한다는 새로운 변수 추가
+          this.ishost = false;
           this.changeMeetingDialog(true);
         })
     },
@@ -211,6 +237,22 @@ export default {
         nickName: this.nickName,
         currentDrink: this.currentDrink
       }
+      //호스트라면 방 제목 변경
+      if(this.ishost){
+        var hostData = {
+        nickName: this.nickName,
+        roomName: this.roomName
+        }
+        this.updateHostInfo(hostData);
+      }
+      else{
+        /*var roomData = {
+        nickName: this.nickName
+        }
+        this.updateUserNickname(roomData);
+        */
+      }
+
       this.enterSession(enterData)
         .then(() => {
           this.$router.push({ name: 'MeetingPage', params: { sessionId: this.mySessionId }});
@@ -245,6 +287,7 @@ export default {
   mounted() {
     if (this.user) {
       this.nickName = this.user.name;
+      this.roomName = `${this.nickName}의 방입니다`
     }
   }
 };

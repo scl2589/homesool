@@ -66,6 +66,23 @@ public class RoomDto {
 	@Data
 	@AllArgsConstructor
 	@NoArgsConstructor
+	public static class InsertHostInfo {
+		@ApiModelProperty(value = "Host id", example = "1404739104")
+		private long hostId;
+		
+		@ApiModelProperty(value = "Host nickname", example = "지은")
+		private String hostNickName;
+		
+		@ApiModelProperty(value = "Room Id", example = "1")
+		private long roomId;
+		
+		@ApiModelProperty(value = "Room Name", example = "오늘은 내가 술게임최강자")
+		private String roomName;
+	}
+	
+	@Data
+	@AllArgsConstructor
+	@NoArgsConstructor
 	public static class UpdateRoomInfo {
 		@ApiModelProperty(value = "Room Id", example = "1")
 		private long roomId;

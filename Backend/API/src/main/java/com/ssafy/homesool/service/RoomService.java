@@ -37,13 +37,25 @@ public class RoomService {
 				.hostId(insertRoomInfo.getHostId())
 				.startTime(insertRoomInfo.getStartTime())
 				.code(code)
-				.roomName(insertRoomInfo.getRoomName())
+				.roomName("")
 				.build();
 		return RoomMapper.INSTANCE.toResponse(
 				roomRepository.save(room)
 		);
 	}
 
+	public Room updateRoomName(long roomId, String roomName) {
+		Room room= roomRepository.findOneByRoomId(roomId);
+		Room newroom = Room.builder()
+				.hostId(room.getHostId())
+				.startTime(room.getStartTime())
+				.code(room.getCode())
+				.roomId(room.getRoomId())
+				.roomName(roomName)
+				.build();
+		return roomRepository.save(newroom);
+	}
+	
 	public Room update(long roomId, Date endTime) {
 		Room room= roomRepository.findOneByRoomId(roomId);
 		room.updateEndTime(endTime);
