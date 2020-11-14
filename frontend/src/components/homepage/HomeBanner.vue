@@ -120,4 +120,8 @@ $banner-height:250px;
       font-size: 1rem;
     }
 }
+
+   .v-carousel__controls__item{
+      color: lightgray !important
+   }
 </style>
