@@ -82,7 +82,7 @@ public class RoomController {
 		return new ResponseEntity<Room>(roomService.update(updateRoomInfo.getRoomId(), updateRoomInfo.getEndTime()),HttpStatus.OK);
 	}
 	
-	@PostMapping("host")
+	@PostMapping("{code}/host")
 	@ApiOperation(value = "미팅 시작 후 호스트 정보 업데이트", notes = "초기 정보 업데이트", response = String.class)
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "OK"),
@@ -92,11 +92,13 @@ public class RoomController {
 			@ApiResponse(code = 404, message = "Not Found")
 	})
 	private ResponseEntity<String> UpdateHost(
+		@ApiParam(value = "방 코드",required = true, example = "A1B2C3D4E5") @PathVariable String code,
 		@ApiParam(value = "호스트 유저 id와 시작 시각", required = true) @RequestBody RoomDto.InsertHostInfo insertHostInfo) {
 		logger.debug("update host in Room 호출\n" );
 		//방 제목 추가
 		roomService.updateRoomName(insertHostInfo.getRoomId(), insertHostInfo.getRoomName());
 		//호스트 닉네임 업데이트
+		roomService.addMember(code, insertHostInfo.getHostId(), insertHostInfo.getHostNickName(), 1);
 		return new ResponseEntity<>("update host", HttpStatus.OK);
 	}
 	
@@ -109,11 +111,26 @@ public class RoomController {
 		@ApiResponse(code = 403, message = "Forbidden"),
 		@ApiResponse(code = 404, message = "Not Found")
 	})
-	
 	private ResponseEntity<Long> addMember(
 		@ApiParam(value = "방 코드",required = true, example = "A1B2C3D4E5") @PathVariable String code,
+		@ApiParam(value = "유저 id",required = true, example = "1404739104") @PathVariable long userId){
+		logger.debug(String.format("add Member {%d} in {%s} 호출",userId,code));
+		return new ResponseEntity<>(roomService.addMember(code,userId," ",2),HttpStatus.OK);
+	}
+	
+	@PutMapping("{code}/with/{userId}")
+	@ApiOperation(value = "멤버 닉네임 업데이트", notes = "멤버 닉네임 업데이트")
+	@ApiResponses(value = {
+		@ApiResponse(code = 201, message = "Created"),
+		@ApiResponse(code = 400, message = "Bad Request"),
+		@ApiResponse(code = 401, message = "Unauthorized"),
+		@ApiResponse(code = 403, message = "Forbidden"),
+		@ApiResponse(code = 404, message = "Not Found")
+	})
+	private ResponseEntity<Long> UpdateMember(
+		@ApiParam(value = "방 코드",required = true, example = "A1B2C3D4E5") @PathVariable String code,
 		@ApiParam(value = "유저 id",required = true, example = "1404739104") @PathVariable long userId,
-		@ApiParam(value = "유저 닉네임",required = true, example = "지은") @RequestBody RoomDto.UpdateMemberInfo updateMemberInfo){
+		@ApiParam(value = "유저 닉네임",required = true, example = "지은짱") @RequestBody RoomDto.UpdateMemberInfo updateMemberInfo){
 		logger.debug(String.format("add Member {%d} in {%s} 호출",userId,code));
 		return new ResponseEntity<>(roomService.addMember(code,userId,updateMemberInfo.getNickName(),2),HttpStatus.OK);
 	}

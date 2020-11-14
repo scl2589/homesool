@@ -9,32 +9,6 @@ import firebase from 'firebase'
 
 const OPENVIDU_SERVER_SECRET = "MY_SECRET";
 
-const ToastEnter = Swal.mixin({
-  toast: true,
-  position: 'top-end',
-  showConfirmButton: false,
-  timer: 3000,
-  timerProgressBar: false,
-  background: '#A0C4FF',
-  onOpen: (toast) => {
-    toast.addEventListener('mouseenter', Swal.stopTimer)
-    toast.addEventListener('mouseleave', Swal.resumeTimer)
-  }
-})
-
-const ToastLeave = Swal.mixin({
-  toast: true,
-  position: 'top-end',
-  showConfirmButton: false,
-  timer: 3000,
-  timerProgressBar: false,
-  background: '#FFADAD',
-  onOpen: (toast) => {
-    toast.addEventListener('mouseenter', Swal.stopTimer)
-    toast.addEventListener('mouseleave', Swal.resumeTimer)
-  }
-})
-
 const meetingStore = {
   namespaced: true,
   state: {
@@ -122,8 +96,6 @@ const meetingStore = {
 
     //capture
     screenshotInfo: null,
-
-    isNewbie: true,
   },
   getters: {
     notModeHost(state) {
@@ -356,10 +328,6 @@ const meetingStore = {
     //screenshot
     SET_SCREENSHOT_INFO(state, data) {
       state.screenshotInfo = data;
-    },
-
-    SET_IS_NEWBIE(state, value) {
-      state.isNewbie = value
     }
   },
   actions: {
@@ -450,8 +418,6 @@ const meetingStore = {
       } else if (state.selectedGame == 5) {
         // 나술안취했어
         commit('SET_SENTENCE', null);
-        commit('SET_DRUNKEN_TEXT', null);
-        commit('SET_DRUNK', null)
       }
 
       // 공통
@@ -530,12 +496,12 @@ const meetingStore = {
     changeMeetingLogDialog({ commit }, value) {
       commit('SET_MEETINGLOG_DIALOG', value);
     },
-    createSessionId({ rootGetters, commit, dispatch }, nickName) {
+    createSessionId({ rootGetters, commit, dispatch }) {
       const ct = new Date();
       const createData = {
         "hostId": rootGetters.getId,
         "startTime": moment(ct).format('YYYY-MM-DDTHH:mm:ss'),
-        "hostNickName" : nickName,
+        "hostNickName" : " ",
       };
       axios.post(SERVER.URL + SERVER.ROUTES.room, createData, rootGetters.config)
         .then(res => {
@@ -546,14 +512,11 @@ const meetingStore = {
           console.log(err.response.data)
         })
     },
-    checkSessionId({ rootGetters, commit, dispatch }, hostData) {
-      const createData = {
-        nickname : hostData.nickName
-      };
-      axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${hostData.inputSessionId}/with/${rootGetters.getId}`, createData, rootGetters.config)
+    checkSessionId({ rootGetters, commit, dispatch }, sessionId) {
+      axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${sessionId}/with/${rootGetters.getId}`,null,rootGetters.config)
         .then(res => {
           commit('SET_ROOMID', res.data);
-          dispatch('joinSession', hostData.inputSessionId);
+          dispatch('joinSession', sessionId);
           return true;
         })
         .catch(err => {
@@ -571,25 +534,8 @@ const meetingStore = {
           console.log(err.response.data)
         })
     },
-    updateHostInfo({ rootGetters, state}, hostData){
-      const createData = {
-        "hostId" : rootGetters.getId,
-        "hostNickName" : hostData.hostNickName,
-        "roomId" : state.roomId,
-        "roomName" : hostData.roomName,
-      };
-      console.log(createData);
-      axios.post(`${SERVER.URL + SERVER.ROUTES.room}/host`, createData, rootGetters.config,)
-        .then(res => {
-          console.log(res)
-        })
-        .catch(err => {
-          console.log(err.response.data)
-        })
-    },
-
     // openvidu
-    joinSession ({ state, commit, dispatch }, mySessionId) {
+    joinSession ({ commit, dispatch }, mySessionId) {
       commit('SET_MYSESSIONID', mySessionId);
 			// --- Get an OpenVidu object ---
 			const OV = new OpenVidu();
@@ -600,30 +546,14 @@ const meetingStore = {
       const subscribers = [];
 			session.on('streamCreated', ({ stream }) => {
         const subscriber = session.subscribe(stream);
-        subscribers.push(subscriber);
-        if (!state.isNewbie && !stream.connection.data.includes('screen')) {
-          ToastEnter.fire({
-            html: `<span style="color: #0764FF">🎉${stream.connection.data.slice(15, -2)}</span><span>님이 입장하였습니다🎉</span>`
-          })
-        }
-
-        if (!state.isNewbie && stream.connection.data.includes('screen') && state.publisher.stream.connection.data.slice(15, -2) !== stream.connection.data.slice(15, -8)) {
-          ToastEnter.fire({
-            html: `<span style="color: #0764FF">🤘${stream.connection.data.slice(15, -8)}</span><span>님이 화면공유를 시작했습니다🤘</span>`
-          })
-        }
+				subscribers.push(subscriber);
 			});
 			// On every Stream destroyed...
 			session.on('streamDestroyed', ({ stream }) => {
 				const index = subscribers.indexOf(stream.streamManager, 0);
 				if (index >= 0) {
 					subscribers.splice(index, 1);
-        }
-        if (!stream.connection.data.includes('screen')) {
-          ToastLeave.fire({
-            html: `<span style="color: #FFFCFA">✋${stream.connection.data.slice(15, -2)}</span><span>님이 퇴장하였습니다✋</span>`
-          })
-        }
+				}
 			});
 			// --- Connect to the session with a valid user token ---
 			// 'getToken' method is simulating what your server-side should do.
@@ -767,6 +697,35 @@ const meetingStore = {
       }
     },
     enterSession({ state, rootGetters, commit, dispatch }, enterData) {
+      if(enterData.roomName){ // 호스트 요청
+        const createData = {
+          "hostId" : rootGetters.getId,
+          "hostNickName" : enterData.nickName,
+          "roomId" : state.roomId,
+          "roomName" : enterData.roomName,
+        };
+        console.log("")
+        console.log(createData);
+        axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${state.mySessionId}/host`, createData, rootGetters.config,)
+          .then(res => {
+            console.log(res)
+          })
+          .catch(err => {
+            console.log(err.response.data)
+        })
+      }else{  //유저 요청
+        const MemberData = {
+          "nickName": enterData.nickName,
+        }
+        axios.put(`${SERVER.URL + SERVER.ROUTES.room}/${state.mySessionId}/with/${rootGetters.getId}`,MemberData,rootGetters.config)
+        .then(res => {
+          console.log(res)
+        })
+        .catch(err => {
+          console.log(err.response.data)
+      })
+      }
+
       commit('SET_CURRENT_DRINK', enterData.currentDrink);
       let user = rootGetters.getUser;
       //다른 애들도 넣어주자
@@ -780,6 +739,7 @@ const meetingStore = {
           axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
               .then(res => {
                 console.log("SUCCESSFUL - uploading user record")
+                //alert(res.data);
                 user.drinks[i].liquorId = res.data;
                 user.drinks[i].liquorNum = 0;
               })
@@ -845,8 +805,7 @@ const meetingStore = {
                 modeHost: state.modeHost,
                 selectedSong: state.selectedSong,
                 selectedGame: state.selectedGame,
-                isSongEnded: state.isSongEnded,
-                isSharingMode: state.isSharingMode
+                gameStatus: state.gameStatus
               }
               state.session.signal({
                 type: 'status',
@@ -860,8 +819,9 @@ const meetingStore = {
               if (!state.currentMode && !state.modeHost) {
                 commit('SET_THEME', status.theme);
                 commit('SET_MODE_HOST', status.modeHost);
-                commit('SET_IS_SHARING_MODE', status.isSharingMode);
-
+                commit('SET_SELECTED_SONG', status.selectedSong);
+                commit('SET_SELECTED_GAME', status.selectedGame);
+                commit('SET_GAME_STATUS', status.gameStatus);
                 if (status.currentMode === 'anonymous') {
                   setTimeout(() => {
                     let pitchs = ['0.76', '0.77', '0.78', '0.79', '0.80', '1.3', '1.4', '1.5', '1.6', '1.7']
@@ -870,22 +830,7 @@ const meetingStore = {
                     commit('SET_IS_CHATPANEL', true);
                   }, 1000);
                 } else if (status.currentMode === 'snapshot') {
-                  Swal.fire({
-                    icon: 'info',
-                    text: '스냅샷이 진행 중입니다. 잠시만 기다려주세요😊'
-                  });
                   return;
-                } else if (status.currentMode === 'game') {
-                  if (status.selectedGame) {
-                    Swal.fire({
-                      icon: 'info',
-                      text: '술게임이 진행 중입니다. 잠시만 기다려주세요😊'
-                    });
-                    return;
-                  }
-                } else if (status.currentMode === 'singing') {
-                  commit('SET_SELECTED_SONG', status.selectedSong);
-                  commit('SET_IS_SONG_ENDED', status.isSongEnded);
                 }
                 commit('SET_CURRENT_MODE', status.currentMode);
               }
@@ -1157,6 +1102,7 @@ const meetingStore = {
             });
 
             state.session.on('signal:share', (event) => {
+              console.log("EVENT.DATA", event.data)
               if ( event.data === "F") {
                 commit('SET_IS_SHARING_MODE', false)
               } else {
@@ -1221,14 +1167,14 @@ const meetingStore = {
       const screenSubscribers = [];
 			screenSession.on('streamCreated', ({ stream }) => {
         const subscriber2 = screenSession.subscribe(stream);
-        screenSubscribers.push(subscriber2);
+				screenSubscribers.push(subscriber2);
 			});
 			// On every Stream destroyed...
 			screenSession.on('streamDestroyed', ({ stream }) => {
 				const index2 = screenSubscribers.indexOf(stream.streamManager, 0);
 				if (index2 >= 0) {
 					screenSubscribers.splice(index2, 1);
-        }
+				}
 			});
       dispatch('getToken', state.mySessionId).then(token2 => {
         let screenPublisher = screenOV.initPublisher(undefined, {
@@ -1432,9 +1378,6 @@ const meetingStore = {
     },
     changeCurrentDrink({ commit }, currentDrink) {
       commit('SET_CURRENT_DRINK',currentDrink )
-    },
-    changeIsNewbie({ commit }) {
-      commit('SET_IS_NEWBIE', false);
     }
   }
 }

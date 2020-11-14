@@ -197,7 +197,6 @@ export default {
       'clickMuteAudio',
       'enterSession',
       'changeMeetingDialog',
-      'updateHostInfo',
       'updateUserNickname'
     ]),
     hostbtn() {
@@ -205,7 +204,7 @@ export default {
         alert('먼저 로그인을 해주세요!')
         return false;
       }
-      this.createSessionId(this.nickName);
+      this.createSessionId();
       //주최한다는 새로운 변수 추가
       this.ishost = true;
       this.changeMeetingDialog(true);
@@ -215,11 +214,7 @@ export default {
         alert('먼저 로그인을 해주세요!')
         return false;
       }
-      var hostData = {
-        inputSessionId: this.inputSessionId,
-        nickName: this.nickName
-      }
-      this.checkSessionId(hostData)
+      this.checkSessionId(this.inputSessionId)
         .then(() => {
           //주최 안한다는 새로운 변수 추가
           this.ishost = false;
@@ -239,18 +234,7 @@ export default {
       }
       //호스트라면 방 제목 변경
       if(this.ishost){
-        var hostData = {
-        nickName: this.nickName,
-        roomName: this.roomName
-        }
-        this.updateHostInfo(hostData);
-      }
-      else{
-        /*var roomData = {
-        nickName: this.nickName
-        }
-        this.updateUserNickname(roomData);
-        */
+        enterData.roomName = this.roomName
       }
 
       this.enterSession(enterData)
