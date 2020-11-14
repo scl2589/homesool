@@ -261,6 +261,8 @@ export default {
       'publisher',
       'screenPublisher',
       'currentMode',
+      'isChatPanel',
+      'messages',
     ]),
     isMultiPanel() {
       if (this.currentMode) {
@@ -291,6 +293,28 @@ export default {
       this.currentBGM.src = require('@/assets/musics/' + this.playList[this.bgmIndex]);
       if (this.isPlaying) {
         this.currentBGM.play();
+      }
+    },
+    messages() {
+      if (!this.isChatPanel) {
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: false,
+          onOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+          }
+        })
+
+        let newMessage = this.messages[this.messages.length - 1]
+        Toast.fire({
+          text: `${newMessage.sender}: ${newMessage.message}`
+        })
+
+        
       }
     }
   },
