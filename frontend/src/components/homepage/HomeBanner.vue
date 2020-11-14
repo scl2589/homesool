@@ -1,10 +1,10 @@
 <template>
   <v-carousel
+    dark
     cycle
     height="250"
     hide-delimiter-background
   >
-  <!-- 이거 for문 돌리고 싶은데 배열에 src 주소 넣고 :src로 돌린다음에 받아오니까 이미지 안뜸 -->
     <v-carousel-item>
       <v-sheet height="100%">
         <v-row
@@ -12,9 +12,8 @@
           align="center"
           justify="center"
         >
-          <div class="display-3">
-            <div> 언제까지 어깨춤을 추게할거야~ </div>
-            <img src="../../../public/img/partytemp1.jpg" alt="배너1" class="banner">
+          <div class="text-container">
+            <img src="@/assets/images/party2.png" alt="배너2" class="banner">
           </div>
         </v-row>
       </v-sheet>
@@ -26,9 +25,8 @@
           align="center"
           justify="center"
         >
-          <div class="display-3">
-              <div> 이 놀라운 기능들이<br>모두 다 술이술이홈술이라는 사실 </div>
-            <img src="@/assets/images/partytemp2.jpg" alt="배너1" class="banner">
+          <div class="text-container">
+            <img src="@/assets/images/party5.png" alt="배너5" class="banner">
           </div>
         </v-row>
       </v-sheet>
@@ -40,9 +38,21 @@
           align="center"
           justify="center"
         >
-          <div class="display-3">
-              <div> 언택트 술모임! </div>
-            <img src="@/assets/images/partytemp3.jpg" alt="배너1" class="banner">
+          <div class="text-container">
+            <img src="@/assets/images/party6.png" alt="배너6" class="banner">
+          </div>
+        </v-row>
+      </v-sheet>
+    </v-carousel-item>
+    <v-carousel-item>
+      <v-sheet height="100%">
+        <v-row
+          class="fill-height"
+          align="center"
+          justify="center"
+        >
+          <div class="text-container">
+            <img src="@/assets/images/party7.png" alt="배너7" class="banner">
           </div>
         </v-row>
       </v-sheet>
@@ -74,6 +84,8 @@
 </script>
 
 <style lang="scss">
+@import url('https://fonts.googleapis.com/css2?family=Bowlby+One+SC&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap');
 $carousel-btn-margin:5px;
 $banner-height:250px;
 .v-window__prev{
@@ -85,13 +97,27 @@ $banner-height:250px;
 .banner{
     display: block; 
     margin: 0px auto; 
-    width:100vw; 
-    transform: translate(0,-50%);
+    width:100vw;
+    // opacity: 0.3;
 }
-.display-3 div{
+.text-container div{
     position:relative; 
-    line-height:$banner-height;
     color:white; 
     z-index:1;
+    
+    .homesool {
+      font-family: 'Bowlby One SC', cursive;
+      font-size:2rem;
+      color: #d6f567
+    }
+    .homesool-offer {
+      font-family: 'Do Hyeon', sans-serif;
+      font-size: 1.5rem;
+    }
+    small {
+      font-family: 'Do Hyeon', sans-serif;
+      color: #d4d4d4;
+      font-size: 1rem;
+    }
 }
 </style>
