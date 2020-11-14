@@ -201,7 +201,10 @@ export default {
     ]),
     hostbtn() {
       if (!this.getId) {
-        alert('먼저 로그인을 해주세요!')
+        Swal.fire({
+          title: "먼저 로그인을 해주세요!",
+          icon: "warning",
+        })
         return false;
       }
       this.createSessionId();
@@ -211,7 +214,10 @@ export default {
     },
     guestbtn() {
       if (!this.getId) {
-        alert('먼저 로그인을 해주세요!')
+        Swal.fire({
+          title: "먼저 로그인을 해주세요!",
+          icon: "warning",
+        })
         return false;
       }
       this.checkSessionId(this.inputSessionId)

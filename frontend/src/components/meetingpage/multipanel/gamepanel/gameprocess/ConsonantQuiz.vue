@@ -84,7 +84,6 @@ export default {
       request.gameStatus=2;
       this.word = "";
       var jsonRequest = JSON.stringify(request);
-      console.log(jsonRequest);
       this.sendGameRequest(jsonRequest);
     },
   }

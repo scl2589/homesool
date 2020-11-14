@@ -85,9 +85,6 @@ const mypageStore = {
               commit('SET_ALCOHOL_TYPE_DATA', alcoholTypeData)
             }
           })
-          .catch(err => {
-            console.log(err.response.data)
-          })
 
         axios.get(SERVER.URL + SERVER.ROUTES.user + `/${rootState.user.id}/statistics10days`, rootGetters.config)
           .then(res => {
@@ -114,9 +111,6 @@ const mypageStore = {
             })
             commit('SET_RECENT_DATA', recentData)
           })
-        .catch(err => {
-          console.log(err.response.data)
-        })
       }
     }
   }

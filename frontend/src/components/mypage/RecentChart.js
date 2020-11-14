@@ -6,7 +6,7 @@ export default {
     data: Object
   },
   mounted() {
-    this.renderChart(this.data, 
+    this.renderChart(this.data,
       {
         scales: {
           yAxes: [{
@@ -35,7 +35,7 @@ export default {
           enabled: true,
           mode: 'single',
           callbacks: {
-            label: function(tooltipItems) {
+            label: function (tooltipItems) {
               return tooltipItems.yLabel;
             }
           }

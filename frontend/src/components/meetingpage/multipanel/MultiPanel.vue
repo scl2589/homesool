@@ -1,16 +1,6 @@
 <template>
   <div>
     <div class="d-flex justify-content-between">
-      <!-- <button
-        class="btn goback-btn"
-        v-if="selectedSong"
-        @click="closeSingingPanel"
-      >
-        <i 
-          class="fas fa-arrow-left"
-          style="color:white;"
-        ></i>
-      </button> -->
       <button
         class="btn close-btn"
         @click="changeMode(null)"

@@ -157,7 +157,7 @@ export default {
       } else {
         var swal = Swal.mixin({
           customClass: {
-            confirmButton: 'btn btn-danger',
+            confirmButton: 'btn btn-danger btn-lg',
           },
           buttonsStyling: false
         })
@@ -184,11 +184,11 @@ export default {
               this.$router.push({ name: 'MyPage'})
             }
           })
-          .catch((err) => {
-            console.log(err)
-          })
       } else {
-        alert('한 종류 이상의 주량을 등록해주세요!');
+        Swal.fire({
+          title: "한 종류 이상의 주량을 등록해주세요!",
+          icon: "warning",
+        })
       }
     }
   },
