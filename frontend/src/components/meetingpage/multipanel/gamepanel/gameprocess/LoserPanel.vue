@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column justify-content-center align-items-center h-100" v-if="loser">
+  <div class="d-flex flex-column justify-space-around align-items-center h-100" v-if="loser">
     <div class="w-100" v-if="selectedGame==2">
       <div class="answerList mb-2">
         <p 
@@ -28,6 +28,9 @@
       </div>
     </div>
     <img class="w-50" :src="smileURL" alt="" v-if="selectedGame == 4 && smileURL">
+    <div class="w-100 mt-3" v-if="selectedGame==5">
+      <p class="w-100 color-gray answers p-0">읽은 문장: {{sentence}}</p>
+    </div>
     <user-video
       class="w-50"
       :class="{'w-45': game2, 'w-35':six, 'w-20':nine}"
@@ -51,13 +54,13 @@
       <p><span class="color-yellow">{{ loser.stream.connection.data.slice(15,-2) }}</span>님이 끝내 웃음을 참지 못했습니다.</p>
     </div>
     <div v-if="selectedGame == 5">
-      <h1>결과</h1>
-      <p>읽은 문장: {{sentence}}</p>
-      <p>{{ loser.stream.connection.data.slice(15,-2) }}은 {{findDrunken}}</p>
+      <div class="w-100">
+        <p class="color-white"><span class="color-yellow">{{ loser.stream.connection.data.slice(15,-2) }}</span>님은 {{findDrunken}}</p>
+      </div>
     </div>
 
     <div class="w-100">
-      <p>벌칙은 <span class="color-yellow">{{ penalty }}</span> 입니다.</p>
+      <p class="color-white" v-if="findDrunken !=='아직 안취했습니다.'">벌칙은 <span class="color-yellow">{{ penalty }}</span> 입니다.</p>
     </div>
 
     <div class="w-100 mb-3">
@@ -139,11 +142,6 @@ export default {
 </script>
 
 <style scoped>
-p {
-  color: white;
-  margin: 5px 0 0 0;
-}
-
 .answers {
   border-bottom: 1px solid white;
 }
@@ -162,6 +160,10 @@ p {
 
 .result3 {
   color: white;
+}
+
+p {
+  margin: 0;
 }
 
 </style>
