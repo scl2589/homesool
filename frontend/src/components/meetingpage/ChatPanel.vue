@@ -28,7 +28,7 @@
         <div class="footer d-flex mt-auto">
           <div class="col-10 px-1 py-0">
             <input 
-              @keyup.enter="clickSendMessage(message)"
+              @keyup.enter="clickSendMessage"
               class="text-box"
               v-model="message"
             >
@@ -36,7 +36,7 @@
           <div class="col-2 p-0">
             <button
               class="send-btn"
-              @click="clickSendMessage(message)"
+              @click="clickSendMessage"
             >
               <i class="fas fa-paper-plane"></i>
             </button>
@@ -75,8 +75,10 @@ export default {
       "sendMessage",
     ]),
     clickSendMessage() {
-      this.sendMessage(this.message)
-      this.message = ""
+      if (this.message) {
+        this.sendMessage(this.message)
+        this.message = ""
+      }
     }
   },
 };
