@@ -10,8 +10,8 @@
         <div class="carousel-inner">
           <div class="carousel-item active">
             <img 
-              :src="require('@/assets/images/sample.png')" 
-              class="d-block w-100" 
+              :src="require('@/assets/images/drunken1.png')" 
+              class="d-block w-50 mx-auto" 
               alt="sample image"
             >
             <p class="description">
@@ -20,8 +20,8 @@
           </div>
           <div class="carousel-item">
             <img 
-              :src="require('@/assets/images/sample.png')" 
-              class="d-block w-100" 
+              :src="require('@/assets/images/drunken2.png')" 
+              class="d-block w-50 mx-auto" 
               alt="sample image"
             >
             <p class="description">
@@ -30,8 +30,8 @@
           </div>
           <div class="carousel-item">
             <img 
-              :src="require('@/assets/images/sample.png')" 
-              class="d-block w-100" 
+              :src="require('@/assets/images/drunken3.png')" 
+              class="d-block w-50 mx-auto" 
               alt="sample image"
             >
             <p class="description">
@@ -105,5 +105,9 @@ p, h1, h2, h3, h4, h5, h6, button {
 
 button {
   color: black;
+}
+
+img {
+  border: 1px solid white;
 }
 </style>
