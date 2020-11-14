@@ -40,7 +40,6 @@ const mypageStore = {
             }
 
             let typeData = res.data;
-            console.log('hhhhhhhhhh', typeData);
             if (typeData.length > 5) {
               for (let i = 0; i < 5; i++) {
                 if (typeData[i].liquorName.includes('소주')) {
