@@ -22,9 +22,10 @@
         max-width="600px"
         v-if="user && publisher"
       >
-        <v-card v-if="user.drinks.length">
+      <div class="scroll-sect">
+                <v-card v-if="user.drinks.length">
           <v-card-title>
-            <h3>입장하기</h3>
+            <h3 class="m-0">입장하기</h3>
           </v-card-title>
           <v-form v-model="valid" :lazy-validation="lazy">  
             <v-container>
@@ -56,7 +57,7 @@
                 >
                   <v-text-field
                     v-model="roomName"
-                    hint="방 제목을 입력해주세요 :)"
+                    hint="방 제목을 입력해주세요"
                     persistent-hint
                     required
                     :rules="[v => !!v || '필수항목입니다.']"
@@ -69,7 +70,7 @@
                   <v-text-field
                     v-model="nickName"
                     label="닉네임"
-                    hint="미팅에서 사용할 닉네임을 입력해주세요 :)"
+                    hint="미팅에서 사용할 닉네임을 입력해주세요"
                     persistent-hint
                     required
                     :rules="[v => !!v || '필수항목입니다.']"
@@ -85,7 +86,7 @@
                     item-text="liquorName"
                     item-value="liquorName"
                     label="오늘의 술"
-                    hint="미팅에서 마실 술 종류를 입력해주세요 :)"
+                    hint="미팅에서 마실 술 종류를 입력해주세요"
                     persistent-hint
                     required
                     :rules="[v => !!v || '필수항목입니다.']"
@@ -146,6 +147,8 @@
             </v-btn>
           </div>
         </v-card>
+      </div>
+
       </v-dialog>
     </v-row>
   </div>
@@ -365,4 +368,42 @@ $buttonheight: 50px;
 .pointer {
   cursor: pointer;
 }
+
+.container {
+  padding-top: 0 !important;
+}
+
+.v-input {
+  padding: 8px 0 5px 0 !important;
+  margin: 0 !important;
+}
+
+.scroll-sect {
+  height: 80vh !important;
+  overflow: auto;
+}
+
+.scroll-sect::-webkit-scrollbar {
+  width: 8px; 
+  height: 8px;
+}
+
+.scroll-sect::-webkit-scrollbar-track {
+  background: #37474F;
+}
+
+.scroll-sect::-webkit-scrollbar-corner {
+  background: #37474F; 
+}
+
+.scroll-sect::-webkit-scrollbar-thumb {
+  background: #c1c56a;
+}
+
+.scroll-sect::-webkit-scrollbar-button {
+  background-color: #37474F;
+  height: 0;
+}
+
+
 </style>
