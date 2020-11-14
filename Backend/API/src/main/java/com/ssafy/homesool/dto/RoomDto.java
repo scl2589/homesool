@@ -30,6 +30,9 @@ public class RoomDto {
 		
 		@ApiModelProperty(value = "Room code", example = "A1B2C3D4E5")
 		private String code;
+		
+		@ApiModelProperty(value = "Room Name", example = "오늘은 내가 술게임최강자")
+		private String roomName;
 	}
 	
 	@Data
@@ -52,6 +55,29 @@ public class RoomDto {
 
 		@ApiModelProperty(value = "Start time", example = "")
 		private Date startTime;
+		
+		@ApiModelProperty(value = "Host nickname", example = "지은")
+		private String hostNickName;
+		
+		@ApiModelProperty(value = "Room Name", example = "오늘은 내가 술게임최강자")
+		private String roomName;
+	}
+	
+	@Data
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public static class InsertHostInfo {
+		@ApiModelProperty(value = "Host id", example = "1404739104")
+		private long hostId;
+		
+		@ApiModelProperty(value = "Host nickname", example = "지은")
+		private String hostNickName;
+		
+		@ApiModelProperty(value = "Room Id", example = "1")
+		private long roomId;
+		
+		@ApiModelProperty(value = "Room Name", example = "오늘은 내가 술게임최강자")
+		private String roomName;
 	}
 	
 	@Data
@@ -63,5 +89,13 @@ public class RoomDto {
 
 		@ApiModelProperty(value = "End time", example = "")
 		private Date endTime;
+	}
+	
+	@Data
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public static class UpdateMemberInfo {
+		@ApiModelProperty(value = "User Nickname", example = "지은")
+		private String nickName;
 	}
 }

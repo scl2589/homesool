@@ -10,6 +10,7 @@ import org.mariadb.jdbc.internal.logging.Logger;
 import org.mariadb.jdbc.internal.logging.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -30,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 
 import com.ssafy.homesool.dto.PhotoDto;
 import com.ssafy.homesool.dto.RoomDto;
+import com.ssafy.homesool.dto.UserDto;
 import com.ssafy.homesool.entity.Room;
 import com.ssafy.homesool.entity.Member;
 import com.ssafy.homesool.service.PhotoService;
@@ -61,7 +63,7 @@ public class RoomController {
 		//방 생성
 		RoomDto.RoomResponse roomResponse = roomService.add(insertRoomInfo);
 		//멤버 목록에 추가
-		roomService.addMember(roomResponse.getCode(), insertRoomInfo.getHostId());
+		roomService.addMember(roomResponse.getCode(), insertRoomInfo.getHostId(), insertRoomInfo.getHostNickName(),1);
 		return new ResponseEntity<>(roomResponse, HttpStatus.OK);
 	}
 	
@@ -80,6 +82,24 @@ public class RoomController {
 		return new ResponseEntity<Room>(roomService.update(updateRoomInfo.getRoomId(), updateRoomInfo.getEndTime()),HttpStatus.OK);
 	}
 	
+	@PostMapping("host")
+	@ApiOperation(value = "미팅 시작 후 호스트 정보 업데이트", notes = "초기 정보 업데이트", response = String.class)
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "OK"),
+			@ApiResponse(code = 400, message = "Bad Request"),
+			@ApiResponse(code = 401, message = "Unauthorized"),
+			@ApiResponse(code = 403, message = "Forbidden"),
+			@ApiResponse(code = 404, message = "Not Found")
+	})
+	private ResponseEntity<String> UpdateHost(
+		@ApiParam(value = "호스트 유저 id와 시작 시각", required = true) @RequestBody RoomDto.InsertHostInfo insertHostInfo) {
+		logger.debug("update host in Room 호출\n" );
+		//방 제목 추가
+		roomService.updateRoomName(insertHostInfo.getRoomId(), insertHostInfo.getRoomName());
+		//호스트 닉네임 업데이트
+		return new ResponseEntity<>("update host", HttpStatus.OK);
+	}
+	
 	@PostMapping("{code}/with/{userId}")
 	@ApiOperation(value = "미팅 멤버 추가", notes = "미팅에 접속하고 멤버 목록에 추가한 후 response로 roomId를 보내준다.", response = Long.class)
 	@ApiResponses(value = {
@@ -89,11 +109,13 @@ public class RoomController {
 		@ApiResponse(code = 403, message = "Forbidden"),
 		@ApiResponse(code = 404, message = "Not Found")
 	})
+	
 	private ResponseEntity<Long> addMember(
 		@ApiParam(value = "방 코드",required = true, example = "A1B2C3D4E5") @PathVariable String code,
-		@ApiParam(value = "유저 id",required = true, example = "1404739104") @PathVariable long userId){
+		@ApiParam(value = "유저 id",required = true, example = "1404739104") @PathVariable long userId,
+		@ApiParam(value = "유저 닉네임",required = true, example = "지은") @RequestBody RoomDto.UpdateMemberInfo updateMemberInfo){
 		logger.debug(String.format("add Member {%d} in {%s} 호출",userId,code));
-		return new ResponseEntity<>(roomService.addMember(code,userId),HttpStatus.OK);
+		return new ResponseEntity<>(roomService.addMember(code,userId,updateMemberInfo.getNickName(),2),HttpStatus.OK);
 	}
 	
 	@PostMapping("photo")
@@ -156,5 +178,4 @@ public class RoomController {
 			}
 			return new ResponseEntity<>(photoRequest.getImg(), HttpStatus.OK);
 	}
-	
 }

@@ -530,11 +530,12 @@ const meetingStore = {
     changeMeetingLogDialog({ commit }, value) {
       commit('SET_MEETINGLOG_DIALOG', value);
     },
-    createSessionId({ rootGetters, commit, dispatch }) {
+    createSessionId({ rootGetters, commit, dispatch }, nickName) {
       const ct = new Date();
       const createData = {
         "hostId": rootGetters.getId,
-        "startTime": moment(ct).format('YYYY-MM-DDTHH:mm:ss')
+        "startTime": moment(ct).format('YYYY-MM-DDTHH:mm:ss'),
+        "hostNickName" : nickName,
       };
       axios.post(SERVER.URL + SERVER.ROUTES.room, createData, rootGetters.config)
         .then(res => {
@@ -545,16 +546,45 @@ const meetingStore = {
           console.log(err.response.data)
         })
     },
-    checkSessionId({ rootGetters, commit, dispatch }, sessionId) {
-      axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${sessionId}/with/${rootGetters.getId}`, null, rootGetters.config)
+    checkSessionId({ rootGetters, commit, dispatch }, hostData) {
+      const createData = {
+        nickname : hostData.nickName
+      };
+      axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${hostData.inputSessionId}/with/${rootGetters.getId}`, createData, rootGetters.config)
         .then(res => {
           commit('SET_ROOMID', res.data);
-          dispatch('joinSession', sessionId);
+          dispatch('joinSession', hostData.inputSessionId);
           return true;
         })
         .catch(err => {
           console.log(err.response.data)
           alert('초대코드가 유효하지 않습니다.')
+        })
+    },
+    updateUserNickname({ rootGetters, state}, roomdata) {
+      axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${state.mySessionId}/with/${rootGetters.getId}`, roomdata, rootGetters.config)
+        .then(res => {
+          console.log("닉네임 변경")
+          console.log(res)
+        })
+        .catch(err => {
+          console.log(err.response.data)
+        })
+    },
+    updateHostInfo({ rootGetters, state}, hostData){
+      const createData = {
+        "hostId" : rootGetters.getId,
+        "hostNickName" : hostData.hostNickName,
+        "roomId" : state.roomId,
+        "roomName" : hostData.roomName,
+      };
+      console.log(createData);
+      axios.post(`${SERVER.URL + SERVER.ROUTES.room}/host`, createData, rootGetters.config,)
+        .then(res => {
+          console.log(res)
+        })
+        .catch(err => {
+          console.log(err.response.data)
         })
     },
 

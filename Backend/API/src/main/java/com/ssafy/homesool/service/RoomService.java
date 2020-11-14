@@ -37,25 +37,38 @@ public class RoomService {
 				.hostId(insertRoomInfo.getHostId())
 				.startTime(insertRoomInfo.getStartTime())
 				.code(code)
+				.roomName("")
 				.build();
 		return RoomMapper.INSTANCE.toResponse(
 				roomRepository.save(room)
 		);
 	}
 
+	public Room updateRoomName(long roomId, String roomName) {
+		Room room= roomRepository.findOneByRoomId(roomId);
+		Room newroom = Room.builder()
+				.hostId(room.getHostId())
+				.startTime(room.getStartTime())
+				.code(room.getCode())
+				.roomId(room.getRoomId())
+				.roomName(roomName)
+				.build();
+		return roomRepository.save(newroom);
+	}
+	
 	public Room update(long roomId, Date endTime) {
 		Room room= roomRepository.findOneByRoomId(roomId);
 		room.updateEndTime(endTime);
 		return roomRepository.save(room);
 	}
 
-	public long addMember(String code, long userId) {
+	public long addMember(String code, long userId, String nickName, int ishost) {
 		
 		Room room = roomRepository.findOneByCode(code);
 		// Room Not Found or Room is closed
 		if(room == null || room.getEndTime() != null) 
 			throw new RoomNotFoundException(code);
-		Member member = new Member(room.getRoomId(), userId);
+		Member member = new Member(room.getRoomId(), userId, nickName, ishost);
 		return memberRepository.save(member).getRoomId();
 	}
 

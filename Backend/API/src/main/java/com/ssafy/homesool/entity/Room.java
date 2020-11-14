@@ -45,4 +45,7 @@ public class Room {
 	public void updateEndTime(Date endTime) {
 		this.endTime = endTime;
 	}
+	
+	@Column(nullable = true)
+	private String roomName;
 }
