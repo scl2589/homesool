@@ -1427,8 +1427,33 @@ const meetingStore = {
       commit('SET_GOT_WASTED', null);
     },
     updateUserDrinkRecord({ state, rootGetters , commit }, num) {
-      commit('SET_TOTAL_DRINK', num);
+      let user = rootGetters.getUser;
+      let currentDrinkNum = 0;
+      let currentDrinkId = 0;   //DB상 ID
+      for(let i=0; i<user.drinks.length; i++){
+        if(user.drinks[i].liquorName==state.currentDrink){
+          if(user.drinks[i].liquorId){ //데이터가 있을 때
+            if(user.drinks[i].liquorNum == 0 && num == -1) return;  //현재까지 마신 양이 0이고 -1을 눌렀으면 return
+            user.drinks[i].liquorNum += num;
+            currentDrinkNum = user.drinks[i].liquorNum;
+            currentDrinkId = user.drinks[i].liquorId;
 
+            //주량체크
+            if(!(user.drinks[i].isOver)){ //플래그가 없을 때
+              if(user.drinks[i].liquorLimit < user.drinks[i].liquorNum){
+                  Swal.fire({
+                    title: `${state.currentDrink}의 주량을 넘었습니다`,
+                    icon: "warning",
+                  })
+                user.drinks[i].isOver = true;
+              }
+            }
+          }
+        }
+      }
+      commit('setUser', user, { root:true });
+
+      commit('SET_TOTAL_DRINK', num);
       //send drink signal JSON.stringify(song),
       let data = {
         "userId": state.publisher.stream.connection.connectionId,
@@ -1446,19 +1471,7 @@ const meetingStore = {
           console.log(err)
       })
 
-      let user = rootGetters.getUser;
-      let currentDrinkNum = 0;
-      let currentDrinkId = 0;   //DB상 ID
-      for(let i=0; i<user.drinks.length; i++){
-        if(user.drinks[i].liquorName==state.currentDrink){
-          if(user.drinks[i].liquorId){ //데이터가 있을 때
-            user.drinks[i].liquorNum += num;
-            currentDrinkNum = user.drinks[i].liquorNum;
-            currentDrinkId = user.drinks[i].liquorId;
-          }
-        }
-      }
-      commit('setUser', user, { root:true });
+      //API에 보내기
       const drinkData = {
         "liquorLimit": currentDrinkNum,
         "liquorName": state.currentDrink,
