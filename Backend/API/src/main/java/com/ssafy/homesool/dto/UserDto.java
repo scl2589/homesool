@@ -59,7 +59,6 @@ public class UserDto {
 		private int liquorLimit;
 	}
 	
-	@Builder
 	@Data
 	@AllArgsConstructor
 	@NoArgsConstructor
@@ -72,7 +71,32 @@ public class UserDto {
 				+ "[\"http:/k3a503.p.ssafy.io/images/fileName\"]")
 		private List<String> srcs = new ArrayList<>();
 	}
-	
+	@Data
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public static class UserRecordStatistics {
+		@ApiModelProperty(value = "User Drink Records", example = ""
+				+ "[{\"liquorName\" : \"소주\", \"liquorLimit\" : \"3\" }]")
+		private List<UserRecord2> recordStatistics = new ArrayList<>();
+		
+		@ApiModelProperty(value = "User Drink Records", example = ""
+				+ "[\r\n"
+				+ "    {\r\n"
+				+ "      \"date\": \"2020-11-13\",\r\n"
+				+ "      \"userRecord\": [\r\n"
+				+ "        {\r\n"
+				+ "          \"liquorName\": \"맥주\",\r\n"
+				+ "          \"liquorLimit\": 2\r\n"
+				+ "        },\r\n"
+				+ "        {\r\n"
+				+ "          \"liquorName\": \"소주\",\r\n"
+				+ "          \"liquorLimit\": 3\r\n"
+				+ "        }\r\n"
+				+ "      ]\r\n"
+				+ "    }\r\n"
+				+ "  ]")
+		private List<UserRecord3> recordStatistics10days = new ArrayList<>();
+	}
 	@Builder
 	@Data
 	@AllArgsConstructor
@@ -83,5 +107,17 @@ public class UserDto {
 		
 		@ApiModelProperty(value = "Liqour limit", example = "3")
 		private int liquorLimit;
+	}
+	@Builder
+	@Data
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public static class UserRecord3 {
+		@ApiModelProperty(value = "Date", example = "2020-11-14")
+		private String date;
+		
+		@ApiModelProperty(value = "User Drink Records", example = ""
+				+ "[{\"liquorName\" : \"소주\", \"liquorLimit\" : \"3\" }]")
+		private List<UserRecord2> userRecord;
 	}
 }
