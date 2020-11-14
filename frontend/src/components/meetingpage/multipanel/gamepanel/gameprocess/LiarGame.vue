@@ -23,25 +23,25 @@
               </button>
               <button
                 class="btn-yellow rounded"
-                @click="clickSendTheme('야채')"
+                @click="clickSendTheme('동물')"
               >
                 동물
               </button>
               <button
                 class="btn-yellow rounded"
-                @click="clickSendTheme('야채')"
+                @click="clickSendTheme('나라')"
               >
                 나라
               </button>
               <button
                 class="btn-yellow rounded"
-                @click="clickSendTheme('야채')"
+                @click="clickSendTheme('음식')"
               >
                 음식
               </button>
               <button
                 class="btn-yellow rounded"
-                @click="clickSendTheme('야채')"
+                @click="clickSendTheme('영화')"
               >
                 영화
               </button>

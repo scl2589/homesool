@@ -28,6 +28,22 @@ public class LiarGameRunnable implements Runnable {
 			"시금치", "부추", "가지", "파란고추", "실파", "대파", "미나리", "애호박", "단호박", "오이", "당근", "감자", "고구마", "버섯", "양송이", "느타리버섯",
 			"표고버섯", "말린버섯", "무", "단무지", "피클", "무청", "상추", "양배추", "양상추", "바질", "마늘", "생강", "순무", "브로콜리", "인삼", "쑥갓",
 			"피망" };
+	
+	static String[] animal = {"가시두더지","개","개미핥기","개코원숭이","고라니","고래","고릴라","고슴도치","고양이","곰",
+			"기린","나무늘보","낙타","날다람쥐","너구리","늑대","다람쥐","당나귀","돌고래","돼지",
+			"두더지","말","멧돼지","물개","바다표범","박쥐","반달가슴곰","벵골호랑이","북극곰","북극여우",
+			"불독","사막여우","사슴","사자","생쥐","수달","스컹크","알파카","여우","염소",
+			"오랑우탄","오소리","원숭이","족제비","청설모","치와와","치타","침팬지","캥거루","코끼리",
+			"코뿔소","코알라","토끼","펭귄","표범","호랑이"
+	};
+	
+	static String[] country = {"가나","과테말라","그리스","나이지리아","남아프리카 공화국","네덜란드","네팔","노르웨이","뉴질랜드","대한민국",
+			"덴마크","독일","라오스","레바논","룩셈부르크","말레이시아","멕시코","몰디브","몽골","미국",
+			"방글라데시","베네수엘라","베트남","벨기에","북한","박쥐","브라질","사우디아라비아","스리랑카","스웨덴",
+			"스위스","스페인","싱가포르","아랍에미리트","아르헨티나","아프가니스탄","영국","알파카","오스트리아","우즈베키스탄",
+			"이라크","이스라엘","이집트","이탈리아","인도","일본","자메이카","중국","체코","캄보디아",
+			"태국","터키","포르투갈","폴란드","표범","프랑스","핀란드","필리핀","헝가리","호주"
+	};
 
 	private String theme;
 	private Set<Participant> participants;
@@ -58,8 +74,18 @@ public class LiarGameRunnable implements Runnable {
 			Collections.shuffle(randomWords);
 			randomParticipants = new ArrayList<>(participants);
 			Collections.shuffle(randomParticipants);
-		} else {
-
+		} else if(theme.equals("동물")) {
+			randomWords = new ArrayList<>(Arrays.asList(animal));
+			Collections.shuffle(randomWords);
+			randomParticipants = new ArrayList<>(participants);
+			Collections.shuffle(randomParticipants);
+		}else if(theme.equals("나라")) {
+			randomWords = new ArrayList<>(Arrays.asList(country));
+			Collections.shuffle(randomWords);
+			randomParticipants = new ArrayList<>(participants);
+			Collections.shuffle(randomParticipants);
+		}else {
+			
 		}
 
 		// 단어와 라이어가 누구인지 알려줌

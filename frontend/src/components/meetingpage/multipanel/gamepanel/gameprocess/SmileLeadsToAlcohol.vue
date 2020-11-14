@@ -23,16 +23,16 @@
           <button class="btn-yellow rounded" @click="clickSendTheme('야채')">
             야채
           </button>
-          <button class="btn-yellow rounded" @click="clickSendTheme('야채')">
+          <button class="btn-yellow rounded" @click="clickSendTheme('동물')">
             동물
           </button>
-          <button class="btn-yellow rounded" @click="clickSendTheme('야채')">
+          <button class="btn-yellow rounded" @click="clickSendTheme('나라')">
             나라
           </button>
-          <button class="btn-yellow rounded" @click="clickSendTheme('야채')">
+          <button class="btn-yellow rounded" @click="clickSendTheme('음식')">
             음식
           </button>
-          <button class="btn-yellow rounded" @click="clickSendTheme('야채')">
+          <button class="btn-yellow rounded" @click="clickSendTheme('영화')">
             영화
           </button>
         </div>
