@@ -1,6 +1,8 @@
 import SERVER from '@/api/api';
 import axios from 'axios';
 
+const drinkColors = ['#CB997E', '#02323A', '#988148', '#8D9365', '#f194ff', '#BF5B04'];
+
 const mypageStore = {
   namespaced: true,
   state: {
@@ -23,29 +25,6 @@ const mypageStore = {
       if (rootState.user) {
         axios.get(SERVER.URL + SERVER.ROUTES.user + `/${rootState.user.id}/statistics`, rootGetters.config)
           .then(res => {
-            // recent
-            const recentData = {
-              labels: [],
-              datasets: [
-                {
-                  xAxisID: 0,
-                  yAxisID: 0,
-                  label: '최근 음주 통계',
-                  backgroundColor: '#58b04a',
-                  data: []
-                }
-              ]
-            }
-            res.data.recordStatistics10days.forEach(day => {
-              recentData.labels.push(day.date)
-              let totalValue = 0;
-              day.userRecord.forEach(record => {
-                totalValue = totalValue + record.liquorLimit
-              })
-              recentData.datasets[0].data.push(totalValue);
-            })
-            commit('SET_RECENT_DATA', recentData)
-  
             // alcoholType
             const alcoholTypeData = {
               hoverBackgroundColor: "red",
@@ -60,8 +39,8 @@ const mypageStore = {
               ]
             }
 
-            let typeData = res.data.recordStatistics;
-            let drinkColors = ['#CB997E', '#02323A', '#988148', '#8D9365', '#f194ff', '#BF5B04'];
+            let typeData = res.data;
+            console.log('hhhhhhhhhh', typeData);
             if (typeData.length > 5) {
               for (let i = 0; i < 5; i++) {
                 if (typeData[i].liquorName.includes('소주')) {
@@ -89,7 +68,7 @@ const mypageStore = {
               commit('SET_ALCOHOL_TYPE_DATA', alcoholTypeData)
   
             } else {
-              for (let j = 0; j < typeData.length - 1; j++) {
+              for (let j = 0; j < typeData.length; j++) {
                 if (typeData[j].liquorName.includes('소주')) {
                   alcoholTypeData.datasets[0].backgroundColor.push('#58b04a');
                 } else if (typeData[j].liquorName.includes('맥주')) {
@@ -110,6 +89,35 @@ const mypageStore = {
           .catch(err => {
             console.log(err.response.data)
           })
+
+        axios.get(SERVER.URL + SERVER.ROUTES.user + `/${rootState.user.id}/statistics10days`, rootGetters.config)
+          .then(res => {
+            // recent
+            const recentData = {
+              labels: [],
+              datasets: [
+                {
+                  xAxisID: 0,
+                  yAxisID: 0,
+                  label: '최근 음주 통계',
+                  backgroundColor: '#58b04a',
+                  data: []
+                }
+              ]
+            }
+            res.data.forEach(day => {
+              recentData.labels.push(day.date)
+              let totalValue = 0;
+              day.userRecord.forEach(record => {
+                totalValue = totalValue + record.liquorLimit
+              })
+              recentData.datasets[0].data.push(totalValue);
+            })
+            commit('SET_RECENT_DATA', recentData)
+          })
+        .catch(err => {
+          console.log(err.response.data)
+        })
       }
     }
   }
