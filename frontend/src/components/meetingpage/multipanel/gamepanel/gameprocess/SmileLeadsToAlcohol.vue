@@ -117,24 +117,24 @@ export default {
       "updateMainVideoStreamManager",
     ]),
     clickSendTheme(theme) {
-       Swal.fire({
-          icon: 'warning',
-          title: '주제가 선택되었습니다.',
-          showCancelButton: false,
-          confirmButtonText: '확인',
-          showLoaderOnConfirm: true,
-        })
-        .then((result) => {
-          if (result.value) {
-            var request = new Object();
-            request.gameId = this.selectedGame;
-            request.theme = theme;
-            request.gameStatus = 2;
-            var jsonRequest = JSON.stringify(request);
-            this.sendGameRequest(jsonRequest);
-          } 
-        })
-      }
+      Swal.fire({
+        icon: 'info',
+        title: '주제가 선택되었습니다.',
+        showCancelButton: false,
+        confirmButtonText: '확인',
+        showLoaderOnConfirm: true,
+      })
+      .then((result) => {
+        if (result.value) {
+          var request = new Object();
+          request.gameId = this.selectedGame;
+          request.theme = theme;
+          request.gameStatus = 2;
+          var jsonRequest = JSON.stringify(request);
+          this.sendGameRequest(jsonRequest);
+        } 
+      })
+    }
   },
 
   beforeDestroy() {

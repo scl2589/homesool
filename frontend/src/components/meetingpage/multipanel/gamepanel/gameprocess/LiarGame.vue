@@ -114,6 +114,7 @@
 </template>
 
 <script>
+import Swal from 'sweetalert2'
 import { mapState, mapActions, mapGetters } from 'vuex'
 import LoserPanel from '@/components/meetingpage/multipanel/gamepanel/gameprocess/LoserPanel';
 
@@ -158,15 +159,24 @@ export default {
       'endGameProcess',
     ]),
     clickSendTheme(theme){
-      //alert("주제선택");
-      var request = new Object();
-      request.gameId=this.selectedGame;
-      request.theme=theme;
-      request.gameStatus=2;
+      Swal.fire({
+        icon: 'info',
+        title: '주제가 선택되었습니다.',
+        showCancelButton: false,
+        confirmButtonText: '확인',
+        showLoaderOnConfirm: true,
+      })
+      .then((result) => {
+        if (result.value) {
+          var request = new Object();
+          request.gameId=this.selectedGame;
+          request.theme=theme;
+          request.gameStatus=2;
 
-      var jsonRequest = JSON.stringify(request);
-      console.log(jsonRequest);
-      this.sendGameRequest(jsonRequest);
+          var jsonRequest = JSON.stringify(request);
+          this.sendGameRequest(jsonRequest);
+        } 
+      })
     },
     voteForLiar(){
       this.DidVote = true;
@@ -177,7 +187,6 @@ export default {
       request.voteId=this.picked;
 
       var jsonRequest = JSON.stringify(request);
-      console.log("투표"+jsonRequest);
       this.sendGameRequest(jsonRequest);
     },
     sendEndgame(){
@@ -186,7 +195,6 @@ export default {
       request.gameStatus=4;
 
       var jsonRequest = JSON.stringify(request);
-      console.log(jsonRequest);
       this.sendGameRequest(jsonRequest);
     }
   },

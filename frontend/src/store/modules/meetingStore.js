@@ -370,7 +370,10 @@ const meetingStore = {
           // 현재 진행 중인 mode와 modeHost가 있는 경우
           if (state.selectedSong || state.selectedGame || state.currentMode === 'snapshot') {
             // 현재 멈추면 안되는 상황인 경우
-            alert('지금은 다른 모드로 전환할 수 없습니다.');
+            Swal.fire({
+              title: "지금은 다른 모드로 전환할 수 없습니다.",
+              icon: "warning",
+            })
             return;
           } else {
             // 현재 모드를 중단해도 되는 경우
@@ -383,7 +386,10 @@ const meetingStore = {
         } else {
           if (state.modeHost) {
             // 현재 currentMode는 없지만 modeHost가 null 값이 아닌 경우(실제 snapshot 모드가 진행 중인 경우)
-            alert('지금은 다른 모드로 전환할 수 없습니다.');
+            Swal.fire({
+              title: "지금은 다른 모드로 전환할 수 없습니다.",
+              icon: "warning",
+            })
             return;
           } else {
             // modeHost가 중간에 나가버린 경우
@@ -408,12 +414,6 @@ const meetingStore = {
         data: mode,
         to: [],
       })
-        .then(() => {
-          console.log(`init ${mode} mode`);
-        })
-        .catch((err) => {
-          console.log(err)
-        })
     },
     endAnonymousMode({ state }) {
       state.publisher.stream.removeFilter("GStreamerFilter");
@@ -491,12 +491,6 @@ const meetingStore = {
         data: JSON.stringify(song),
         to: [],
       })
-        .then(() => {
-          console.log("song started");
-        })
-        .catch((err) => {
-          console.log(err)
-        })
     },
     checkSongSync({ state }, currentSongTime) {
       state.session.signal({
@@ -504,12 +498,6 @@ const meetingStore = {
         data: currentSongTime + 0.05,
         to: [],
       })
-        .then(() => {
-          console.log("songsync");
-        })
-        .catch((err) => {
-          console.log(err)
-        })
     },
     changeTheme({ state }, theme) {
       state.session.signal({
@@ -517,12 +505,6 @@ const meetingStore = {
         data: theme,
         to: [],
       })
-        .then(() => {
-          console.log("theme changed");
-        })
-        .catch((err) => {
-          console.log(err)
-        })
     },
     changeMeetingDialog({ commit }, value) {
       commit('SET_MEETING_DIALOG', value);
@@ -542,9 +524,6 @@ const meetingStore = {
           commit('SET_ROOMID', res.data.roomId);
           dispatch('joinSession', res.data.code);
         })
-        .catch(err => {
-          console.log(err.response.data)
-        })
     },
     checkSessionId({ rootGetters, commit, dispatch }, sessionId) {
       axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${sessionId}/with/${rootGetters.getId}`,null,rootGetters.config)
@@ -554,19 +533,14 @@ const meetingStore = {
           return true;
         })
         .catch(err => {
-          console.log(err.response.data)
-          alert('초대코드가 유효하지 않습니다.')
+          Swal.fire({
+            title: "초대코드가 유효하지 않습니다.",
+            icon: "error",
+          })
         })
     },
     updateUserNickname({ rootGetters, state}, roomdata) {
       axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${state.mySessionId}/with/${rootGetters.getId}`, roomdata, rootGetters.config)
-        .then(res => {
-          console.log("닉네임 변경")
-          console.log(res)
-        })
-        .catch(err => {
-          console.log(err.response.data)
-        })
     },
     // openvidu
     joinSession ({ state, commit, dispatch }, mySessionId) {
@@ -758,26 +732,12 @@ const meetingStore = {
           "roomId" : state.roomId,
           "roomName" : enterData.roomName,
         };
-        console.log("")
-        console.log(createData);
         axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${state.mySessionId}/host`, createData, rootGetters.config,)
-          .then(res => {
-            console.log(res)
-          })
-          .catch(err => {
-            console.log(err.response.data)
-        })
       }else{  //유저 요청
         const MemberData = {
           "nickName": enterData.nickName,
         }
         axios.put(`${SERVER.URL + SERVER.ROUTES.room}/${state.mySessionId}/with/${rootGetters.getId}`,MemberData,rootGetters.config)
-        .then(res => {
-          console.log(res)
-        })
-        .catch(err => {
-          console.log(err.response.data)
-      })
       }
 
       commit('SET_CURRENT_DRINK', enterData.currentDrink);
@@ -792,14 +752,10 @@ const meetingStore = {
           }
           axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
               .then(res => {
-                console.log("SUCCESSFUL - uploading user record")
                 //alert(res.data);
                 user.drinks[i].liquorId = res.data;
                 user.drinks[i].liquorNum = 0;
               })
-              .catch((err) => {
-                console.log(err)
-          })
         }
       }
       const drinkData = {
@@ -1195,7 +1151,6 @@ const meetingStore = {
 
             state.session.on('signal:drink', (event) => {
               let drinkData = JSON.parse(event.data);
-              console.log(drinkData);
               state.subscribers.forEach(subscriber => {
                 if (subscriber.stream.connection.connectionId === drinkData.userId) {
                   subscriber.totalDrink = drinkData.totalDrink;
@@ -1207,12 +1162,17 @@ const meetingStore = {
 					})
 					.catch(error => {
             console.log('There was an error connecting to the session:', error.code, error.message);
-            alert('오류가 발생했습니다. 입장 정보를 다시 한 번 확인해주세요.');
+            Swal.fire({
+              title: "오류가 발생했습니다. 입장 정보를 다시 한 번 확인해주세요.",
+              icon: "error",
+            })
 					});
         })
         .catch(err => {
-          console.log(err.response.data)
-          alert('오류가 발생했습니다. 입장 정보를 다시 한 번 확인해주세요.');
+          Swal.fire({
+            title: "오류가 발생했습니다. 입장 정보를 다시 한 번 확인해주세요.",
+            icon: "error",
+          })
         })
     },
     sendMessage({ state }, message) {
@@ -1225,12 +1185,6 @@ const meetingStore = {
         data: JSON.stringify(messageData),
         to: [],
       })
-        .then(() => {
-          console.log("Message successfully sent");
-        })
-        .catch((err) => {
-          console.log(err)
-        })
     },
     startShareScreen({ state, commit, dispatch }) {
       if (state.isSharingMode) {
@@ -1313,12 +1267,6 @@ const meetingStore = {
         to: [],
         type: 'game'
       })
-        .then(() => {
-          console.log("Message successfully sent");
-        })
-        .catch((err) => {
-          console.log(err)
-      })
     },
     attachImage({ state }, file) {
       state.session.signal({
@@ -1338,9 +1286,6 @@ const meetingStore = {
             to: [],
             type: 'mode'
           })
-        })
-        .catch((err) => {
-          console.log(err)
         })
     },
     checkIsSmile({ state }) {
@@ -1399,9 +1344,6 @@ const meetingStore = {
             })
           }
         })
-        .catch(err => {
-          console.log(err)
-        })
     },
     recordVoice({ commit, dispatch }) {
       const sdk = require("microsoft-cognitiveservices-speech-sdk");
@@ -1411,9 +1353,7 @@ const meetingStore = {
         let audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
         let recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
         
-        console.log('Speak into your microphone.');
         recognizer.recognizeOnceAsync(result => {
-          console.log(`RECOGNIZED: Text=${result.text}`);
           if (result.text === undefined) {
             dispatch('recordVoice')
           } else {
@@ -1464,12 +1404,6 @@ const meetingStore = {
         to: [],
         type: 'drink'
       })
-        .then(() => {
-          console.log("Message successfully sent");
-        })
-        .catch((err) => {
-          console.log(err)
-      })
 
       //API에 보내기
       const drinkData = {
@@ -1478,12 +1412,6 @@ const meetingStore = {
         "recordId": currentDrinkId,
       }
       axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
-        .then(() => {
-          console.log("SUCCESSFUL - uploading user record")
-        })
-        .catch((err) => {
-          console.log(err)
-        })
     },
     changeCurrentDrink({ commit }, currentDrink) {
       commit('SET_CURRENT_DRINK',currentDrink )

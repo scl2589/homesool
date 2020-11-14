@@ -89,7 +89,6 @@ export default {
         request.index=this.gameUpDownIndex;
         this.number = '';
         var jsonRequest = JSON.stringify(request);
-        console.log(jsonRequest);
         this.sendGameRequest(jsonRequest);
       } else {
         Swal.fire({
@@ -104,7 +103,6 @@ export default {
       request.gameId=this.selectedGame;
       request.gameStatus=4;
       var jsonRequest = JSON.stringify(request);
-      console.log(jsonRequest);
       this.sendGameRequest(jsonRequest);
     },
   }
