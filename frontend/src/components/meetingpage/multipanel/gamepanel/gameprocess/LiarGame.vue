@@ -13,13 +13,13 @@
                 class="btn-yellow rounded"
                 @click="clickSendTheme('열대과일')"
               >
-              열대과일
+                열대과일
               </button>
               <button
                 class="btn-yellow rounded"
                 @click="clickSendTheme('야채')"
               >
-              야 채
+                야채
               </button>
               <button
                 class="btn-yellow rounded"
