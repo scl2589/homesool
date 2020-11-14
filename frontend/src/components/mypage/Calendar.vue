@@ -2,42 +2,28 @@
   <div>
     <div>
       <vc-calendar
-        class="custom-calendar"
+        class="custom-calendar max-w-full"
         :attributes='attributes'
         is-expanded
+        disable-page-swipe
         :max-date="new Date()"
         locale="ko-kr"
       >
       <template v-slot:day-content="{ day, attributes }">
         <div class="flex flex-col h-full z-10 overflow-hidden">
           <span class="day-label text-sm text-gray-900">{{ day.day }}</span>
-          <div class="flex-grow overflow-y-auto overflow-x-auto" >
+          <div class="flex-grow overflow-y-auto overflow-x-auto custom-overflow" >
             <div
               v-for="attr in attributes"
               class="text-xs leading-tight rounded-sm p-1 mt-0 mb-1"
               :class="attr.customData.class"
               :key="attr.key"
             >
-              <p @click="showDetail(attr.key)">{{ attr.customData.title }}</p>
+              <p class="mb-0" @click="showDetail(attr.key)">{{ attr.customData.title }}</p>
             </div>
           </div>
         </div>
       </template>
-        <!-- <div
-          slot="day-popover"
-          slot-scope="{ day, dayTitle, attributes }">
-          <div class="text-xs text-gray-300 font-semibold text-center">
-            {{ dayTitle }}
-          </div>
-          <popover-row
-            v-for="attr in attributes"
-            :key="attr.id"
-            :attribute="attr"
-          >
-            <div class="pointer" v-if="attr.customData.id" @click="clickDiary(attr.customData.id)">{{ attr.customData.title }}</div>
-            <div v-else>{{ attr.customData.title }}</div>
-          </popover-row>
-        </div> -->
       </vc-calendar>
     </div>
     <v-dialog
@@ -46,9 +32,55 @@
         max-width="600px"
       >
       <v-card>
-        <v-card-title>
+        <v-card-title class="d-flex justify-content-center">
           <h3>미팅 기록 조회</h3>
         </v-card-title>
+        
+        <v-container class="d-flex flex-column align-items-start px-5 py-0">
+          <v-row class="d-flex mb-3 mx-2" v-if="logs.roomInfo">
+            <h4 class="mb-0">날짜:</h4>
+            <p class="mb-0 ml-3">{{`${logs.roomInfo.startTime.slice(0, 4)}년 ${logs.roomInfo.startTime.slice(5, 7)}월 ${logs.roomInfo.startTime.slice(8, 10)}일`}}</p>
+          </v-row>
+          <v-row class="d-flex mb-3 mx-2" v-if="logs.roomInfo">
+            <h4 class="mb-0">방제목:</h4>
+            <p class="mb-0 ml-3">{{logs.roomInfo.roomName}}</p>
+          </v-row>
+          <v-row class="d-flex mb-3 mx-2">
+            <h4 class="mb-0">호스트:</h4>
+            <p class="mb-0 ml-3">{{logs.host}}</p>
+          </v-row>
+          <v-row class="d-flex mb-3 mx-2" v-if="logs.users && logs.users.length">
+            <h4 class="mb-0">참여자:</h4>
+            <p class="mb-0 ml-3" v-for="user in logs.users" :key="user">
+              {{user}},
+            </p>
+          </v-row>
+          <v-row class="d-flex mb-3 mx-2">
+            <h4 class="mb-0">음주량:</h4>
+            <span v-for="(record,index) in logs.records" :key="index">
+              <p class="mb-0 ml-3" v-if="record.liquorLimit > 0">{{record.liquorName}} {{record.liquorLimit}}잔,</p>
+            </span>            
+          </v-row>
+          <v-row class="mb-3 mx-2" v-if="logs.roomInfo && logs.srcs.length">
+            <h4 class="mb-0">사진</h4>
+            <v-carousel
+              v-model="model"
+              dark
+              cycle
+              height="250"
+              hide-delimiter-background
+            >
+              <v-carousel-item
+                class=""
+                v-for="(src,index) in logs.srcs"
+                :key="index"
+              >
+                <img class="h-100 mw-100" :src="`https://firebasestorage.googleapis.com/v0/b/homesuli.appspot.com/o/${logs.roomInfo.code}%2Fsnapshot%2F${src}.jpg?alt=media&token=942e1b59-2774-4d79-b0e7-098d76168b49`">
+              </v-carousel-item>
+            </v-carousel>
+          </v-row>
+        </v-container>
+
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
@@ -59,30 +91,6 @@
             Close
           </v-btn>
         </v-card-actions>
-        <v-container>
-          <h4> 호스트 </h4>
-          <p>{{this.logs.host}}</p>
-          <h4> 참여자 </h4>
-          <p v-for="user in logs.users" :key="user">
-            {{user}},
-          </p>
-          <h3>음주량</h3>
-          <v-row>
-            <v-col>
-              <p v-for="(record,index) in logs.records" :key="index">
-                {{record.liquorName}} {{record.liquorLimit}} 잔을 마셨습니다.
-              </p>
-            </v-col>
-          </v-row>
-          <h3>사진</h3>
-          <v-row>
-            <v-col>
-              <div v-for="(src,index) in logs.srcs" :key="index">
-                <img :src="src">   
-              </div>
-            </v-col>
-          </v-row>
-        </v-container>
         
       </v-card>
     </v-dialog>
@@ -90,95 +98,20 @@
 </template>
 
 <script>
-// import PopoverRow from 'v-calendar/lib/components/popover-row.umd.min'
 import SERVER from '@/api/api'
 import axios from 'axios'
 import { mapActions, mapGetters,mapState } from 'vuex';
 export default {
   name: 'Calendar',
   components: {
-    // PopoverRow
   },
   data() {
-    // const month = new Date().getMonth();
-    // const year = new Date().getFullYear();
     return {
       attributes: [
-        // {
-        //   key: 1,
-        //   customData: {
-        //     title: 'Lunch with mom.',
-        //     class: 'red lighten-3 text-white',
-        //   },
-        //   dates: new Date(year, month, 1),
-        // },
-        // {
-        //   key: 2,
-        //   customData: {
-        //     title: 'Take Noah to basketball practice',
-        //     class: 'blue lighten-3 text-white',
-        //   },
-        //   dates: new Date(year, month, 2),
-        // },
-        // {
-        //   key: 3,
-        //   customData: {
-        //     title: "Noah's basketball game.",
-        //     class: 'blue lighten-3 text-white',
-        //   },
-        //   dates: new Date(year, month, 5),
-        // },
-        // {
-        //   key: 4,
-        //   customData: {
-        //     title: 'Take car to the shop',
-        //     class: 'indigo lighten-3 text-white',
-        //   },
-        //   dates: new Date(year, month, 5),
-        // },
-        // {
-        //   key: 4,
-        //   customData: {
-        //     title: 'Meeting with new client.',
-        //     class: 'teal lighten-3 text-white',
-        //   },
-        //   dates: new Date(year, month, 7),
-        // },
-        // {
-        //   key: 5,
-        //   customData: {
-        //     title: "Mia's gymnastics practice.",
-        //     class: 'pink lighten-3 text-white',
-        //   },
-        //   dates: new Date(year, month, 11),
-        // },
-        // {
-        //   key: 6,
-        //   customData: {
-        //     title: 'Cookout with friends.',
-        //     class: 'orange lighten-3 text-white',
-        //   },
-        //   dates: { months: 5, ordinalWeekdays: { 2: 1 } },
-        // },
-        // {
-        //   key: 7,
-        //   customData: {
-        //     title: "Mia's gymnastics recital.",
-        //     class: 'pink lighten-3 text-white',
-        //   },
-        //   dates: new Date(year, month, 22),
-        // },
-        // {
-        //   key: 8,
-        //   customData: {
-        //     title: 'Visit great grandma.',
-        //     class: 'red lighten-3 text-white',
-        //   },
-        //   dates: new Date(year, month, 25),
-        // },
       ],
       logs : {},
       color : ["red","blue","indigo","teal","pink","orange"],
+      model: 0
     };
   },
   computed: {
@@ -230,45 +163,9 @@ export default {
           console.log(err)
         })
     },
-    
-  // computed: {
-  //   attributes() {
-  //     const meetingData = []
-  //     for (var meeting of this.meetings) {
-  //       let inputData = {
-  //         dates: meeting.meeting_date,
-  //         dot: {
-  //           color: 'green',
-  //           class: meeting.isComplete ? 'opacity-75' : '',
-  //         },
-  //         popover: {
-  //           label: meeting.description,
-  //           visibility: 'focus',
-  //           placement: 'auto'
-  //         },
-  //         customData: {
-  //           title: meeting.title,
-  //           id: meeting.id
-  //         },
-  //       }
-  //       meetingData.push(inputData)
-  //     }
-  //     return meetingData
-  //   },
-  // },
 }
 </script>
 
-<style scoped>
-/* p {
-  color: black !important;
-} */
-
-.vc-pane-container {
-  width: 50%;
-  position: relative;
-}
-</style>
 
 <style lang="postcss" scoped>
 ::-webkit-scrollbar {
@@ -278,12 +175,12 @@ export default {
   display: none;
 }
 /deep/ .custom-calendar.vc-container {
-  --day-border: 1px solid #b8c2cc;
-  --day-border-highlight: 1px solid #b8c2cc;
+  --day-border: 1px solid rgb(0, 0, 0, 0.2) !important;
+  --day-border-highlight: 1px solid rgb(0, 0, 0, 0.2) !important;
   --day-width: 90px;
   --day-height: 90px;
   --weekday-bg: #f8fafc;
-  --weekday-border: 1px solid #eaeaea;
+  --weekday-border: 1px solid rgb(0, 0, 0, 0.2) !important;
   border-radius: 0;
   width: 100%;
   & .vc-header {
@@ -322,5 +219,29 @@ export default {
   & .vc-day-dots {
     margin-bottom: 5px;
   }
+}
+</style>
+
+<style scoped>
+.vc-pane-container {
+  width: 50%;
+  position: relative;
+}
+
+.custom-overflow {
+  height: 15vh;
+}
+
+.custom-calendar {
+  max-height: 760px;
+  overflow: hidden;
+}
+
+/* .vc-grid-container > .vc-grid-cell {
+  border: 1px solid black;
+} */
+
+.vc-grid-cell {
+  border: 1px solid rgb(0, 0, 0, 0.2) !important;
 }
 </style>
