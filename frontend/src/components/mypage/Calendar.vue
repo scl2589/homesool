@@ -60,6 +60,12 @@
           </v-btn>
         </v-card-actions>
         <v-container>
+          <h4> 호스트 </h4>
+          <p>{{this.logs.host}}</p>
+          <h4> 참여자 </h4>
+          <p v-for="user in logs.users" :key="user">
+            {{user}},
+          </p>
           <h3>음주량</h3>
           <v-row>
             <v-col>
@@ -189,6 +195,7 @@ export default {
       })
         .then((event) => {
           this.logs = event.data
+          console.log(event.data)
         })
         .catch((err) => {
           console.log(err)
@@ -205,12 +212,11 @@ export default {
         headers: {'X-AUTH-TOKEN' : this.$store.state.token}
       })
         .then((event) => {
-          
           for(var i=0 ;i<event.data.length;i++){
             let log = new Object()
             log.key = event.data[i].roomId
             log.customData = {
-              title: event.data[i].code,
+              title: event.data[i].roomName,
               class: this.color[Math.floor(Math.random()*6)]+' lighten-3 text-white',
             }
             let year = event.data[i].startTime.slice(0,4)

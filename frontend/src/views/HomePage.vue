@@ -183,7 +183,7 @@ export default {
     user(value) {
       if (value) {
         this.nickName = value.name;
-        this.roomName = `${this.nickName}의 방입니다`
+        this.roomName = `${this.nickName}의 방`
       }
     }
   },
@@ -271,7 +271,7 @@ export default {
   mounted() {
     if (this.user) {
       this.nickName = this.user.name;
-      this.roomName = `${this.nickName}의 방입니다`
+      this.roomName = `${this.nickName}의 방`
     }
   }
 };
