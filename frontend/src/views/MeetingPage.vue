@@ -261,6 +261,8 @@ export default {
       'publisher',
       'screenPublisher',
       'currentMode',
+      'isChatPanel',
+      'messages',
     ]),
     isMultiPanel() {
       if (this.currentMode) {
@@ -292,6 +294,27 @@ export default {
       if (this.isPlaying) {
         this.currentBGM.play();
       }
+    },
+    messages() {
+      if (!this.isChatPanel) {
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: false,
+          onOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+          }
+        })
+
+        let newMessage = this.messages[this.messages.length - 1]
+        Toast.fire({
+          // html: `<span style="color: #0764FF">${newMessage.sender}</span><span>: ${newMessage.message}</span>`
+          html: `<span style="color: #0764FF">${newMessage.sender}</span><span>님이 메시지를 보냈습니다</span>`
+        })
+      }
     }
   },
 
@@ -304,7 +327,8 @@ export default {
       'clickMuteAudio',
       'startShareScreen',
       'stopShareScreen',
-      'changeMode'
+      'changeMode',
+      'changeIsNewbie'
     ]),
     toggleBGM() {
       if (this.currentBGM.paused) {
@@ -387,6 +411,10 @@ export default {
       this.currentBGM.src = require('@/assets/musics/' + this.playList[this.bgmIndex]);
       this.currentBGM.play();
     })
+
+    setTimeout(() => {
+      this.changeIsNewbie();
+    }, 3000);
   },
 
   beforeRouteLeave (to, from, next) {
