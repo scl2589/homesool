@@ -18,8 +18,8 @@ import com.ssafy.homesool.config.security.JwtTokenProvider;
 import com.ssafy.homesool.dto.KakaoUserDto;
 import com.ssafy.homesool.dto.LoginDto;
 import com.ssafy.homesool.dto.UserDto;
+import com.ssafy.homesool.dto.UserDto.UserRecord2;
 import com.ssafy.homesool.dto.UserDto.UserRecordDetail;
-import com.ssafy.homesool.dto.UserDto.UserRecordStatistics;
 import com.ssafy.homesool.entity.User;
 import com.ssafy.homesool.entity.UserDrink;
 import com.ssafy.homesool.entity.UserRecord;
@@ -156,16 +156,9 @@ public class UserService {
 		userRepository.deleteById(userId);
 	}
 
-	public UserDto.UserRecordStatistics getStatistics(long userId) {
-		UserRecordStatistics urs = new UserRecordStatistics();
-		
-		// 총 음주량 저장
-		urs.setRecordStatistics(
-				UserMapper.INSTANCE.toRecord(
-						userRecordRepository.getStatistics(userId)));
-		
+	public List<UserDto.UserRecord3>  getStatistics10days(long userId) {
 		// 날짜별 음주량 리스트
-		List<UserDto.UserRecord3> ur3List = new ArrayList<>();
+		List<UserDto.UserRecord3> res = new ArrayList<>();
 		// 최근 10번의 음주 날짜 가져오기
 		List<String> drinkDayList = roomRepository.get10days(userId);
 		
@@ -176,9 +169,13 @@ public class UserService {
 			// 날짜별 음주량
 			ur3.setUserRecord(UserMapper.INSTANCE.toRecord(
 					userRecordRepository.getStatisticsByDate(userId, date)));
-			ur3List.add(ur3);
+			res.add(ur3);
 		}
-		urs.setRecordStatistics10days(ur3List);
-		return urs;
+		return res;
+	}
+	
+	public List<UserRecord2> getStatistics(long userId) {
+		return UserMapper.INSTANCE.toRecord(
+				userRecordRepository.getStatistics(userId));
 	}
 }
