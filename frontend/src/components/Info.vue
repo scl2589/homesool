@@ -1,6 +1,7 @@
 <template>
   <div id="myinfo">
-    <h1 id="title">회원가입</h1>
+    <h1 id="title" v-if="$route.name === 'RegisterPage'">회원가입</h1>
+    <h1 id="title" v-if="$route.name === 'ProfilePage'">프로필</h1>
     <div class="d-flex flex-column form">
       <div class="row no-gutters">
         <div class="col-sm-4 infotitle">
@@ -84,8 +85,16 @@
         <button
           class="btn btn-lg btn-yellow"
           @click="clickSignup"
+          v-if="$route.name === 'RegisterPage'"
         >
           가입하기
+        </button>
+        <button
+          class="btn btn-lg btn-yellow"
+          @click="clickSignup"
+          v-if="$route.name === 'ProfilePage'"
+        >
+          수정하기
         </button>
       </div>
     </div>
@@ -169,7 +178,11 @@ export default {
           headers: {'X-AUTH-TOKEN' : this.$store.state.token}
         })
           .then(() => {
-            this.$router.push('/')
+            if (this.$route.name === 'RegisterPage') {
+              this.$router.push('/')
+            } else if (this.$route.name === 'ProfilePage') {
+              this.$router.push({ name: 'MyPage'})
+            }
           })
           .catch((err) => {
             console.log(err)

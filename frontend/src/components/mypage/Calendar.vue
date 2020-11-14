@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="p-3 container">
+    <div>
       <vc-calendar
         class="custom-calendar"
         :attributes='attributes'
