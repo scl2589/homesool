@@ -311,7 +311,6 @@ export default {
 
         let newMessage = this.messages[this.messages.length - 1]
         Toast.fire({
-          // html: `<span style="color: #0764FF">${newMessage.sender}</span><span>: ${newMessage.message}</span>`
           html: `<span style="color: #0764FF">${newMessage.sender}</span><span>님이 메시지를 보냈습니다</span>`
         })
       }
