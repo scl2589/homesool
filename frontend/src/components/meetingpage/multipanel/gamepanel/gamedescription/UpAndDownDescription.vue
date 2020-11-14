@@ -1,6 +1,6 @@
 <template>
   <div class="upanddown" data-app>
-    <h5 class="pt-3">Up🔺 & Down🔻 </h5>
+    <h5 class="pt-3">Up&Down🔺🔻 </h5>
     <div 
       id="carouselExampleControls" 
       class="carousel slide m-1 p-1" 
@@ -9,8 +9,8 @@
       <div class="carousel-inner">
         <div class="carousel-item active">
           <img 
-            :src="require('@/assets/images/sample.png')" 
-            class="d-block w-100" 
+            :src="require('@/assets/images/updown1.png')" 
+            class="d-block w-50 mx-auto" 
             alt="sample image"
           >
           <p class="description">
@@ -19,8 +19,8 @@
         </div>
         <div class="carousel-item">
           <img 
-            :src="require('@/assets/images/sample.png')" 
-            class="d-block w-100" 
+            :src="require('@/assets/images/updown2.png')" 
+            class="d-block w-50 mx-auto" 
             alt="sample image"
           >
           <p class="description">
@@ -29,12 +29,12 @@
         </div>
         <div class="carousel-item">
           <img 
-            :src="require('@/assets/images/sample.png')" 
-            class="d-block w-100" 
+            :src="require('@/assets/images/updown3.png')" 
+            class="d-block w-50 mx-auto" 
             alt="sample image"
           >
           <p class="description">
-            3. 숫자를 맞힌다면 Win!!!<br> 이전 순서의 사람이 벌칙 당첨!!
+            3. 숫자를 맞힌다면 벌칙 당첨!!!
           </p>
         </div>
       </div>
@@ -85,5 +85,9 @@ p, h1, h2, h3, h4, h5, h6, button {
 
 .v-select__selection--comma {
   margin: 0 !important;
+}
+
+img {
+  border: 1px solid white;
 }
 </style>

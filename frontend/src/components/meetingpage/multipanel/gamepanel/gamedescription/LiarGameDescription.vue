@@ -9,8 +9,8 @@
       <div class="carousel-inner">
         <div class="carousel-item active">
           <img 
-            :src="require('@/assets/images/sample.png')" 
-            class="d-block w-100" 
+            :src="require('@/assets/images/liar1.png')" 
+            class="d-block w-50  mx-auto" 
             alt="sample image"
           >
           <p class="description">
@@ -19,8 +19,8 @@
         </div>
         <div class="carousel-item">
           <img 
-            :src="require('@/assets/images/sample.png')" 
-            class="d-block w-100" 
+            :src="require('@/assets/images/liar2.png')" 
+            class="d-block w-50 mx-auto" 
             alt="sample image"
           >
           <p class="description">
@@ -29,8 +29,8 @@
         </div>
         <div class="carousel-item">
           <img 
-            :src="require('@/assets/images/sample.png')" 
-            class="d-block w-100" 
+            :src="require('@/assets/images/liar3.png')" 
+            class="d-block w-50 mx-auto" 
             alt="sample image"
           >
           <p class="description">
@@ -39,8 +39,8 @@
         </div>
         <div class="carousel-item">
           <img 
-            :src="require('@/assets/images/sample.png')" 
-            class="d-block w-100" 
+            :src="require('@/assets/images/liar5.png')" 
+            class="d-block w-50 mx-auto" 
             alt="sample image"
           >
           <p class="description">
@@ -49,8 +49,8 @@
         </div>
         <div class="carousel-item">
           <img 
-            :src="require('@/assets/images/sample.png')" 
-            class="d-block w-100" 
+            :src="require('@/assets/images/liar4.png')" 
+            class="d-block w-50 mx-auto" 
             alt="sample image"
           >
           <p class="description">
@@ -59,8 +59,8 @@
         </div>
         <div class="carousel-item">
           <img 
-            :src="require('@/assets/images/sample.png')" 
-            class="d-block w-100" 
+            :src="require('@/assets/images/liar6.png')" 
+            class="d-block w-50 mx-auto" 
             alt="sample image"
           >
           <p class="description">
@@ -117,16 +117,8 @@ p, h1, h2, h3, h4, h5, h6, button {
 .v-select__selection--comma {
   margin: 0 !important;
 }
-/* 
-.v-input {
-  width: 60% !important;
-}
 
-.v-input__slot {
-  width: 60% !important;
+img {
+  border: 1px solid white;
 }
-
-.v-input__control {
-  width: 60% !important;
-} */
 </style>

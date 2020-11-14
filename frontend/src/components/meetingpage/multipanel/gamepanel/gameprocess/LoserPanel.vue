@@ -1,16 +1,19 @@
 <template>
   <div class="d-flex flex-column justify-space-around align-items-center h-100" v-if="loser">
+    <div class="w-100" v-if="selectedGame==1">
+      <p class="answers color-white"> 번호 : <span class="color-yellow">{{this.gameUpDownNumber}}</span></p>
+    </div>
     <div class="w-100" v-if="selectedGame==2">
       <div class="answerList mb-2">
         <p 
+          class="color-white other-user"
           v-if="gameAnswerWords.length"
-          class="other-user"
         >
           ⭐다른 유저의 정답⭐
         </p>
         <div class="d-flex row no-gutters answers">
           <p 
-            class="col-4 answer2"
+            class="col-4 answer2 color-white"
             v-for="word in gameAnswerWords" 
             :key="word.word"
           >
@@ -39,19 +42,18 @@
       v-if="selectedGame != 4"
     />
     <div v-if="selectedGame == 1">
-      <p> 번호 : {{this.gameUpDownNumber}}</p>
-      <p><span class="color-yellow">{{ loser.stream.connection.data.slice(15,-2) }}</span> 당첨!!! </p>
+      <p class="color-white"><span class="color-yellow">{{ loser.stream.connection.data.slice(15,-2) }}</span> 당첨!!! </p>
     </div>
     <div class="w-100" v-if="selectedGame == 2">
-      <p><span class="color-yellow">{{ loser.stream.connection.data.slice(15,-2).slice(0, 10) }}</span>님이 <u>꼴찌</u> 입니다!!!</p>
+      <p class="color-white"><span class="color-yellow">{{ loser.stream.connection.data.slice(15,-2).slice(0, 10) }}</span>님이 <u>꼴찌</u> 입니다!!!</p>
     </div>
     <div class="w-100 mt-auto d-flex row no-gutters" v-if="selectedGame == 3">
-      <p class="col-4"> <span class="color-gray">최다득표자 :</span> {{this.gameVoteData}} </p>
-      <p class="col-4"> <span class="color-gray">라이어 :</span> {{this.gameLiarData}} </p>
-      <p class="col-4"> <span class="color-gray">벌칙자 :</span> {{ loser.stream.connection.data.slice(15,-2).slice(0, 6) }} </p>
+      <p class="col-4 color-white"> <span class="color-gray">최다득표자 :</span> {{this.gameVoteData}} </p>
+      <p class="col-4 color-white"> <span class="color-gray">라이어 :</span> {{this.gameLiarData}} </p>
+      <p class="col-4 color-white"> <span class="color-gray">벌칙자 :</span> {{ loser.stream.connection.data.slice(15,-2).slice(0, 6) }} </p>
     </div>
     <div v-if="selectedGame == 4">
-      <p><span class="color-yellow">{{ loser.stream.connection.data.slice(15,-2) }}</span>님이 끝내 웃음을 참지 못했습니다.</p>
+      <p class="color-white"><span class="color-yellow">{{ loser.stream.connection.data.slice(15,-2) }}</span>님이 끝내 웃음을 참지 못했습니다.</p>
     </div>
     <div v-if="selectedGame == 5">
       <div class="w-100">
