@@ -22,6 +22,7 @@
   </v-app>
 </template>
 <script>
+import Swal from 'sweetalert2'
 import { mapActions, mapState } from 'vuex'
 export default {
   data(){
@@ -69,9 +70,18 @@ export default {
       this.$router.push({ name: 'MyPage'}).catch(()=>{});
     },
     clickLogout(){
-      if (confirm("홈술이를 로그아웃 하시겠습니까?")) {
-        this.$store.dispatch('kakaoLogout');
-      }
+      Swal.fire({
+        html: "홈술이를 로그아웃 하시겠습니까?",
+        showCancelButton: true,
+        confirmButtonText: '네',
+        cancelButtonText: '아니요',
+        icon: "warning",
+      })
+      .then((result) => {
+        if (result.value) {
+          this.$store.dispatch('kakaoLogout');
+        }
+      });
     }
   },
   mounted() {
@@ -138,5 +148,14 @@ $header-margin:5px;
       cursor: pointer;
     }
   }
+}
+</style>
+<style>
+.swal2-confirm {
+  background-color: #3e91df !important;
+}
+
+.swal2-cancel {
+  background-color: #f85858 !important;
 }
 </style>

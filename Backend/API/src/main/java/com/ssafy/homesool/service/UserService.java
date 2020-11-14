@@ -149,6 +149,7 @@ public class UserService {
 		
 		userRecordDetail.setHost(memberRepository.findHostnameByroomId(roomId));
 		userRecordDetail.setUsers(memberRepository.findNicknameByroomId(roomId));
+		userRecordDetail.setRoomInfo(roomRepository.findOneByRoomId(roomId));
 		return userRecordDetail;
 	}
 	

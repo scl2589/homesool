@@ -116,9 +116,7 @@ export default {
     },
     findSharer() {
       for (let i = 0, len = this.subscribers.length; i < len; i++ ) {
-        console.log("SLICINGGGG",this.subscribers[i].stream.connection.data.slice(-8, -2) )
         if (this.subscribers[i].stream.connection.data.slice(-8, -2) === 'screen') {
-          console.log("헐 여기이")
           this.sharer = this.subscribers[i]
         }
       }

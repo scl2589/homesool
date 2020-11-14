@@ -160,6 +160,7 @@ p {
   z-index: 20;
   opacity: 0;
   padding : 10px;
+  cursor:pointer;
 }
 
 .drink-minus{
@@ -175,6 +176,7 @@ p {
   z-index: 20;
   opacity: 0;
   padding : 10px;
+  cursor:pointer;
 }
 
 .drink-plus{
@@ -189,7 +191,8 @@ p {
   text-align: center;
   z-index: 20;
   opacity: 0;
-  padding : 10px
+  padding : 10px;
+  cursor:pointer;
 }
 
 .select-other{
@@ -203,13 +206,15 @@ p {
   -ms-transform: translate(-50%, -50%);
   text-align: center;
   z-index: 30;
-  padding : 10px;
 }
 
 .other{
 	color: black;
 	position: relative;
 	z-index: 30;
+	cursor:pointer;
+	border-bottom: 0.5px solid grey;
+	padding:3px;
 }
 
 .overlay-drink-count{

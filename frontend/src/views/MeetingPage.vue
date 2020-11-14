@@ -385,13 +385,31 @@ export default {
     },
     toggleShareScreen() {
       if (this.screenPublisher) {
-        if (confirm('화면 공유를 중단 하시겠습니까?')) {
-          this.stopShareScreen();
-        }
+        Swal.fire({
+          html: "화면공유를 중단 하시겠습니까?",
+          showCancelButton: true,
+          confirmButtonText: '네',
+          cancelButtonText: '아니요',
+          icon: "warning",
+        })
+        .then((result) => {
+          if (result.value) {
+            this.stopShareScreen();
+          }
+        });
       } else {
-        if (confirm('화면 공유를 시작 하시겠습니까?')) {
-          this.startShareScreen();
-        }
+        Swal.fire({
+          html: "화면공유를 시작 하시겠습니까?",
+          showCancelButton: true,
+          confirmButtonText: '네',
+          cancelButtonText: '아니요',
+          icon: "warning",
+        })
+        .then((result) => {
+          if (result.value) {
+            this.startShareScreen();
+          }
+        });
       }
     }
   },
@@ -417,10 +435,19 @@ export default {
   },
 
   beforeRouteLeave (to, from, next) {
-    if (confirm('술자리에서 나가시겠습니까?')) {
-      this.leaveSession();
-      next();
-    }
+    Swal.fire({
+      html: "술자리에서 나가시겠습니까?",
+      showCancelButton: true,
+      confirmButtonText: '네',
+      cancelButtonText: '아니요',
+      icon: "warning",
+    })
+    .then((result) => {
+      if (result.value) {
+        this.leaveSession();
+        next();
+      }
+    });
   },
 
   beforeDestroy() {

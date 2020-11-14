@@ -23,16 +23,16 @@
           <button class="btn-yellow rounded" @click="clickSendTheme('야채')">
             야채
           </button>
-          <button class="btn-yellow rounded" @click="clickSendTheme('야채')">
+          <button class="btn-yellow rounded" @click="clickSendTheme('동물')">
             동물
           </button>
-          <button class="btn-yellow rounded" @click="clickSendTheme('야채')">
+          <button class="btn-yellow rounded" @click="clickSendTheme('나라')">
             나라
           </button>
-          <button class="btn-yellow rounded" @click="clickSendTheme('야채')">
+          <button class="btn-yellow rounded" @click="clickSendTheme('음식')">
             음식
           </button>
-          <button class="btn-yellow rounded" @click="clickSendTheme('야채')">
+          <button class="btn-yellow rounded" @click="clickSendTheme('영화')">
             영화
           </button>
         </div>
@@ -117,24 +117,24 @@ export default {
       "updateMainVideoStreamManager",
     ]),
     clickSendTheme(theme) {
-       Swal.fire({
-          icon: 'warning',
-          title: '주제가 선택되었습니다.',
-          showCancelButton: false,
-          confirmButtonText: '확인',
-          showLoaderOnConfirm: true,
-        })
-        .then((result) => {
-          if (result.value) {
-            var request = new Object();
-            request.gameId = this.selectedGame;
-            request.theme = theme;
-            request.gameStatus = 2;
-            var jsonRequest = JSON.stringify(request);
-            this.sendGameRequest(jsonRequest);
-          } 
-        })
-      }
+      Swal.fire({
+        icon: 'info',
+        title: '주제가 선택되었습니다.',
+        showCancelButton: false,
+        confirmButtonText: '확인',
+        showLoaderOnConfirm: true,
+      })
+      .then((result) => {
+        if (result.value) {
+          var request = new Object();
+          request.gameId = this.selectedGame;
+          request.theme = theme;
+          request.gameStatus = 2;
+          var jsonRequest = JSON.stringify(request);
+          this.sendGameRequest(jsonRequest);
+        } 
+      })
+    }
   },
 
   beforeDestroy() {

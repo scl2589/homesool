@@ -54,7 +54,6 @@ export default {
 <style scoped>
 .panel {
   background-color: black;
-  /* height: 100%; */
   height: 46vh;
 }
 .panel-title{

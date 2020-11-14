@@ -128,10 +128,6 @@ export default {
       })
         .then((event) => {
           this.logs = event.data
-          console.log(event.data)
-        })
-        .catch((err) => {
-          console.log(err)
         })
     },
     clickClose(){
@@ -159,13 +155,9 @@ export default {
             this.attributes.push(log)
           }
         })
-        .catch((err) => {
-          console.log(err)
-        })
     },
 }
 </script>
-
 
 <style lang="postcss" scoped>
 ::-webkit-scrollbar {
