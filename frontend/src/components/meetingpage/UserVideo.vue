@@ -2,7 +2,7 @@
 <div v-if="streamManager">
 	<div class="drink-container">
 		<div v-if="!($route.name==='HomePage')">
-			<div class="drink-overlay" v-if="isPublisher">
+			<div class="drink-overlay d-flex justify-content-center align-items-center" v-if="isPublisher">
 				<img class="drink-minus" src="@/assets/images/minus.png" alt="한잔 덜 마셨어요" @click="updateUserDrinkRecord(-1)"> 
 				<img class="drink" :src="getImgsrc" alt="현재주종" @click="setShowOthers">
 				<img class="drink-plus" src="@/assets/images/plus.png" alt="한잔 더 마셨어요" @click="updateUserDrinkRecord(1)">
@@ -24,6 +24,25 @@
 		</div>
 		<div class="overlay-name d-flex justify-content-center align-items-center" v-if="isLeftPanel && nickName">
 			<p class="black">{{ clientData }}</p>
+		</div>
+		<div class="overlay-drink-count d-flex" v-if="isLeftPanel  && currentMode !== 'anonymous'">
+			<div v-if="isPublisher">
+				<div class="drink-count-container">
+					<img width="20px" src="@/assets/images/shot.png" alt=""> x {{totalDrink}}  
+				</div>
+			</div>
+			<div v-else> <!--subscriber-->
+				<div v-if="this.streamManager.totalDrink">
+					<div class="drink-count-container">
+						<img width="20px" src="@/assets/images/shot.png" alt=""> x {{this.streamManager.totalDrink}} 
+					</div>
+				</div>
+				<div v-else>
+					<div class="drink-count-container">
+						<img width="20px" src="@/assets/images/shot.png" alt=""> x 0
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 	<ov-video :stream-manager="streamManager"/>
@@ -60,7 +79,7 @@ export default {
 					this.offGotWasted();
 				}, 120000);
 			}
-		}
+		},
 	},
 	methods: {
 		...mapActions('meetingStore', ['updateUserDrinkRecord','offGotWasted', 'changeCurrentDrink']),
@@ -119,11 +138,11 @@ p {
 
 .drink-overlay{
  position: absolute;
- top: 25%;
+ top: 0;
  bottom: 0;
  left: 0;
  right: 0;
- height: 50%;
+ width:100%;
  opacity: 1;
  transition: .3s ease;
 }
@@ -131,7 +150,7 @@ p {
 .drink{
   background-color: white;
   border-radius: 50%;
-  width: 7%;
+  height: 30%;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -146,10 +165,10 @@ p {
 .drink-minus{
   background-color: white;
   border-radius: 50%;
-  width: 5%;
+  height: 15%;
   position: absolute;
   top: 50%;
-  left: 40%;
+  left: 35%;
   transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
   text-align: center;
@@ -161,10 +180,10 @@ p {
 .drink-plus{
   background-color: white;
   border-radius: 50%;
-  width: 5%;
+  height: 15%;
   position: absolute;
   top: 50%;
-  left: 60%;
+  left: 65%;
   transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
   text-align: center;
@@ -193,6 +212,23 @@ p {
 	z-index: 30;
 }
 
+.overlay-drink-count{
+	position: absolute;
+	bottom: 0%;
+	right:30%;
+	height: 10%;
+	z-index: 30;
+}
+
+.drink-count-container{
+	display: inline;
+	width: 90px;
+	padding:10px;
+	background-color: white;
+	border-radius: 50%;
+	color:black;
+	font-size: 1.2rem;
+}
 
 .drink-container:hover .drink{
 	opacity: 0.8;

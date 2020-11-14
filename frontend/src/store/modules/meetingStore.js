@@ -1193,6 +1193,16 @@ const meetingStore = {
               }
             });
 
+            state.session.on('signal:drink', (event) => {
+              let drinkData = JSON.parse(event.data);
+              console.log(drinkData);
+              state.subscribers.forEach(subscriber => {
+                if (subscriber.stream.connection.connectionId === drinkData.userId) {
+                  subscriber.totalDrink = drinkData.totalDrink;
+                }
+              });
+            });
+
             return true;
 					})
 					.catch(error => {
@@ -1418,6 +1428,24 @@ const meetingStore = {
     },
     updateUserDrinkRecord({ state, rootGetters , commit }, num) {
       commit('SET_TOTAL_DRINK', num);
+
+      //send drink signal JSON.stringify(song),
+      let data = {
+        "userId": state.publisher.stream.connection.connectionId,
+        "totalDrink" : state.totalDrink
+      }
+      state.session.signal({
+        data: JSON.stringify(data),
+        to: [],
+        type: 'drink'
+      })
+        .then(() => {
+          console.log("Message successfully sent");
+        })
+        .catch((err) => {
+          console.log(err)
+      })
+
       let user = rootGetters.getUser;
       let currentDrinkNum = 0;
       let currentDrinkId = 0;   //DB상 ID
