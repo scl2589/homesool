@@ -34,7 +34,7 @@
             alt="sample image"
           >
           <p class="description">
-            3. 숫자를 맞힌다면 벌칙 당첨!!!
+            3. 숫자를 맞힌다면 <br>다음 순서의 참가자가 벌칙 당첨!!!
           </p>
         </div>
       </div>
