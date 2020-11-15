@@ -1262,11 +1262,19 @@ const meetingStore = {
       })
     },
     sendGameRequest({ state }, data){
-      state.session.signal({
-        data: data,
-        to: [],
-        type: 'game'
-      })
+      if ( state.subscribers.length >= 1) {
+        state.session.signal({
+          data: data,
+          to: [],
+          type: 'game'
+        })
+      } else {
+        Swal.fire({
+          html: '혼자서는 술게임을 <br>진행할 수 없습니다.',
+          icon: "warning",
+        })
+      }
+
     },
     attachImage({ state }, file) {
       state.session.signal({
