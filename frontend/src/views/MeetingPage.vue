@@ -4,7 +4,7 @@
       <!-- LeftPanel -->
       <div 
         id="capture"
-        :class="{'col-8' : (isMultiPanel || isChatPanel), 'col-12' : !isMultiPanel && !isChatPanel, 'basic-theme' : theme === 'basic', 'christmas-theme' : theme === 'christmas', 'birthday-theme' : theme === 'birthday'}"
+        :class="{'col-8' : (isMultiPanel || isChatPanel), 'col-12' : !isMultiPanel && !isChatPanel, 'basic-theme' : theme === 'basic', 'christmas-theme' : theme === 'christmas', 'birthday-theme' : theme === 'birthday', 'spring-theme' : theme === 'spring'}"
       >
         <LeftPanel class="h-100"></LeftPanel>
       </div>
@@ -253,6 +253,13 @@ export default {
           'birthday4.mp3',
           'birthday5.mp3'
         ],
+        spring: [
+          'spring1.mp3',
+          'spring2.wav',
+          'spring3.mp3',
+          'spring4.mp3',
+          'spring5.mp3'
+        ]
       },
       bgmIndex: 0,
       currentBGM: new Audio(require('@/assets/musics/French Guitar Jazz V2.mp3')),
@@ -356,9 +363,9 @@ export default {
         inputOptions: {
           basic: '기본',
           spring: '봄',
-          summer: '여름',
-          fall: '가을',
-          winter: '겨울',
+          // summer: '여름',
+          // fall: '가을',
+          // winter: '겨울',
           christmas: '크리스마스',
           birthday: '생일'
         },
@@ -493,6 +500,14 @@ export default {
   background-image: 
     linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
     url('../assets/images/birthday_back.png');
+  background-size: contain;
+  background-repeat:repeat;
+}
+
+.spring-theme {
+  background-image: 
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+    url('../assets/images/spring_back.jpg');
   background-size: contain;
   background-repeat:repeat;
 }
