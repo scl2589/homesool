@@ -28,18 +28,18 @@
 		<div class="overlay-drink-count d-flex" v-if="isLeftPanel  && currentMode !== 'anonymous'">
 			<div v-if="isPublisher">
 				<div class="drink-count-container">
-					<img width="20px" src="@/assets/images/shot.png" alt=""> x {{totalDrink}}  
+					<img width="15px" src="@/assets/images/shot.png" alt=""> x {{totalDrink}}  
 				</div>
 			</div>
 			<div v-else> <!--subscriber-->
 				<div v-if="this.streamManager.totalDrink">
 					<div class="drink-count-container">
-						<img width="20px" src="@/assets/images/shot.png" alt=""> x {{this.streamManager.totalDrink}} 
+						<img width="15px" src="@/assets/images/shot.png" alt=""> x {{this.streamManager.totalDrink}} 
 					</div>
 				</div>
 				<div v-else>
 					<div class="drink-count-container">
-						<img width="20px" src="@/assets/images/shot.png" alt=""> x 0
+						<img width="15px" src="@/assets/images/shot.png" alt=""> x 0
 					</div>
 				</div>
 			</div>
@@ -279,19 +279,19 @@ p {
 .overlay-drink-count{
 	position: absolute;
 	bottom: 0%;
-	right:30%;
+	right:20%;
 	height: 10%;
 	z-index: 30;
 }
 
 .drink-count-container{
 	display: inline;
-	width: 90px;
+	width: 70px;
 	padding:10px;
 	background-color: white;
 	border-radius: 50%;
 	color:black;
-	font-size: 1.2rem;
+	font-size: 0.8rem;
 }
 
 .drink-container:hover .drink{
