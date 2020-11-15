@@ -41,7 +41,7 @@
     <div class="startgame h-100 d-flex flex-column justify-content-center" v-if="gameStatus == 2">
       <div 
         v-if="notCurrentPlayer">
-        <user-video class="w-50 mt-3 video" :stream-manager="notCurrentPlayer" />
+        <!-- <user-video class="w-50 mt-3 video" :stream-manager="notCurrentPlayer" /> -->
         <p class="turn">
           <span class="color-yellow">{{ notCurrentPlayer.stream.connection.data.slice(15, -2) }}</span>님의
           차례입니다.
@@ -73,7 +73,7 @@
 import Swal from 'sweetalert2'
 import { mapState, mapActions, mapGetters } from "vuex";
 import LoserPanel from "@/components/meetingpage/multipanel/gamepanel/gameprocess/LoserPanel";
-import UserVideo from "@/components/meetingpage/UserVideo";
+// import UserVideo from "@/components/meetingpage/UserVideo";
 
 export default {
   name: "SmileLeadsToAlcohol",
@@ -84,7 +84,7 @@ export default {
   },
   components: {
     LoserPanel,
-    UserVideo,
+    // UserVideo,
   },
   computed: {
     ...mapState("meetingStore", [
