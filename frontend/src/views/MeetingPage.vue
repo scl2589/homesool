@@ -348,7 +348,12 @@ export default {
         input: 'select',
         inputOptions: {
           basic: '기본',
-          christmas: '크리스마스'
+          spring: '봄',
+          summer: '여름',
+          fall: '가을',
+          winter: '겨울',
+          christmas: '크리스마스',
+          birthday: '생일'
         },
         inputPlaceholder: '테마',
         showCancelButton: true,
