@@ -3,6 +3,7 @@ package io.openvidu.server.game;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.gson.JsonObject;
@@ -49,11 +50,27 @@ public class SmileRunnable implements Runnable{
 			"이라크","이스라엘","이집트","이탈리아","인도","일본","자메이카","중국","체코","캄보디아",
 			"태국","터키","포르투갈","폴란드","표범","프랑스","핀란드","필리핀","헝가리","호주"
 	};
-
+	static String[] food = { "김치", "푸아그라", "파스타", "스시", "똠양꿍", "나시고랭", "탄두리치킨", "퐁듀", "케밥", "와플", "타코", "딤섬",
+			"피쉬앤칩스", "쌀국수", "불고기", "비빔밥", "냉면", "떡볶이", "감자탕", "삼계탕", "전", "김치찌개", "카레", "돈까스", "우동", "타코야키",
+			"만두", "훠궈", "마라탕", "양꼬치", "취두부", "팟타이", "똠양꿍", "스테이크", "바게트", "햄버거", "핫도그", "피자", "스파게티"
+	};
+	static String[] movie = {"어벤져스", "아바타", "타이타닉", "스타워즈", "쥬라기 월드", "분노의 질주", "겨울왕국", "해리 포터", "미녀와 야수", "인크레더블",
+			"아이언맨", "미니언즈", "캡틴 아메리카", "아쿠아맨", "트랜스포머", "다크 나이트 라이즈", "토이 스토리", "캐리비안의 해적", "이상한 나라의 앨리스", "라이온 킹",
+			"니모를 찾아서", "바람과 함께 사라지다", "사운드 오브 뮤직", "ET", "명량", "극한직업", "신과함께", "국제시장", "베테랑", "도둑들", "7번방의 선물", "암살",
+			"알라딘", "광해, 왕이 된 남자", "부산행", "해운대", "괴물", "왕의 남자", "인터스텔라", "인셉션", "기생충", "보헤미안 랩소디", "검사외전", "엑시트", "내부자들",
+			"국가대표", "디워", "히말라야", "밀정", "써니", "스파이더맨", "터널"
+	};
 
 	private String theme;
 	private Set<Participant> participants;
-	
+	private Map<String,String[]> wordMap = Map.of(
+			"열대과일",hotfruits,
+			"야채",vegi,
+			"동물",animal,
+			"나라",country,
+			"음식",food,
+			"영화",movie
+			);
 	static RpcNotificationService rpcNotificationService;
 	
 	public SmileRunnable(String theme, Set<Participant> participants, RpcNotificationService rnfs) {
@@ -70,34 +87,10 @@ public class SmileRunnable implements Runnable{
 	}
 	@Override
 	public void run() {
-		String name = Thread.currentThread().getName();
-		ArrayList<String> randomWords = null;
-		ArrayList<Participant> randomParticipants = null;
-		if(theme.equals("열대과일")) {
-			randomWords = new ArrayList<>(Arrays.asList(hotfruits));
-			Collections.shuffle(randomWords);
-			randomParticipants = new ArrayList<>(participants);
-			Collections.shuffle(randomParticipants);
-		}
-		else if(theme.equals("야채")) {
-			randomWords = new ArrayList<>(Arrays.asList(vegi));
-			Collections.shuffle(randomWords);
-			randomParticipants = new ArrayList<>(participants);
-			Collections.shuffle(randomParticipants);
-		}
-		else if(theme.equals("동물")) {
-			randomWords = new ArrayList<>(Arrays.asList(animal));
-			Collections.shuffle(randomWords);
-			randomParticipants = new ArrayList<>(participants);
-			Collections.shuffle(randomParticipants);
-		}else if(theme.equals("나라")) {
-			randomWords = new ArrayList<>(Arrays.asList(country));
-			Collections.shuffle(randomWords);
-			randomParticipants = new ArrayList<>(participants);
-			Collections.shuffle(randomParticipants);
-		}else {
-			
-		}
+		ArrayList<String> randomWords = new ArrayList<>(Arrays.asList(wordMap.get(theme)));
+		Collections.shuffle(randomWords);
+		ArrayList<Participant> randomParticipants = new ArrayList<>(participants);
+		Collections.shuffle(randomParticipants);
 		
 		//공통부분 시작
 		try {
