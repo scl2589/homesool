@@ -4,7 +4,7 @@
       <!-- LeftPanel -->
       <div 
         id="capture"
-        :class="{'col-8' : (isMultiPanel || isChatPanel), 'col-12' : !isMultiPanel && !isChatPanel, 'basic-theme' : theme === 'basic', 'christmas-theme' : theme === 'christmas'}"
+        :class="{'col-8' : (isMultiPanel || isChatPanel), 'col-12' : !isMultiPanel && !isChatPanel, 'basic-theme' : theme === 'basic', 'christmas-theme' : theme === 'christmas', 'birthday-theme' : theme === 'birthday'}"
       >
         <LeftPanel class="h-100"></LeftPanel>
       </div>
@@ -246,6 +246,13 @@ export default {
           'Christmas Tale.mp3',
           'Christmas Jazz.mp3'
         ],
+        birthday: [
+          'birthday1.wav',
+          'birthday2.wav',
+          'birthday3.mp3',
+          'birthday4.mp3',
+          'birthday5.mp3'
+        ],
       },
       bgmIndex: 0,
       currentBGM: new Audio(require('@/assets/musics/French Guitar Jazz V2.mp3')),
@@ -427,7 +434,7 @@ export default {
     this.currentBGM.volume = 0.1
     this.currentBGM.addEventListener("ended", function() {
       this.bgmIndex++;
-      if (this.bgmIndex >= this.playList.length) {
+      if (this.bgmIndex >= 5) {
         this.bgmIndex = 0;
       }
       this.currentBGM.src = require('@/assets/musics/' + this.playList[this.bgmIndex]);
@@ -481,6 +488,15 @@ export default {
   background-size: contain;
   background-repeat: repeat;
 }
+
+.birthday-theme {
+  background-image: 
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    url('../assets/images/birthday_back.png');
+  background-size: contain;
+  background-repeat:repeat;
+}
+
 
 .right-panel {
   background-color: black;
