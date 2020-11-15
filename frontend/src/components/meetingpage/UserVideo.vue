@@ -278,8 +278,8 @@ p {
 
 .overlay-drink-count{
 	position: absolute;
-	bottom: 0%;
-	right:20%;
+	bottom: 4%;
+	right: 15%;
 	height: 10%;
 	z-index: 30;
 }
@@ -287,10 +287,10 @@ p {
 .drink-count-container{
 	display: inline;
 	width: 70px;
-	padding:10px;
-	background-color: white;
-	border-radius: 50%;
-	color:black;
+	padding:5px;
+	background-color: black;
+	border-radius: 10%;
+	color:white;
 	font-size: 0.8rem;
 }
 
