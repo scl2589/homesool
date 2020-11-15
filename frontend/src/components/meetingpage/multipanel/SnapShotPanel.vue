@@ -23,7 +23,15 @@
         v-show="expired"
         class="expired-timer timer"
       >
-        <div class="d-flex justify-content-between">
+        <div 
+          class="spinner-border" 
+          style="width: 3rem; height: 3rem;" 
+          role="status"
+          v-if="spinner"
+        >
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="d-flex justify-content-between" v-else>
           <button 
             class="btn btn-yellow"
             @click="changeMode('snapshot')"
@@ -42,7 +50,10 @@
           </button>
           <div v-else></div>
         </div>
-        <div class="box">
+        <div 
+          class="box"
+          v-if="!spinner"
+        >
           <div class="spacer"></div>
           <div class="value d-flex justify-content-center">
             <div id="preview"></div>
@@ -68,6 +79,7 @@ export default {
       remain: 5,
       expired: false,
       captured: null,
+      spinner: false,
     }
   },
   computed: {
@@ -82,6 +94,7 @@ export default {
             this.remain--;
           }, 1000)
         } else {
+          this.spinner = true
           if ( !this.notModeHost ) {
             let canvas = document.getElementById('canvas');
             let ctx = canvas.getContext('2d');
@@ -165,6 +178,7 @@ export default {
               promises.push(uploadTask)
               
               Promise.all(promises).then(() => {
+                this.spinner = false;
                 this.attachImage(file_name)
                 var imageInfo = {
                   "img" : file_name,
