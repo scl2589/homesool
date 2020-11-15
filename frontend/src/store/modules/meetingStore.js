@@ -608,6 +608,8 @@ const meetingStore = {
 		leaveSession ({ state, commit }) {
 			// --- Leave the session by calling 'disconnect' method over the Session object ---
 			if (state.session) {
+        state.publisher.stream.disposeWebRtcPeer();
+        state.publisher.stream.disposeMediaStream() 
         state.session.disconnect();
         commit('SET_OV', undefined);
         commit('SET_SESSION', undefined);
