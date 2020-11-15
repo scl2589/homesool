@@ -23,7 +23,7 @@
         v-if="user && publisher"
       >
       <div class="scroll-sect">
-                <v-card v-if="user.drinks.length">
+        <v-card v-if="user.drinks.length">
           <v-card-title>
             <h3 class="m-0">입장하기</h3>
           </v-card-title>
