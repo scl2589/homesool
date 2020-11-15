@@ -532,7 +532,7 @@ const meetingStore = {
           dispatch('joinSession', sessionId);
           return true;
         })
-        .catch(err => {
+        .catch(() => {
           Swal.fire({
             title: "초대코드가 유효하지 않습니다.",
             icon: "error",
@@ -1168,7 +1168,7 @@ const meetingStore = {
             })
 					});
         })
-        .catch(err => {
+        .catch(() => {
           Swal.fire({
             title: "오류가 발생했습니다. 입장 정보를 다시 한 번 확인해주세요.",
             icon: "error",
