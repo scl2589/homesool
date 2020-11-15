@@ -31,11 +31,9 @@ public class Room {
 	@Column(nullable =false)
 	private long hostId;
 	
-	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = false, updatable = false)
 	private Date startTime;
 	
-	@Temporal(TemporalType.TIMESTAMP)
 	@Column
 	private Date endTime;
 	
