@@ -63,13 +63,13 @@ public class SmileRunnable implements Runnable{
 
 	private String theme;
 	private Set<Participant> participants;
-	private Map<String,String> wordMap = Map.of(
-			"열대과일","hotfruits",
-			"야채","vegi",
-			"동물","animal",
-			"나라","country",
-			"음식","food",
-			"영화","movie"
+	private Map<String,String[]> wordMap = Map.of(
+			"열대과일",hotfruits,
+			"야채",vegi,
+			"동물",animal,
+			"나라",country,
+			"음식",food,
+			"영화",movie
 			);
 	static RpcNotificationService rpcNotificationService;
 	
