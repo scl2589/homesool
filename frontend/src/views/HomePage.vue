@@ -141,7 +141,7 @@
             <v-btn
               color="blue darken-1"
               text
-              @click="clickClose"
+              @click="clickClose(publisher)"
             >
               Close
             </v-btn>
