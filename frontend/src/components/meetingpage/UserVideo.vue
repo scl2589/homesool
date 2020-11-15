@@ -14,8 +14,8 @@
 				</div>
 			</div>
 		</div>
-		<div class="overlay d-flex justify-content-center align-items-center" v-if="currentMode === 'anonymous'">
-			<img height="100%" src="@/assets/images/host.png" alt="">
+		<div class="overlay-anonymous d-flex justify-content-center align-items-center" v-if="currentMode === 'anonymous'">
+			<img class="anonymous-img" :src="require(`@/assets/images/${anonyMousImg(streamManager.stream.connection.connectionId)}.png`)" alt="">
 		</div>
 		<div class="overlay-drunken d-flex justify-content-center align-items-center w-100" v-if="gotWasted && streamManager.stream.connection.connectionId === gotWasted && isLeftPanel && currentMode !== 'anonymous'">
 			<img width="10%" src="@/assets/images/drunken.png" alt="">
@@ -23,7 +23,7 @@
 			<img width="10%" src="@/assets/images/drunken.png" alt="">
 		</div>
 		<div class="overlay-name d-flex justify-content-center align-items-center" v-if="isLeftPanel && nickName">
-			<p class="black">{{ clientData }}</p>
+			<p class="black px-2">{{ clientData }}</p>
 		</div>
 		<div class="overlay-drink-count d-flex" v-if="isLeftPanel  && currentMode !== 'anonymous'">
 			<div v-if="isPublisher">
@@ -62,6 +62,64 @@ export default {
 		isPublisher: Boolean,
 		isLeftPanel: Boolean
 	},
+	data() {
+    return {
+			showOthers : false,
+			pickedDrink: null,
+      anonymousImages: [
+        '001-unicorn',
+        '002-magic-hat',
+        '003-wizard',
+        '004-magic-hat-1',
+        '005-illusionist',
+        '006-moon',
+        '007-magician',
+        '008-witch',
+        '009-fortune-teller',
+				'010-cat',
+				'011-fortune-teller-1',
+				'012-magician-1',
+				'013-magician-2',
+				'014-witch-1',
+				'015-elf',
+				'016-gnome',
+				'017-knight',
+				'018-fairy',
+				'019-witch-2',
+				'020-little-red-riding-hood',
+				'021-wolf',
+				'022-giant',
+				'023-dwarf',
+				'024-wizard-1',
+				'025-yeti',
+				'026-king',
+				'027-wizard-2',
+				'028-dwarf-1',
+				'029-little-red-riding-hood-1',
+				'030-witch-3',
+				'031-king-1',
+				'032-viking',
+				'033-queen',
+				'034-santa-claus',
+				'035-witch-4',
+				'036-vampire',
+				'037-witch-5',
+				'038-owl',
+				'039-santa-claus-1',
+				'040-pirate',
+				'041-nurse',
+				'042-queen-1',
+				'043-clown',
+				'044-cowboy',
+				'045-jack-o-lantern',
+				'046-clown-1',
+				'047-scarecrow',
+				'048-knight-1',
+				'049-mummy',
+				'050-ninja'
+      ]
+    }
+  },
 	computed: {
 		...mapState('meetingStore', ['currentMode','gotWasted','currentDrink','publisher','totalDrink', 'nickName']),
 		...mapState(['user']),
@@ -70,7 +128,7 @@ export default {
 		clientData () {
 			const { clientData } = this.getConnectionData();
 			return clientData;
-		},
+		}
 	},
 	watch: {
 		gotWasted(value) {
@@ -93,13 +151,14 @@ export default {
 		setCurrentDrink(value){
 			this.showOthers = !this.showOthers;
 			this.changeCurrentDrink(value);
-		}
-	},
-	data(){
-		return{
-			showOthers : false,
-			pickedDrink: null,
-		}
+		},
+		anonyMousImg(connectionId) {
+			let result = 0;
+			for (let i = 0, len = connectionId.length; i < len; i++ ) {
+        result += connectionId[i].charCodeAt(0);
+      }
+      return this.anonymousImages[result % 50]
+    }
 	}
 };
 </script>
@@ -108,14 +167,14 @@ p {
 	color: white !important;
 }
 
-.overlay{
+.overlay-anonymous{
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   z-index: 10;
-  background-color: rgba(0,0,0,1); /*dim the background*/
+  background-color: #323031;
 }
 
 .overlay-name{
@@ -243,5 +302,10 @@ p {
 }
 .drink-container:hover .drink-plus{
 	opacity: 0.4;
+}
+
+.anonymous-img {
+	max-height: 80%;
+	max-width: 80%;
 }
 </style>
