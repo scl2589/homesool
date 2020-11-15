@@ -1,6 +1,6 @@
-﻿# 술이술이홈술이
+﻿﻿# 술이술이홈술이
 
-<img src="images/README/banner.gif" alt="banner" style="zoom:50%;" /><br>
+<img src="images/README/banner.gif" alt="banner" style="zoom:50%;" />
 <img src="images/README/home.JPG" alt="home" style="zoom:50%;" />
 
 ## 👨‍👩‍👦팀원 소개
@@ -77,7 +77,7 @@
 > 홈술이는 책임질 수 있는 술자리, 건전한 술자리를 장려합니다.
 
 - '나 술 안취했어' 기능
-  - <img src="images/README/drunkTest" alt="drunkTest" style="zoom:50%;" />
+  - <img src="images/README/drunkTest.gif" alt="drunkTest" style="zoom:50%;" />
   - 사람들의 취기를 검증할 수 있게 해주는 기능입니다.
   - 사용자는 최대한 올바른 발음으로 해당 문장을 읽고, 서비스는 STT 기술을 활용해, 사용자가 발음한 문장과 주어진 문장 간의 정확도를 검증합니다.
 
