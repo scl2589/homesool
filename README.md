@@ -1,14 +1,13 @@
-# 술이술이홈술이
+﻿# 술이술이홈술이
+
+<img src="images/README/banner.gif" alt="banner" style="zoom:50%;" /><br>
+<img src="images/README/home.JPG" alt="home" style="zoom:50%;" />
 
 ## 👨‍👩‍👦팀원 소개
 
 **Chae Lin Shin**
 
 - 🍒Github: [@scl2589](https://github.com/scl2589)
-
-**Myeong Ji Son**
-
-- 🚀Github: [@ji-exitosa](https://github.com/ji-exitosa)
 
 **Sun Hwan Park**
 
@@ -54,65 +53,51 @@
 
 > 홈술이는 사용자들이 서로 떨어져 있지만, 같은 술자리 분위기를 공유하며 느낄 수 있게 하는 기능을 제공합니다.
 
-- 상황별, 시즌별 다양한 테마 제공
-  - <img src="images/README/image-20201023121218909.png" alt="image-20201023121218909" style="zoom: 50%;" />
-- 모두가 동시에 공유하는 BGM 제공
+- 상황별, 시즌별 다양한 테마
+  - <img src="images/README/theme.JPG" alt="theme" style="zoom: 50%;" />
+- 모두가 동시에 공유하는 BGM
 
 ### 즐거운 술자리
 
 > 홈술이에는 화상 기반 술자리 서비스만이 제공할 수 있는 여러 '재미요소'가 포함되어 있습니다.
 
-- 술게임 모드 제공
-  - <img src="images/README/image-20201023121247221.png" alt="image-20201023121247221" style="zoom:50%;" />
+- 술게임 모드
+  - <img src="images/README/gameMode.JPG" alt="gameMode" style="zoom:50%;" />
+  - <img src="images/README/games.JPG" alt="games" style="zoom:50%;" />
   - 온라인으로도 원활하게 술게임을 진행할 수 있도록 지원합니다.
-- 진실의 방 모드 제공
-  - <img src="images/README/image-20201023121428851.png" alt="image-20201023121428851" style="zoom:50%;" />
+- 진실의 방 모드
+  - <img src="images/README/truthRoom.JPG" alt="truthRoom" style="zoom:50%;" />
   - 온라인 취중진담을 지원합니다.
 - 스냅샷
-  - <img src="images/README/image-20201023121438876.png" alt="image-20201023121438876" style="zoom:50%;" />
+  - <img src="images/README/snapshot.gif" alt="snapshot" style="zoom:50%;" />
   - 즐거운 술자리 모습을 사진으로 남길 수 있습니다.
 
 ### 건전한 술자리
 
 > 홈술이는 책임질 수 있는 술자리, 건전한 술자리를 장려합니다.
 
-- '나 술 안취했어' 기능 제공
-  - <img src="images/README/image-20201023121456387.png" alt="image-20201023121456387" style="zoom:50%;" />
-  -  사람들의 취기를 검증할 수 있게 해주는 기능입니다.
-  - 용자는 최대한 올바른 발음으로 해당 문장을 읽고, 서비스는 STT 기술을 활용해, 사용자가 발음한 문장과 주어진 문장 간의 정확도를 검증합니다.
+- '나 술 안취했어' 기능
+  - <img src="images/README/drunkTest" alt="drunkTest" style="zoom:50%;" />
+  - 사람들의 취기를 검증할 수 있게 해주는 기능입니다.
+  - 사용자는 최대한 올바른 발음으로 해당 문장을 읽고, 서비스는 STT 기술을 활용해, 사용자가 발음한 문장과 주어진 문장 간의 정확도를 검증합니다.
 
-- 데시벨 체크 기능 제공
-  - 너무 큰 목소리로 이야기 할 경우, 주변 소음공해 방지를 위해 경고 메시지 띄워줍니다.
-- 음주 내역을 기록할 수 있는 기능 제공
-  - <img src="images/README/image-20201023121517536.png" alt="image-20201023121517536" style="zoom:50%;" />
+- 음주 내역을 기록할 수 있는 기능
+  - <img src="images/README/check.gif" alt="check" style="zoom:50%;" />
   - 음주량이 기존에 설정해 둔 본인의 주량을 넘어선다면, 경고 메시지를 띄워 사용자의 지나친 음주를 예방합니다.
+  - <img src="images/README/calendar.JPG" alt="calendar" style="zoom:50%;" />
+  - 음주 달력을 통해 술자리의 정보를 확인 할 수 있습니다.
+  - <img src="images/README/statistics.png" alt="statistics" style="zoom:50%;" />
+  - 음주 분석을 통해 음주 습관을 점검 할 수 있습니다.
 
 <br>
 
 ## 서비스 아키텍쳐
 
-![image-20201023121154746](images/README/image-20201023121154746.png)
+<img src="images/README/architecture.JPG" alt="statistics" style="zoom:50%;" />
 
 <br>
 
 ## 🖼와이어프레임
 <a href="https://lab.ssafy.com/s03-final/s03p31a503/tree/master/Documentation/WireFrame">와이어프레임 확인하기</a>
-
-<br>
-
-## ✍ Ground Rule
-
-* 1일 1 commit
-
-* merge 후 브랜치 지우기
-
-<br>
-
-## 🤝 Branch Rule
-
-* Git Branch 전략
-
-* Commit Rule : [JIRA 이슈번호] 타입/브랜치명 : 행위단위 내용  
-  ex) [S03P31A503-8] docs/master : Add erd diagram
 
 <br>
