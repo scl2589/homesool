@@ -6,7 +6,7 @@
         id="capture"
         :class="{'col-8' : (isMultiPanel || isChatPanel), 'col-12' : !isMultiPanel && !isChatPanel, 'basic-theme' : theme === 'basic', 'christmas-theme' : theme === 'christmas'}"
       >
-        <LeftPanel></LeftPanel>
+        <LeftPanel class="h-100"></LeftPanel>
       </div>
 
       <!-- RightPanel -->

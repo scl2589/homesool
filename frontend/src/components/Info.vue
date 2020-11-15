@@ -106,7 +106,7 @@
 import axios from 'axios'
 import SERVER from '@/api/api'
 import Swal from 'sweetalert2'
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'Info',
@@ -130,6 +130,7 @@ export default {
     ...mapGetters(['getId'])
   },
   methods: {
+    ...mapActions(['getMyInfo']),
     clickSubtract(liquorName) {
       for (var drink of this.signupData.drinks) {
         if (drink.liquorName == liquorName) {
@@ -179,6 +180,7 @@ export default {
         })
           .then(() => {
             if (this.$route.name === 'RegisterPage') {
+              this.getMyInfo()
               this.$router.push('/')
             } else if (this.$route.name === 'ProfilePage') {
               this.$router.push({ name: 'MyPage'})
