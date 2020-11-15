@@ -1357,7 +1357,7 @@ const meetingStore = {
     },
     recordVoice({ commit, dispatch }) {
       const sdk = require("microsoft-cognitiveservices-speech-sdk");
-      const speechConfig = sdk.SpeechConfig.fromSubscription("9bd552b2504c45e1802217ac626d6508", "koreacentral");
+      const speechConfig = sdk.SpeechConfig.fromSubscription(secrets.AZURE.SECRET_KEY, "koreacentral");
       speechConfig.speechRecognitionLanguage = "ko-KR";
       function fromMic() {
         let audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
