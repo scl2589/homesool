@@ -1,15 +1,19 @@
 <template>
   <div>
     <div v-if="!isSharingMode">
-      <div class="d-flex justify-content-center align-items-center mt-3">
+      <div class="d-flex justify-content-center align-items-center pt-3">
         <img class="theme-deco" :src="require(`@/assets/images/${theme}_deco.png`)" alt="theme-deco">
         <img class="theme-title" :src="require(`@/assets/images/${theme}_title.png`)" alt="theme-title">
         <img class="theme-deco" :src="require(`@/assets/images/${theme}_deco.png`)" alt="theme-deco">
       </div>
-      <div id="session" v-if="session">
-        <div class="d-flex row no-gutters justify-content-around">
+      <div
+        class="d-flex flex-column align-items-center justify-content-center height-75" 
+        id="session" 
+        v-if="session"
+      >
+        <div class="d-flex row no-gutters">
           <user-video 
-            class="my-2 px-2 transformvideo" 
+            class="my-2 px-2" 
             :class="{ 'col-12': one, 'col-6' : two, 'col-4' : three, 'col-3' : eight, 'col-2' : twelve }" 
             id="myVideo"
             :stream-manager="publisher" 
@@ -18,7 +22,7 @@
             @click.native="updateMainVideoStreamManager(publisher)"
           />
           <user-video 
-            class="my-2 px-2 transformvideo" 
+            class="my-2 px-2" 
             :class="{ 'col-12': one, 'col-6' : two, 'col-4' : three, 'col-3' : eight, 'col-2' : twelve }" 
             v-for="sub in subscribers" 
             :key="sub.stream.connection.connectionId" 
@@ -145,22 +149,15 @@ export default {
         this.twelve = false
         if (count == 2) {
           this.$nextTick(function() {
-            let videos =  document.querySelectorAll("transformvideo");
+            let videos =  document.querySelectorAll("video");
             for (let i = 0, len = videos.length; i < len; i++ ) {
               videos[i].classList.add("height70")
               videos[i].classList.remove("height30")
               videos[i].classList.remove("height15")
             }
-
           })
         } else {
           this.$nextTick(function() {
-            let transform =  document.querySelectorAll(".transformvideo");
-            for (let i = 0, len = transform.length; i < len; i++ ) {
-              transform[i].classList.add("height30")
-              transform[i].classList.remove("height70")
-              transform[i].classList.remove("height15")
-            }
             let videos =  document.querySelectorAll("video");
             for (let i = 0, len = videos.length; i < len; i++ ) {
               videos[i].classList.add("height30")
@@ -177,12 +174,6 @@ export default {
         this.twelve = false
         if (count == 3) {
           this.$nextTick(function() {
-            let transform =  document.querySelectorAll("transformvideo");
-            for (let i = 0, len = transform.length; i < len; i++ ) {
-              transform[i].classList.add("height70")
-              transform[i].classList.remove("height30")
-              transform[i].classList.remove("height15")
-            }
             let videos =  document.querySelectorAll("video");
             for (let i = 0, len = videos.length; i < len; i++ ) {
               videos[i].classList.add("height70")
@@ -222,7 +213,7 @@ export default {
         this.twelve = true
         if (count <= 12) {
           this.$nextTick(function() {
-            let videos =  document.querySelectorAll("transformvideo");
+            let videos =  document.querySelectorAll("video");
             for (let i = 0, len = videos.length; i < len; i++ ) {
               videos[i].classList.add("height30")
               videos[i].classList.remove("height70")
@@ -291,12 +282,12 @@ export default {
 
 <style scoped>
 .theme-title {
-  max-width: 30vw;
-  max-height: 20vh;
+  /* max-width: 30vw; */
+  max-height: 13vh;
 }
 
 .theme-deco {
-  width: 10vw;
+  height: 13vh;
 }
 
 .personal-screen {
@@ -318,12 +309,8 @@ export default {
   height: 15vh;
 }
 
-.height70 {
-  height: 30vh !important;
+.height-75 {
+  height: 75vh;
 }
 
-.height30 {
-  max-width: 40% !important;
-  /* margin: 0 1.5vw !important; */
-}
 </style>

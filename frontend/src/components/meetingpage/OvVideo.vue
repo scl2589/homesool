@@ -19,7 +19,7 @@ export default {
 }
 
 .height70 {
-  height: 65vh !important;
+  max-height: 65vh !important;
 }
 
 .height30 {

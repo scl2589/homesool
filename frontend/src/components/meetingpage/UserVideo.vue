@@ -1,8 +1,9 @@
 <template>
 <div v-if="streamManager">
+	<ov-video :stream-manager="streamManager"/>
 	<div class="drink-container">
 		<div v-if="!($route.name==='HomePage')">
-			<div class="drink-overlay d-flex justify-content-center align-items-center" v-if="isPublisher">
+			<div class="drink-overlay d-flex justify-content-around align-items-center" v-if="isPublisher">
 				<img class="drink-minus" src="@/assets/images/minus.png" alt="한잔 덜 마셨어요" @click="updateUserDrinkRecord(-1)"> 
 				<img class="drink" :src="getImgsrc" alt="현재주종" @click="setShowOthers">
 				<img class="drink-plus" src="@/assets/images/plus.png" alt="한잔 더 마셨어요" @click="updateUserDrinkRecord(1)">
@@ -22,30 +23,33 @@
 			<p class="mb-0 mx-2 black">나는 고주망태입니다.</p>
 			<img width="10%" src="@/assets/images/drunken.png" alt="">
 		</div>
-		<div class="overlay-name d-flex justify-content-center align-items-center" v-if="isLeftPanel && nickName">
-			<p class="black px-2">{{ clientData }}</p>
-		</div>
-		<div class="overlay-drink-count d-flex" v-if="isLeftPanel  && currentMode !== 'anonymous'">
-			<div v-if="isPublisher">
-				<div class="drink-count-container">
-					<img width="15px" src="@/assets/images/shot.png" alt=""> x {{totalDrink}}  
-				</div>
+		<div class="d-flex justify-content-between">
+			<div class="overlay-name d-flex justify-content-center align-items-center" v-if="isLeftPanel && nickName">
+				<p class="px-2 client-name">{{ clientData }}</p>
 			</div>
-			<div v-else> <!--subscriber-->
-				<div v-if="this.streamManager.totalDrink">
-					<div class="drink-count-container">
-						<img width="15px" src="@/assets/images/shot.png" alt=""> x {{this.streamManager.totalDrink}} 
+			<div class="overlay-drink-count d-flex" v-if="isLeftPanel  && currentMode !== 'anonymous'">
+					<div v-if="isPublisher">
+						<div class="drink-count-container">
+							<img width="15px" src="@/assets/images/shot.png" alt=""> x {{totalDrink}}  
+						</div>
+					</div>
+					<div v-else> <!--subscriber-->
+						<div v-if="this.streamManager.totalDrink">
+							<div class="drink-count-container">
+								<img width="15px" src="@/assets/images/shot.png" alt=""> x {{this.streamManager.totalDrink}} 
+							</div>
+						</div>
+						<div v-else>
+							<div class="drink-count-container">
+								<img width="15px" src="@/assets/images/shot.png" alt=""> x 0
+							</div>
+						</div>
 					</div>
 				</div>
-				<div v-else>
-					<div class="drink-count-container">
-						<img width="15px" src="@/assets/images/shot.png" alt=""> x 0
-					</div>
-				</div>
 			</div>
+
 		</div>
-	</div>
-	<ov-video :stream-manager="streamManager"/>
+	
 </div>
 </template>
 
@@ -177,14 +181,14 @@ p {
   background-color: #323031;
 }
 
-.overlay-name{
+/* .overlay-name{
   position: absolute;
   bottom: 0%;
   left: 0%;
   width: 100%;
   height: 10%;
   z-index: 12;
-}
+} */
 
 .overlay-drunken{
   position: absolute;
@@ -228,7 +232,7 @@ p {
   height: 15%;
   position: absolute;
   top: 50%;
-  left: 35%;
+  left: 30%;
   transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
   text-align: center;
@@ -244,7 +248,7 @@ p {
   height: 15%;
   position: absolute;
   top: 50%;
-  left: 65%;
+  left: 70%;
   transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
   text-align: center;
@@ -256,9 +260,9 @@ p {
 
 .select-other{
   background-color: white;
-  width: 10%;
+  width: 10vw;
   position: absolute;
-  top: 30%;
+  top: 20%;
   left: 50%;
   color: black;
   transform: translate(-50%, -50%);
@@ -277,21 +281,20 @@ p {
 }
 
 .overlay-drink-count{
-	position: absolute;
-	bottom: 4%;
-	right: 15%;
-	height: 10%;
 	z-index: 30;
 }
 
 .drink-count-container{
-	display: inline;
-	width: 70px;
-	padding:5px;
-	background-color: black;
-	border-radius: 10%;
+	background-color: transparent;
 	color:white;
-	font-size: 0.8rem;
+	font-size: 0.9rem;
+	text-shadow:  #FC0 1px 0 10px;
+}
+
+.drink-container {
+	max-height: 3vh;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .drink-container:hover .drink{
@@ -307,5 +310,9 @@ p {
 .anonymous-img {
 	max-height: 80%;
 	max-width: 80%;
+}
+
+.client-name {
+	text-shadow: #FC0 1px 0 10px;
 }
 </style>
