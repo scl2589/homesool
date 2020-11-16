@@ -1,9 +1,17 @@
 # 술이술이홈술이
 
-​:arrow_forward:​ HERE​ https://k3a503.p.ssafy.io 
+<br>
+​:arrow_forward:​ Our Service​ https://k3a503.p.ssafy.io 
+<br>
+<br>
+​:arrow_forward:​ Introduction​ https://youtu.be/4IB_dOKe60E 
+<br>
+<br>
 
 <img src="images/README/banner.gif" alt="banner" style="zoom:50%;" />
 <img src="images/README/home.JPG" alt="home" style="zoom:50%;" />
+
+<br>
 
 ## 👨‍👩‍👦팀원 소개
 
