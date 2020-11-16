@@ -111,7 +111,7 @@
 
 <br>
 
-## ​:derelict_house:​ Installation
+## ​:yum:​ Installation
 
 - Frontend
 
