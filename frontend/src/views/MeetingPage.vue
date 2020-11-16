@@ -214,6 +214,51 @@
 </template>
 
 <script>
+const themeBGM = {
+  basic: [
+    'French Guitar Jazz V2.mp3',
+    'Jazz.mp3',
+    'jazz_20160226.mp3',
+    'Easy Jazz.mp3',
+    'The Jazz.mp3'
+  ],
+  christmas: [
+    'christmas_1.wav',
+    'O Holy Night.wav',
+    'Slient Night.mp3',
+    'Christmas Tale.mp3',
+    'Christmas Jazz.mp3'
+  ],
+  birthday: [
+    'birthday1.wav',
+    'birthday2.wav',
+    'birthday3.mp3',
+    'birthday4.mp3',
+    'birthday5.mp3'
+  ],
+  spring: [
+    'spring1.mp3',
+    'spring2.wav',
+    'spring3.mp3',
+    'spring4.mp3',
+    'spring5.mp3'
+  ]
+};
+
+let playList = themeBGM.basic;
+let bgmIndex = 0;
+let currentBGM = new Audio(require('@/assets/musics/French Guitar Jazz V2.mp3'));
+currentBGM.volume = 0.1
+
+currentBGM.addEventListener("ended", function() {
+  bgmIndex++;
+  if (bgmIndex >= 5) {
+    bgmIndex = 0;
+  }
+  currentBGM.src = require('@/assets/musics/' + playList[bgmIndex]);
+  currentBGM.play();
+})
+
 import { mapState, mapActions } from 'vuex' 
 import Swal from 'sweetalert2'
 import MultiPanel from '@/components/meetingpage/multipanel/MultiPanel'
@@ -231,38 +276,6 @@ export default {
 
   data() {
     return {
-      themeBGM: {
-        basic: [
-          'French Guitar Jazz V2.mp3',
-          'Jazz.mp3',
-          'jazz_20160226.mp3',
-          'Easy Jazz.mp3',
-          'The Jazz.mp3'
-        ],
-        christmas: [
-          'christmas_1.wav',
-          'O Holy Night.wav',
-          'Slient Night.mp3',
-          'Christmas Tale.mp3',
-          'Christmas Jazz.mp3'
-        ],
-        birthday: [
-          'birthday1.wav',
-          'birthday2.wav',
-          'birthday3.mp3',
-          'birthday4.mp3',
-          'birthday5.mp3'
-        ],
-        spring: [
-          'spring1.mp3',
-          'spring2.wav',
-          'spring3.mp3',
-          'spring4.mp3',
-          'spring5.mp3'
-        ]
-      },
-      bgmIndex: 0,
-      currentBGM: new Audio(require('@/assets/musics/French Guitar Jazz V2.mp3')),
       isPlaying: false
     }
   },
@@ -284,29 +297,27 @@ export default {
       } else {
         return false;
       }
-    },
-    playList() {
-      return this.themeBGM[this.theme]
-    } 
+    }
   },
 
   watch: {
     currentMode(value) {
       if (value === 'singing') {
-        if (!this.currentBGM.paused) {
-          this.currentBGM.pause();
+        if (!currentBGM.paused) {
+          currentBGM.pause();
           this.isPlaying = false;
         }
       }
     },
-    theme() {
-      if (this.currentBGM) {
-        this.currentBGM.pause();
+    theme(value) {
+      if (currentBGM) {
+        currentBGM.pause();
       }
-      this.bgmIndex = 0;
-      this.currentBGM.src = require('@/assets/musics/' + this.playList[this.bgmIndex]);
+      bgmIndex = 0;
+      playList = themeBGM[value] 
+      currentBGM.src = require('@/assets/musics/' + playList[bgmIndex]);
       if (this.isPlaying) {
-        this.currentBGM.play();
+        currentBGM.play();
       }
     },
     messages() {
@@ -344,16 +355,16 @@ export default {
       'changeIsNewbie'
     ]),
     toggleBGM() {
-      if (this.currentBGM.paused) {
-        this.currentBGM.play()
+      if (currentBGM.paused) {
+        currentBGM.play()
         this.isPlaying = true;
       } else {          
-        this.currentBGM.pause()
+        currentBGM.pause()
         this.isPlaying = false;
       }
     },
     setVolume(e) {
-      this.currentBGM.volume = e.target.value / 100;
+      currentBGM.volume = e.target.value / 100;
     },
     clickChangeTheme() {
       Swal.fire({
@@ -438,16 +449,6 @@ export default {
   },
 
   mounted() {
-    this.currentBGM.volume = 0.1
-    this.currentBGM.addEventListener("ended", function() {
-      this.bgmIndex++;
-      if (this.bgmIndex >= 5) {
-        this.bgmIndex = 0;
-      }
-      this.currentBGM.src = require('@/assets/musics/' + this.playList[this.bgmIndex]);
-      this.currentBGM.play();
-    })
-
     setTimeout(() => {
       this.changeIsNewbie();
     }, 3000);
@@ -470,7 +471,9 @@ export default {
   },
 
   beforeDestroy() {
-    this.currentBGM.pause();
+    if (!currentBGM.paused) {
+      currentBGM.pause();
+    }
     if (this.isChatPanel) {
       this.toggleChatPanel();
     }
