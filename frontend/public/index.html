@@ -15,12 +15,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"/>
     <!-- Jua체 -->
     <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Nanum+Gothic&family=Song+Myung&display=swap" rel="stylesheet">
+
+    
     <style>
       /* @import url(https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@1.0/nanumsquare.css); */
       * {
         font-family: 'Jua', sans-serif;
       }
-      
+      .btn-yellow {
+        color: black !important;
+        background-color: #ECFF1E;
+        padding: 3px !important;
+      }
+
+      .btn-yellow:hover, .btn-yellow:active, .btn-yellow:link {
+        color: black;
+        outline-style: none;
+      }
+
       .btn-success {
         color: white !important;
         background-color: #3e91b5 !important;
@@ -30,6 +43,18 @@
         color: white !important;
         background-color: #F25143 !important;
       }
+
+      .color-yellow {
+        color: yellow;
+      }
+
+      .color-white {
+        color: white;
+      }
+
+      .color-gray {
+        color: #979797;
+      }
     </style>
   </head>
   <body>
@@ -38,8 +63,16 @@
     </noscript>
     <v-app id="app"></v-app>
     <!-- built files will be auto injected -->
+    <!-- youtube iframe -->
+    <script src="https://www.youtube.com/iframe_api"></script>
     <!-- Bootstrap -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+    <!-- Kakao -->
+    <script type="text/javascript" src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+    <!-- Vue Grid Layout -->
+    <script src="vue-grid-layout.umd.min.js"></script>
+    <!-- azure -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/microsoft-cognitiveservices-speech-sdk@latest/distrib/browser/microsoft.cognitiveservices.speech.sdk.bundle-min.js"></script> -->
   </body>
 </html>

@@ -1,0 +1,8 @@
+/target/
+*.factorypath
+
+/src/main/resources/static/dashboard/
+
+.project
+.classpath
+bin/
