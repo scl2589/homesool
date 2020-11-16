@@ -101,3 +101,18 @@
 <a href="https://lab.ssafy.com/s03-final/s03p31a503/tree/master/Documentation/WireFrame">와이어프레임 확인하기</a>
 
 <br>
+
+## 🖼Installation
+- **Frontend**
+    - cd frontend
+    - npm i
+    - npm run serve
+
+- **Backend**
+    - cd Backend
+    - cd API
+    - ./gradlew build -Pprofile=prod
+    - sudo java -jar -Dspring.profiles.active=prod homesool-0.0.1.jar
+    - cd ../openvidu/openvidu-server
+    - mvn -Dopenvidu.url=https://k3a503.p.ssafy.io:4443/ package exec:java
+    - cd ../API
