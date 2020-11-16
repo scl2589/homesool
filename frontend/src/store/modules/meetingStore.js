@@ -1299,8 +1299,7 @@ const meetingStore = {
         })
     },
     checkIsSmile({ state }) {
-      console.log(state.selectedGame);
-      let myVideo = document.getElementById('myVideo').childNodes[1];
+      let myVideo = document.getElementById('myVideo').childNodes[0];
       let canvas = document.createElement("CANVAS");
       let ctx = canvas.getContext('2d');
       canvas.width = myVideo.videoWidth;

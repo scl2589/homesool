@@ -17,7 +17,7 @@
             v-for="word in gameAnswerWords" 
             :key="word.word"
           >
-            {{word.nickName.slice(0,6)}} : {{word.word}}
+            <span class="nickname">{{word.nickName.slice(0,6)}}</span> : {{word.word}}
           </p>
         </div>
       </div>
@@ -48,9 +48,9 @@
       <p class="color-white"><span class="color-yellow">{{ loser.stream.connection.data.slice(15,-2).slice(0, 10) }}</span>님이 <u>꼴찌</u> 입니다!!!</p>
     </div>
     <div class="w-100 mt-auto d-flex row no-gutters" v-if="selectedGame == 3">
-      <p class="col-4 color-white"> <span class="color-gray">최다득표자 :</span> {{this.gameVoteData}} </p>
-      <p class="col-4 color-white"> <span class="color-gray">라이어 :</span> {{this.gameLiarData}} </p>
-      <p class="col-4 color-white"> <span class="color-gray">벌칙자 :</span> {{ loser.stream.connection.data.slice(15,-2).slice(0, 6) }} </p>
+      <p class="col-4 color-white"> <span class="color-gray nanum-font">최다득표자 :</span> {{this.gameVoteData}} </p>
+      <p class="col-4 color-white"> <span class="color-gray nanum-font">라이어 :</span> {{this.gameLiarData}} </p>
+      <p class="col-4 color-white"> <span class="color-gray nanum-font">벌칙자 :</span> {{ loser.stream.connection.data.slice(15,-2).slice(0, 6) }} </p>
     </div>
     <div v-if="selectedGame == 4">
       <p class="color-white"><span class="color-yellow">{{ loser.stream.connection.data.slice(15,-2) }}</span>님이 끝내 웃음을 참지 못했습니다.</p>
@@ -168,4 +168,17 @@ p {
   margin: 0;
 }
 
+.nickname {
+  font-family: 'Nanum Gothic', sans-serif;
+}
+
+button {
+  font-family: 'Nanum Gothic', sans-serif;
+  font-weight: 600;
+}
+
+.nanum-font {
+  font-family: 'Nanum Gothic', sans-serif;
+  font-weight:600;
+}
 </style>

@@ -195,7 +195,18 @@ export default {
   margin-right: auto;
 }
 
-.turn, .given-word {
+.turn {
   color: white;
+  font-size: 1.2rem;
+}
+
+.given-word {
+  color: white;
+  font-size: 1.5rem;
+}
+
+.no-smile {
+  font-family: 'Nanum Gothic', sans-serif;
+  font-weight: 600;
 }
 </style>
