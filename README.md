@@ -1,5 +1,7 @@
 # 술이술이홈술이
 
+​:arrow_forward:​ HERE​ https://k3a503.p.ssafy.io 
+
 <img src="images/README/banner.gif" alt="banner" style="zoom:50%;" />
 <img src="images/README/home.JPG" alt="home" style="zoom:50%;" />
 
@@ -24,6 +26,13 @@
 <br>
 
 ## 📆 프로젝트 개요
+
+<img src ="https://img.shields.io/badge/platform-Web-red"></img>
+<img src ="https://img.shields.io/badge/library-Vue-green"></img>
+<img src ="https://img.shields.io/badge/framework-SpringBoot-skyblue"></img>
+<img src ="https://img.shields.io/badge/database-MariaDB-silver"></img> 
+<img src ="https://img.shields.io/badge/server-AWS-gold"></img>
+<img src ="https://img.shields.io/badge/language-Java%2C%20JavaScript-purple"></img>
 
 - **진행 기간**: 2020.10.12  ~ 2020.11.27
 
@@ -91,18 +100,18 @@
 
 <br>
 
-## 서비스 아키텍쳐
+## ​:grey_question:​ 서비스 아키텍쳐
 
 <img src="images/README/architecture.JPG" alt="statistics" style="zoom:50%;" />
 
 <br>
 
-## 🖼와이어프레임
+## 🖼 와이어프레임
 <a href="https://lab.ssafy.com/s03-final/s03p31a503/tree/master/Documentation/WireFrame">와이어프레임 확인하기</a>
 
 <br>
 
-## Installation
+## :derelict_house:Installation
 
 - Frontend
 
@@ -132,17 +141,19 @@ python app.py
 
 
 
-## 개발 환경 및 IDE
+## :yum:개발 환경 및 IDE
 
 - Java : jdk11 (11.0.9.1)
-- Docker : 19.03.13
+- Docker : 19.03.13 
 - node.js : 8.10.0
 - maven : Apache Maven 3.6.0
 - openvidu : 2.15.1
 
 
 
-## Server Description
+
+
+##  :baby_chick:Server Description
 
 - port (nginx)
 
@@ -153,6 +164,9 @@ python app.py
     | 8889 | REST API (Spring boot running)         |
     | 5000 | AI (Flask running)                     |
     | 8081 | Jenkins                                |
+
+
+
 
 
 
