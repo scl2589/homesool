@@ -56,7 +56,7 @@
 
 <br>
 
-## ⭐️ 주요 기능
+## ⭐️주요 기능
 
 ### 술자리 맞춤형 화상 서비스
 
@@ -111,7 +111,7 @@
 
 <br>
 
-## :derelict_house:Installation
+## ​:derelict_house:​ Installation
 
 - Frontend
 
@@ -141,7 +141,7 @@ python app.py
 
 
 
-## :yum:개발 환경 및 IDE
+## ​:yum:​ 개발 환경 및 IDE
 
 - Java : jdk11 (11.0.9.1)
 - Docker : 19.03.13 
@@ -153,7 +153,7 @@ python app.py
 
 
 
-##  :baby_chick:Server Description
+## ​:baby_chick:​ Server Description
 
 - port (nginx)
 
@@ -164,6 +164,7 @@ python app.py
     | 8889 | REST API (Spring boot running)         |
     | 5000 | AI (Flask running)                     |
     | 8081 | Jenkins                                |
+
 
 
 
