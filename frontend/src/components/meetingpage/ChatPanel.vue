@@ -17,8 +17,8 @@
             :key="i"
           >
             <div class="message-title">
-              <span class="mr-2">{{ message.sender }}</span>
-              <span>{{ message.time }}</span>
+              <span class="mr-2 message-header">{{ message.sender }}</span>
+              <span class="message-header">{{ message.time }}</span>
             </div>
             <div>
               {{ message.message }}
@@ -106,6 +106,11 @@ export default {
   width: 100%;
   border-radius: 20px;
   color: black;
+  padding-left: 10px;
+}
+
+.text-box:focus {
+  outline: none;
 }
 
 .title {
@@ -122,7 +127,12 @@ export default {
   height: 4vh;
 }
 .message-title {
+  
   font-size: 0.8rem;
+}
+
+.message-header {
+  font-family: 'Nanum Gothic', sans-serif;
 }
 
 .message {

@@ -35,10 +35,10 @@
             class="w-50 video"
             :stream-manager="notCurrentPlayer"
           />
-          <p><span class="color-yellow">{{ notCurrentPlayer.stream.connection.data.slice(15,-2) }}</span>님이 문장을 읽는 중입니다.</p>
+          <p class="read-sentence"><span class="color-yellow">{{ notCurrentPlayer.stream.connection.data.slice(15,-2) }}</span>님이 문장을 읽는 중입니다.</p>
         </div>
         <div v-else class="panel-title">
-          <p><span class="color-yellow">{{ publisher.stream.connection.data.slice(15,-2) }}</span>님 문장을 바로 읽어주세요.</p>
+          <p class="read-sentence"><span class="color-yellow">{{ publisher.stream.connection.data.slice(15,-2) }}</span>님 문장을 바로 읽어주세요.</p>
         </div>
         <div>
           <p class="sentence">{{sentence}}</p>
@@ -152,11 +152,21 @@ p, h1, h2, h3, h4, h5, h6, button {
 }
 
 .sentence {
-  font-size: 1.0rem;
+  font-size: 1.2rem;
 }
 
 .video {
   margin-left: auto;
   margin-right: auto;
+}
+
+
+button {
+  font-family: 'Nanum Gothic', sans-serif;
+  font-weight: 600;
+}
+
+.read-sentence {
+  font-size: 1.8rem;
 }
 </style>

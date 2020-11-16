@@ -50,10 +50,10 @@
         </div>
         <div class="startgame h-100" v-if="gameStatus==2">
             <div class="showWordBox h-100" v-if="gameTurn==0">
-              <div class="showWord d-flex justify-content-center align-items-center" v-if="gameLiar == publisher.session.connection.connectionId">
+              <div class="showWord h-100 d-flex justify-content-center align-items-center" v-if="gameLiar == publisher.session.connection.connectionId">
                 <p class="color-white">당신은 <span class="color-yellow">라이어</span>입니다 </p>
               </div>
-              <div class="showLiar d-flex justify-content-center align-items-center" v-else>
+              <div class="showLiar h-100 d-flex justify-content-center align-items-center" v-else>
                 <p class="color-white">해당 단어는 <span class="color-yellow">{{this.gameWord}}</span> 입니다 </p>
               </div>
             </div>
@@ -258,5 +258,10 @@ label {
 
 .select-theme {
   font-size: 1.8rem;
+}
+
+button {
+  font-family: 'Nanum Gothic', sans-serif;
+  font-weight: 600;
 }
 </style>
