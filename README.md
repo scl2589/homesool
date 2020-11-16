@@ -139,7 +139,7 @@ conda activate <env>
 python app.py
 ```
 
-
+<br>
 
 ## ​:yum:​ 개발 환경 및 IDE
 
@@ -149,9 +149,7 @@ python app.py
 - maven : Apache Maven 3.6.0
 - openvidu : 2.15.1
 
-
-
-
+<br>
 
 ## ​:baby_chick:​ Server Description
 
