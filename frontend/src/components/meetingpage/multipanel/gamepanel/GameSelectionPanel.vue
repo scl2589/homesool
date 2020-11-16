@@ -53,7 +53,7 @@
                   dense
                   append-icon=""
                   solo
-                  @change="checkInput"
+                  @input="checkInput"
                 ></v-select>
                 
               </div>
