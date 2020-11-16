@@ -102,17 +102,57 @@
 
 <br>
 
-## 🖼Installation
-- **Frontend**
-    - cd frontend
-    - npm i
-    - npm run serve
+## Installation
 
-- **Backend**
-    - cd Backend
-    - cd API
-    - ./gradlew build -Pprofile=prod
-    - sudo java -jar -Dspring.profiles.active=prod homesool-0.0.1.jar
-    - cd ../openvidu/openvidu-server
-    - mvn -Dopenvidu.url=https://k3a503.p.ssafy.io:4443/ package exec:java
-    - cd ../API
+- Frontend
+
+```shell
+cd frontend
+npm i
+npm run serve
+```
+
+- Backend
+
+```shell
+cd Backend
+
+cd API
+./gradlew build -Pprofile=prod
+◦sudo java -jar -Dspring.profiles.active=prod homesool-0.0.1.jar
+
+cd ../openvidu/openvidu-server
+◦mvn -Dopenvidu.url=https://k3a503.p.ssafy.io:4443/ package exec:java
+
+cd ../API
+conda create --name <env> --file requirements.txt
+conda activate <env>
+python app.py
+```
+
+
+
+## 개발 환경 및 IDE
+
+- Java : jdk11 (11.0.9.1)
+- Docker : 19.03.13
+- node.js : 8.10.0
+- maven : Apache Maven 3.6.0
+- openvidu : 2.15.1
+
+
+
+## Server Description
+
+- port (nginx)
+
+  - | 443  | server default(https)                  |
+    | ---- | -------------------------------------- |
+    | 80   | server default(http) (redirect to 443) |
+    | 4443 | openvidu (Spring boot running)         |
+    | 8889 | REST API (Spring boot running)         |
+    | 5000 | AI (Flask running)                     |
+    | 8081 | Jenkins                                |
+
+
+
