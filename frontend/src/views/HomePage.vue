@@ -25,13 +25,13 @@
       <div class="scroll-sect">
         <v-card v-if="user.drinks.length">
           <v-card-title>
-            <h3 class="m-0">입장하기</h3>
+            <h3 class="m-0 enter-title">입장하기</h3>
           </v-card-title>
           <v-form v-model="valid" :lazy-validation="lazy">  
             <v-container>
               <v-row>
                 <v-col
-                  class="d-flex justify-content-between align-items-center"
+                  class="d-flex justify-content-between align-items-center enter-code"
                   cols="12"
                 >
                   <h5 class="my-0">입장 코드</h5>
@@ -42,8 +42,9 @@
                     readonly
                     append-icon="far fa-clone"
                     @click:append="clickCopyURL"
+                    color="#84669a"
                   ></v-text-field>
-                  <div class="mb-1 pointer" @click="clickKakaoShare">
+                  <div class="mb-2 pointer" @click="clickKakaoShare">
                     <img
                       width="32vw"
                       src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png"
@@ -52,6 +53,7 @@
                 </v-col>
                 
                 <v-col
+                  class="room-name"
                   cols="12"
                   v-if="ishost"
                 >
@@ -61,11 +63,12 @@
                     persistent-hint
                     required
                     :rules="[v => !!v || '필수항목입니다.']"
+                    color="#84669a"
                   ></v-text-field>
                 </v-col>
 
                 <v-col
-                  cols="12"
+                  cols="6"
                 >
                   <v-text-field
                     v-model="nickName"
@@ -74,11 +77,12 @@
                     persistent-hint
                     required
                     :rules="[v => !!v || '필수항목입니다.']"
+                    color="#84669a"
                   ></v-text-field>
                 </v-col>
 
                 <v-col
-                  cols="12"
+                  cols="6"
                 >
                   <v-select
                     v-model="currentDrink"
@@ -90,6 +94,7 @@
                     persistent-hint
                     required
                     :rules="[v => !!v || '필수항목입니다.']"
+                    color="#84669a"
                   >
                   </v-select>
                 </v-col>
@@ -118,14 +123,14 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn
-              color="blue darken-1"
+              color="indigo"
               text
               @click="clickClose"
             >
               Close
             </v-btn>
             <v-btn
-              color="blue darken-1"
+              color="indigo"
               text
               :disabled="!valid"
               @click="clickEnter"
@@ -397,7 +402,7 @@ $buttonheight: 50px;
 }
 
 .scroll-sect::-webkit-scrollbar-thumb {
-  background: #c1c56a;
+  background: #b0a2c8;
 }
 
 .scroll-sect::-webkit-scrollbar-button {
@@ -405,5 +410,43 @@ $buttonheight: 50px;
   height: 0;
 }
 
+button:focus {
+  outline: none;
+}
 
+.enter-title {
+  color: #b0a2c8;
+}
+
+.container, .v-card__title {
+  padding-bottom: 0!important;
+}
+
+.v-input__slot, .v-card__actions {
+  margin: 0!important;
+  padding-top: 0!important;
+}
+
+.room-name {
+  padding-top: 0;
+}
+
+.enter-code {
+  padding-bottom: 0;
+}
+
+.v-text-field__details {
+  padding-top: 2px;
+}
+
+.v-messages__message {
+  color: #b097c3;
+  font-family: 'Do Hyeon', sans-serif;
+  font-size: 1.1em;
+}
+
+.v-application .primary--text {
+  color: #84669a !important;
+  caret-color: #84669a !important;
+}
 </style>
