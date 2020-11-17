@@ -757,7 +757,7 @@ const meetingStore = {
       //DB에 기록이 있는지 조회 후 없으면 0인 Record 생성
       axios.get(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, rootGetters.config)
               .then(res => {
-                console.log(res);
+                let totalDrink = 0;
                 if(res.data.length !== 0){
                   for(let i=0; i<res.data.length; i++){
                     for(let j=0; j<user.drinks.length; j++){
@@ -765,9 +765,11 @@ const meetingStore = {
                         //이중포문 쓰기 싫은데... 방법이 생각이 안남
                         user.drinks[j].liquorNum = res.data[i].liquorLimit;
                         user.drinks[j].liquorId = res.data[i].id;
+                        totalDrink += res.data[i].liquorLimit;
                       }
                     }
                   }
+                  commit('SET_TOTAL_DRINK', totalDrink);  //totalDrink갱신
                 }
                 else{
                   for(let i=0; i<user.drinks.length; i++){
