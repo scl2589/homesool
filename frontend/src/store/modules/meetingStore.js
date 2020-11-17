@@ -106,7 +106,7 @@ const meetingStore = {
     sentence: null,
     drunkenText: null,
     drunk: null,
-    gotWasted: null,
+    drunkenList: [],
 
     // theme
     theme: 'basic',
@@ -317,12 +317,21 @@ const meetingStore = {
     },
     SET_DRUNK(state, data) {
       state.drunk = data
-    },
-    SET_GOT_WASTED(state, value) {
-      state.gotWasted = value
-    },
+    },   
     SET_SMILE_URL(state, value) {
       state.smileURL = value
+    },
+    SET_DRUNKEN_LIST(state, value) {
+      state.drunkenList.push(value)
+    },
+    REMOVE_DRUNKEN_LIST(state, value) {
+      const index = state.drunkenList.indexOf(value, 0);
+      if (index >= 0) {
+        state.drunkenList.splice(index, 1);
+      }
+    },
+    CLEAR_DRUNKEN_LIST(state) {
+      state.drunkenList = [];
     },
 
     // theme
@@ -631,7 +640,6 @@ const meetingStore = {
         commit('SET_OVTOKEN', null);
         commit('SET_CURRENT_MODE', null);
         commit('SET_MODE_HOST', null);
-        commit('SET_GOT_WASTED', null);
         commit('SET_IS_CHATPANEL', false);
         commit('SET_CLEARMESSAGES');
         commit('SET_THEME', 'basic');
@@ -1094,7 +1102,11 @@ const meetingStore = {
                     commit('SET_DRUNK', event.data.drunk);
 
                     if (event.data.drunk == 2) {
-                      commit('SET_GOT_WASTED', state.currentPlayer.stream.connection.connectionId);
+                      var drunkenPlayer = state.currentPlayer.stream.connection.connectionId;
+                      commit('SET_DRUNKEN_LIST', drunkenPlayer);
+                      setTimeout(() => {
+                        commit('REMOVE_DRUNKEN_LIST', drunkenPlayer)
+                      }, 120000);
                     }
                   }
                 }
@@ -1380,9 +1392,6 @@ const meetingStore = {
         });
       }
       fromMic();
-    },
-    offGotWasted({ commit }) {
-      commit('SET_GOT_WASTED', null);
     },
     updateUserDrinkRecord({ state, rootGetters , commit }, num) {
       let user = rootGetters.getUser;
