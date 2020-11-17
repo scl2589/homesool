@@ -62,9 +62,21 @@ public class RoomController {
 		logger.debug("add Room 호출\n" + insertRoomInfo.toString());
 		//방 생성
 		RoomDto.RoomResponse roomResponse = roomService.add(insertRoomInfo);
-		//멤버 목록에 추가
-		roomService.addMember(roomResponse.getCode(), insertRoomInfo.getHostId(), insertRoomInfo.getHostNickName(),1);
 		return new ResponseEntity<>(roomResponse, HttpStatus.OK);
+	}
+	
+	@GetMapping("code")
+	@ApiOperation(value = "미팅 코드 조회", notes = "미팅 코드로 이 미팅이 유효한지 반환한다", response = String.class)
+	@ApiResponses(value = {
+		@ApiResponse(code = 200, message = "OK"),
+		@ApiResponse(code = 400, message = "Bad Request"),
+		@ApiResponse(code = 401, message = "Unauthorized"),
+		@ApiResponse(code = 403, message = "Forbidden"),
+		@ApiResponse(code = 404, message = "Not Found")
+	})
+	private String getValidCode() {
+		logger.debug(String.format("get rood valid 호출"));
+		return roomService.getCode();
 	}
 	
 	@PutMapping
@@ -83,7 +95,7 @@ public class RoomController {
 	}
 	
 	@PostMapping("{code}/host")
-	@ApiOperation(value = "미팅 시작 후 호스트 정보 업데이트", notes = "초기 정보 업데이트", response = String.class)
+	@ApiOperation(value = "미팅 시작 후 호스트 정보 업데이트", notes = "초기 정보 업데이트", response = RoomDto.RoomResponse.class)
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "OK"),
 			@ApiResponse(code = 400, message = "Bad Request"),
@@ -91,15 +103,15 @@ public class RoomController {
 			@ApiResponse(code = 403, message = "Forbidden"),
 			@ApiResponse(code = 404, message = "Not Found")
 	})
-	private ResponseEntity<String> UpdateHost(
+	private ResponseEntity<RoomDto.RoomResponse> UpdateHost(
 		@ApiParam(value = "방 코드",required = true, example = "A1B2C3D4E5") @PathVariable String code,
 		@ApiParam(value = "호스트 유저 id와 시작 시각", required = true) @RequestBody RoomDto.InsertHostInfo insertHostInfo) {
 		logger.debug("update host in Room 호출\n" );
 		//방 제목 추가
-		roomService.updateRoomName(insertHostInfo.getRoomId(), insertHostInfo.getRoomName());
+		RoomDto.RoomResponse roomResponse = roomService.addBycode(code, insertHostInfo.getHostId(), insertHostInfo.getRoomName());
 		//호스트 닉네임 업데이트
 		roomService.addMember(code, insertHostInfo.getHostId(), insertHostInfo.getHostNickName(), 1);
-		return new ResponseEntity<>("update host", HttpStatus.OK);
+		return new ResponseEntity<>(roomResponse, HttpStatus.OK);
 	}
 	
 	@PostMapping("{code}/with/{userId}")
@@ -155,4 +167,23 @@ public class RoomController {
 			}
 			return new ResponseEntity<>(photoRequest.getImg(), HttpStatus.OK);
 	}
+	
+	@GetMapping("{code}")
+	@ApiOperation(value = "미팅 코드 조회", notes = "미팅 코드로 이 미팅이 유효한지 반환한다", response = Long.class)
+	@ApiResponses(value = {
+		@ApiResponse(code = 200, message = "OK"),
+		@ApiResponse(code = 400, message = "Bad Request"),
+		@ApiResponse(code = 401, message = "Unauthorized"),
+		@ApiResponse(code = 403, message = "Forbidden"),
+		@ApiResponse(code = 404, message = "Not Found")
+	})
+	private ResponseEntity<Long> getRoomValid(
+		@ApiParam(value = "room code", required = true, example = "A1B2C3D4E5") @PathVariable String code) {
+		logger.debug(String.format("get rood valid %s 호출", code));
+		if(roomService.getRoomValid(code) != 0)
+			return new ResponseEntity<>(roomService.getRoomValid(code), HttpStatus.OK);
+		else
+			return new ResponseEntity<>(null, HttpStatus.OK);
+	}
+
 }
