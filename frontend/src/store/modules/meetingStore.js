@@ -554,14 +554,20 @@ const meetingStore = {
       axios.post(SERVER.URL + SERVER.ROUTES.room, createData, rootGetters.config)
         .then(res => {
           commit('SET_ROOMID', res.data.roomId);
-          dispatch('joinSession', res.data.code);
+          dispatch('joinSession', {
+            code: res.data.code,
+            isCreator: true
+          });
         })
     },
     checkSessionId({ rootGetters, commit, dispatch }, sessionId) {
       axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${sessionId}/with/${rootGetters.getId}`,null,rootGetters.config)
         .then(res => {
           commit('SET_ROOMID', res.data);
-          dispatch('joinSession', sessionId);
+          dispatch('joinSession', {
+            code: sessionId,
+            isCreator: false
+          });
           return true;
         })
         .catch(() => {
@@ -575,8 +581,9 @@ const meetingStore = {
       axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${state.mySessionId}/with/${rootGetters.getId}`, roomdata, rootGetters.config)
     },
     // openvidu
-    joinSession ({ state, commit, dispatch }, mySessionId) {
-      commit('SET_MYSESSIONID', mySessionId);
+    joinSession ({ state, commit, dispatch }, joinData) {
+
+      commit('SET_MYSESSIONID', joinData.code);
 			// --- Get an OpenVidu object ---
 			const OV = new OpenVidu();
 			// --- Init a session ---
@@ -618,24 +625,45 @@ const meetingStore = {
 			// --- Connect to the session with a valid user token ---
 			// 'getToken' method is simulating what your server-side should do.
 			// 'token' parameter should be retrieved and returned by your own backend
-			dispatch('getToken', mySessionId).then(token => {
-        let publisher = OV.initPublisher(undefined, {
-          audioSource: undefined, // The source of audio. If undefined default microphone
-          videoSource: undefined, // The source of video. If undefined default webcam
-          publishAudio: true,  	// Whether you want to start publishing with your audio unmuted or not
-          publishVideo: true,  	// Whether you want to start publishing with your video enabled or not
-          resolution: '640x480',  // The resolution of your video
-          frameRate: 30,			// The frame rate of your video
-          insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
-          mirror: true,       	// Whether to mirror your local video or not
+      if (joinData.isCreator) {
+        dispatch('getToken', joinData.code).then(token => {
+          let publisher = OV.initPublisher(undefined, {
+            audioSource: undefined, // The source of audio. If undefined default microphone
+            videoSource: undefined, // The source of video. If undefined default webcam
+            publishAudio: true,  	// Whether you want to start publishing with your audio unmuted or not
+            publishVideo: true,  	// Whether you want to start publishing with your video enabled or not
+            resolution: '640x480',  // The resolution of your video
+            frameRate: 30,			// The frame rate of your video
+            insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
+            mirror: true,       	// Whether to mirror your local video or not
+          });
+          commit('SET_OV', OV);
+          commit('SET_MAINSTREAMMANAGER', publisher);
+          commit('SET_PUBLISHER', publisher);
+          commit('SET_SESSION', session);
+          commit('SET_SUBSCRIBERS', subscribers);
+          commit('SET_OVTOKEN', token);
         });
-        commit('SET_OV', OV);
-        commit('SET_MAINSTREAMMANAGER', publisher);
-        commit('SET_PUBLISHER', publisher);
-        commit('SET_SESSION', session);
-        commit('SET_SUBSCRIBERS', subscribers);
-        commit('SET_OVTOKEN', token);
-			});
+      } else {
+        dispatch('createToken', joinData.code).then(token => {
+          let publisher = OV.initPublisher(undefined, {
+            audioSource: undefined, // The source of audio. If undefined default microphone
+            videoSource: undefined, // The source of video. If undefined default webcam
+            publishAudio: true,  	// Whether you want to start publishing with your audio unmuted or not
+            publishVideo: true,  	// Whether you want to start publishing with your video enabled or not
+            resolution: '640x480',  // The resolution of your video
+            frameRate: 30,			// The frame rate of your video
+            insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
+            mirror: true,       	// Whether to mirror your local video or not
+          });
+          commit('SET_OV', OV);
+          commit('SET_MAINSTREAMMANAGER', publisher);
+          commit('SET_PUBLISHER', publisher);
+          commit('SET_SESSION', session);
+          commit('SET_SUBSCRIBERS', subscribers);
+          commit('SET_OVTOKEN', token);
+        });
+      }
 		},
 		leaveSession ({ state, commit }) {
 			// --- Leave the session by calling 'disconnect' method over the Session object ---
@@ -686,7 +714,7 @@ const meetingStore = {
 		 *   3) The token must be consumed in Session.connect() method
 		 */
 		getToken ({ dispatch }, mySessionId) {
-			return dispatch('createSession', mySessionId).then(sessionId => dispatch('createToken', sessionId));
+      return dispatch('createSession', mySessionId).then(sessionId => dispatch('createToken', sessionId));
 		},
 		// See https://docs.openvidu.io/en/stable/reference-docs/REST-API/#post-apisessions
 		createSession ({ state }, sessionId) {
@@ -708,7 +736,8 @@ const meetingStore = {
 					.then(data => resolve(data.id))
 					.catch(error => {
 						if (error.response.status === 409) {
-							resolve(sessionId);
+              resolve(sessionId);
+              return {};
 						} else {
 							console.warn(`No connection to OpenVidu Server. This may be a certificate error at ${SERVER.OPENVIDU_URL}`);
 							if (window.confirm(`No connection to OpenVidu Server. This may be a certificate error at ${SERVER.OPENVIDU_URL}\n\nClick OK to navigate and accept it. If no certificate warning is shown, then check that your OpenVidu Server is up and running at "${SERVER.OPENVIDU_URL}"`)) {
@@ -740,7 +769,13 @@ const meetingStore = {
 					})
 					.then(response => response.data)
 					.then(data => resolve(data.token))
-					.catch(error => reject(error.response));
+					.catch(error => {
+            Swal.fire({
+              title: "오류가 발생했습니다. 입장 정보를 다시 한 번 확인해주세요.",
+              icon: "error",
+            })
+            reject(error.response)
+          });
 			});
     },
     clickMuteVideo({ state }) {
