@@ -13,11 +13,36 @@
           <br />
         </div>
         <div class="game-list">
-          <li @click="selectGameId(1)">Up & Down</li>
-          <li @click="selectGameId(2)">자음 퀴즈</li>
-          <li @click="selectGameId(3)">라이어 게임</li>
-          <li @click="selectGameId(4)">웃으면 술이와요</li>
-          <li @click="selectGameId(5)">나술안취했어</li>
+          <li 
+            @click="selectGameId(1)"
+            :class="{ 'game-selected': (selectedGameId === 1), 'game-notselected': (selectedGameId !== 1)}"
+          >
+            Up & Down
+          </li>
+          <li 
+            @click="selectGameId(2)"
+            :class="{ 'game-selected': (selectedGameId === 2), 'game-notselected': (selectedGameId !== 2)}"
+          >
+            자음 퀴즈
+          </li>
+          <li 
+            @click="selectGameId(3)"
+            :class="{ 'game-selected': (selectedGameId === 3), 'game-notselected': (selectedGameId !== 3)}"
+          >
+            라이어 게임
+          </li>
+          <li 
+            @click="selectGameId(4)"
+            :class="{ 'game-selected': (selectedGameId === 4), 'game-notselected': (selectedGameId !== 4)}"
+          >
+            웃으면 술이와요
+          </li>
+          <li 
+            @click="selectGameId(5)"
+            :class="{ 'game-selected': (selectedGameId === 5), 'game-notselected': (selectedGameId !== 5)}"
+          >
+            나술안취했어
+          </li>
         </div>
       </div>
       <div class="col-8 my-1">
@@ -247,5 +272,9 @@ li:hover > a {
 
 .penalty {
   max-width: 70%;
+}
+
+.game-selected {
+  background-color: rgb(246, 201, 99);
 }
 </style>
