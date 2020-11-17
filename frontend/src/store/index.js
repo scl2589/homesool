@@ -11,6 +11,8 @@ import SERVER from '@/api/api';
 import meetingStore from '@/store/modules/meetingStore';
 import mypageStore from '@/store/modules/mypageStore';
 
+import Swal from "sweetalert2";
+
 
 Vue.use(Vuex);
 
@@ -70,6 +72,21 @@ export default new Vuex.Store({
             router.push({ name: 'RegisterPage' })
           } else {
             cookies.set('auth-token', data.token)
+            const Toast = Swal.mixin({
+              toast: true,
+              position: "top-end",
+              showConfirmButton: false,
+              timer: 2000,
+              timerProgressBar: true,
+              onOpen: (toast) => {
+                toast.addEventListener("mouseenter", Swal.stopTimer);
+                toast.addEventListener("mouseleave", Swal.resumeTimer);
+              },
+            });
+            Toast.fire({
+              icon: "success",
+              title: "로그인에 성공하였습니다.",
+            });
           }
           if (state.invitedSessionId) {
             dispatch("meetingStore/checkSessionId", state.invitedSessionId)
@@ -101,6 +118,21 @@ export default new Vuex.Store({
       context.commit('setUser', null);
       context.commit('setId', null);
       cookies.remove('auth-token');
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        onOpen: (toast) => {
+          toast.addEventListener("mouseenter", Swal.stopTimer);
+          toast.addEventListener("mouseleave", Swal.resumeTimer);
+        },
+      });
+      Toast.fire({
+        icon: "success",
+        title: "로그아웃에 성공하였습니다.",
+      });
       router.push({ name: 'HomePage' }).catch(() => {});
     },
   },
