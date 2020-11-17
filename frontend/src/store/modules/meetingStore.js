@@ -593,7 +593,6 @@ const meetingStore = {
       axios.get(`${SERVER.URL + SERVER.ROUTES.room}/${sessionId}`,rootGetters.config)
         .then(res => {
           if(res.data != ""){
-            console.log(res);
             commit('SET_ROOMID', res.data);
             dispatch('joinSession', {
               code: sessionId,
@@ -756,8 +755,7 @@ const meetingStore = {
       return dispatch('createSession', mySessionId).then(sessionId => dispatch('createToken', sessionId));
 		},
 		// See https://docs.openvidu.io/en/stable/reference-docs/REST-API/#post-apisessions
-		createSession ({ state }, sessionId) {
-      console.log(state.mySessionId)
+		createSession (context, sessionId) {
 			return new Promise((resolve, reject) => {
 				axios
 					.post(`${SERVER.OPENVIDU_URL}/openvidu/api/sessions`, JSON.stringify({
@@ -788,8 +786,7 @@ const meetingStore = {
 			});
 		},
 		// See https://docs.openvidu.io/en/stable/reference-docs/REST-API/#post-apitokens
-		createToken ({ state }, sessionId) {
-      console.log(state.mySessionId)
+		createToken (context, sessionId) {
 			return new Promise((resolve, reject) => {
 				axios
 					.post(`${SERVER.OPENVIDU_URL}/api/tokens`, JSON.stringify({
