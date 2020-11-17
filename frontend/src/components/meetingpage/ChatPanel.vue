@@ -61,9 +61,9 @@ export default {
       setTimeout(() => {
         var chatDiv = document.getElementById("chat-area");
         chatDiv.scrollTo({
-        top: chatDiv.scrollHeight - chatDiv.clientHeight,
-        behavior: 'smooth'
-      })
+          top: chatDiv.scrollHeight - chatDiv.clientHeight,
+          behavior: 'smooth'
+        })
       }, 50);
     },
     currentMode() {

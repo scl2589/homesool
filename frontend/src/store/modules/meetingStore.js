@@ -465,6 +465,16 @@ const meetingStore = {
     },
     toggleChatPanel({ state, commit }) {
       commit('SET_IS_CHATPANEL', !state.isChatPanel);
+      if (state.isChatPanel === true) {
+        setTimeout(() => {
+          var chatDiv = document.getElementById("chat-area");
+          chatDiv.scrollTo({
+            top: chatDiv.scrollHeight - chatDiv.clientHeight,
+            behavior: 'smooth'
+          })
+        }, 50);
+      }
+      
     },
     searchSong({ commit }, keyword) {
       axios.get(SERVER.YOUTUBE_URL, {
@@ -619,6 +629,13 @@ const meetingStore = {
         commit('SET_MYSESSIONID', null);
         commit('SET_CLEARMESSAGES');
         commit('SET_OVTOKEN', null);
+        commit('SET_CURRENT_MODE', null);
+        commit('SET_MODE_HOST', null);
+        commit('SET_GOT_WASTED', null);
+        commit('SET_IS_CHATPANEL', false);
+        commit('SET_CLEARMESSAGES');
+        commit('SET_THEME', 'basic');
+        commit('SET_NICKNAME', null);
       }
 
       if (state.screenSession) {
@@ -630,14 +647,6 @@ const meetingStore = {
         commit('SET_SCREEN_PUBLISHER', undefined);
         commit('SET_SCREEN_OVTOKEN', null);
       }
-
-      commit('SET_CURRENT_MODE', null);
-      commit('SET_MODE_HOST', null);
-      commit('SET_GOT_WASTED', null);
-      commit('SET_IS_CHATPANEL', false);
-      commit('SET_CLEARMESSAGES');
-      commit('SET_THEME', 'basic');
-      commit('SET_NICKNAME', null);
 		},
 		updateMainVideoStreamManager ({ state, commit }, stream) {
 			if (state.mainStreamManager === stream) return;
