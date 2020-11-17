@@ -1,6 +1,6 @@
 <template>
 <div v-if="streamManager">
-	<ov-video :stream-manager="streamManager"/>
+	<ov-video :stream-manager="streamManager" :is-smile-game="isSmileGame" />
 
 	<div class="drink-container">
 
@@ -68,7 +68,8 @@ export default {
 	props: {
 		streamManager: Object,
 		isPublisher: Boolean,
-		isLeftPanel: Boolean
+		isLeftPanel: Boolean,
+		isSmileGame: Boolean
 	},
 	data() {
     return {

@@ -992,10 +992,12 @@ const meetingStore = {
               if (event.data.participantPublicId){
                 if (state.publisher.stream.connection.connectionId === event.data.participantPublicId) {
                   commit('SET_CURRENT_PLAYER', state.publisher);
+                  commit('SET_CHANGED_FLAG');
                 } else {
                   state.subscribers.forEach(subscriber => {
                     if (subscriber.stream.connection.connectionId === event.data.participantPublicId) {
                       commit('SET_CURRENT_PLAYER', subscriber);
+                      commit('SET_CHANGED_FLAG');
                     }
                   });
                 }
