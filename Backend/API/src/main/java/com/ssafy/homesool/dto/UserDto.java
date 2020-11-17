@@ -51,7 +51,7 @@ public class UserDto {
 	@NoArgsConstructor
 	public static class UserRecord {
 		@ApiModelProperty(value = "Record id", example = "0")
-		private long recordId;
+		private long Id;
 		
 		@ApiModelProperty(value = "Liquor name", example = "소주")
 		private String liquorName;
