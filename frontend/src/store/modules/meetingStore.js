@@ -122,6 +122,7 @@ const meetingStore = {
 
     //capture
     screenshotInfo: null,
+    spinner: false,
 
     isNewbie: true
   },
@@ -356,6 +357,9 @@ const meetingStore = {
     //screenshot
     SET_SCREENSHOT_INFO(state, data) {
       state.screenshotInfo = data;
+    },
+    SET_SPINNER(state, data) {
+      state.spinner = data
     },
     SET_IS_NEWBIE(state, value) {
       state.isNewbie = value
@@ -1146,10 +1150,13 @@ const meetingStore = {
             });
 
             state.session.on('signal:attachImage', (event) => {
-              var image = document.createElement('img')  
-              image.src = `https://firebasestorage.googleapis.com/v0/b/homesuli.appspot.com/o/${state.mySessionId}%2Fsnapshot%2F${event.data}.jpg?alt=media&token=942e1b59-2774-4d79-b0e7-098d76168b49`
-              image.style.maxWidth="90%"
-              document.getElementById('preview').appendChild(image)
+              commit('SET_SPINNER', false)
+              setTimeout(() => {
+                var image = document.createElement('img')  
+                image.src = `https://firebasestorage.googleapis.com/v0/b/homesuli.appspot.com/o/${state.mySessionId}%2Fsnapshot%2F${event.data}.jpg?alt=media&token=942e1b59-2774-4d79-b0e7-098d76168b49`
+                image.style.maxWidth="90%"
+                document.getElementById('preview').appendChild(image)
+              }, 500);
             });
 
             state.session.on('streamDestroyed', (event) => {
@@ -1436,6 +1443,9 @@ const meetingStore = {
     },
     changeIsNewbie({ commit }) {
       commit('SET_IS_NEWBIE', false);
+    },
+    changeSpinner({ commit }, value) {
+      commit('SET_SPINNER', value)
     }
   }
 }

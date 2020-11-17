@@ -439,10 +439,12 @@ button:focus {
   padding-top: 2px;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap');
 .v-messages__message {
   color: #b097c3;
-  font-family: 'Do Hyeon', sans-serif;
-  font-size: 1.1em;
+  font-family: 'Nanum Gothic', sans-serif;
+  font-size: 1.0em;
+  font-weight: 600;
 }
 
 .v-application .primary--text {
