@@ -79,11 +79,10 @@ export default {
       remain: 5,
       expired: false,
       captured: null,
-      spinner: false,
     }
   },
   computed: {
-    ...mapState('meetingStore', ['isSnapshotMode', 'mySessionId', 'roomId']),
+    ...mapState('meetingStore', ['isSnapshotMode', 'mySessionId', 'roomId', 'spinner']),
     ...mapGetters('meetingStore', ['notModeHost'])
   },
   watch: {
@@ -94,7 +93,7 @@ export default {
             this.remain--;
           }, 1000)
         } else {
-          this.spinner = true
+          this.changeSpinner(true)
           if ( !this.notModeHost ) {
             let canvas = document.getElementById('canvas');
             let ctx = canvas.getContext('2d');
@@ -178,7 +177,7 @@ export default {
               promises.push(uploadTask)
               
               Promise.all(promises).then(() => {
-                this.spinner = false;
+                this.changeSpinner(false)
                 this.attachImage(file_name)
                 var imageInfo = {
                   "img" : file_name,
@@ -199,7 +198,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('meetingStore', ['changeMode', 'attachImage', 'saveScreenshot', 'saveScreenshotInfo']),
+    ...mapActions('meetingStore', ['changeMode', 'attachImage', 'saveScreenshot', 'saveScreenshotInfo', 'changeSpinner']),
     savePhoto() {
       // 파일로 저장하는 로직 
       var a = document.createElement('a');
