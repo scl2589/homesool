@@ -26,7 +26,7 @@
 			<img width="10%" src="@/assets/images/drunken.png" alt="">
 		</div>
 
-		<div class="d-flex justify-content-between" v-if="isLeftPanel">
+		<div class="d-flex justify-content-around" v-if="isLeftPanel">
 			<div class="overlay-name d-flex justify-content-center align-items-center" v-if="nickName">
 				<p class="px-2 client-name">{{ clientData }}</p>
 			</div>
