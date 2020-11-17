@@ -123,7 +123,9 @@ const meetingStore = {
     //capture
     screenshotInfo: null,
 
-    isNewbie: true
+    isNewbie: true,
+
+    changedFlag: false
   },
   getters: {
     notModeHost(state) {
@@ -190,6 +192,9 @@ const meetingStore = {
     },
     SET_TOTAL_DRINK(state, value){
       state.totalDrink += value;
+    },
+    RESET_TOTAL_DRINK(state) {
+      state.totalDrink = 0;
     },
 
     // Openvidu
@@ -368,7 +373,11 @@ const meetingStore = {
     },
     SET_IS_NEWBIE(state, value) {
       state.isNewbie = value
-    }
+    },
+
+    SET_CHANGED_FLAG(state) {
+      state.changedFlag = !state.changedFlag
+    },
 
   },
   actions: {
@@ -644,6 +653,7 @@ const meetingStore = {
         commit('SET_CLEARMESSAGES');
         commit('SET_THEME', 'basic');
         commit('SET_NICKNAME', null);
+        commit('RESET_TOTAL_DRINK');
       }
 
       if (state.screenSession) {
@@ -835,13 +845,14 @@ const meetingStore = {
                 selectedSong: state.selectedSong,
                 selectedGame: state.selectedGame,
                 isSongEnded: state.isSongEnded,
-                isSharingMode: state.isSharingMode
+                isSharingMode: state.isSharingMode,
+                totalDrink: state.totalDrink
               }
               state.session.signal({
                 type: 'status',
                 data: JSON.stringify(status),
                 to: [event.stream.connection.connectionId],
-              })
+              })              
             })
 
             state.session.on('signal:status', (event) => {
@@ -877,6 +888,15 @@ const meetingStore = {
                   commit('SET_IS_SONG_ENDED', status.isSongEnded);
                 }
                 commit('SET_CURRENT_MODE', status.currentMode);
+
+                if (status.totalDrink) {
+                  state.subscribers.forEach(subscriber => {
+                    if (subscriber.stream.connection.connectionId === event.from.connectionId) {
+                      subscriber.totalDrink = status.totalDrink;
+                    }
+                  });
+                }
+                commit('SET_CHANGED_FLAG');
               }
             })
 
@@ -1179,6 +1199,7 @@ const meetingStore = {
                   subscriber.totalDrink = drinkData.totalDrink;
                 }
               });
+              commit('SET_CHANGED_FLAG');
             });
 
             return true;

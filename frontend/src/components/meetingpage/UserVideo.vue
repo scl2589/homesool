@@ -1,54 +1,58 @@
 <template>
 <div v-if="streamManager">
 	<ov-video :stream-manager="streamManager"/>
+
 	<div class="drink-container">
-		<div v-if="!($route.name==='HomePage')">
-			<div class="drink-overlay d-flex justify-content-around align-items-center" v-if="isPublisher">
-				<img class="drink-minus" src="@/assets/images/minus.png" alt="한잔 덜 마셨어요" @click="updateUserDrinkRecord(-1)"> 
-				<img class="drink" :src="getImgsrc" alt="현재주종" @click="setShowOthers">
-				<img class="drink-plus" src="@/assets/images/plus.png" alt="한잔 더 마셨어요" @click="updateUserDrinkRecord(1)">
-				<div class="select-other" v-if="showOthers">
-					<div class="other" v-for="drink in user.drinks" :key="drink.liquorName"
-						:v-model="pickedDrink" @click="setCurrentDrink(drink.liquorName)">
-						{{drink.liquorName}}
-					</div>
+
+		<div class="drink-overlay d-flex justify-content-around align-items-center" v-if="isLeftPanel && isPublisher">
+			<img class="drink-minus" src="@/assets/images/minus.png" alt="한잔 덜 마셨어요" @click="updateUserDrinkRecord(-1)"> 
+			<img class="drink" :src="getImgsrc" alt="현재주종" @click="setShowOthers">
+			<img class="drink-plus" src="@/assets/images/plus.png" alt="한잔 더 마셨어요" @click="updateUserDrinkRecord(1)">
+			<div class="select-other" v-if="showOthers">
+				<div class="other" v-for="drink in user.drinks" :key="drink.liquorName"
+					:v-model="pickedDrink" @click="setCurrentDrink(drink.liquorName)">
+					{{drink.liquorName}}
 				</div>
 			</div>
 		</div>
+
 		<div class="overlay-anonymous d-flex justify-content-center align-items-center" v-if="currentMode === 'anonymous'">
 			<img class="anonymous-img" :src="require(`@/assets/images/${anonyMousImg(streamManager.stream.connection.connectionId)}.png`)" alt="">
 		</div>
+
 		<div class="overlay-drunken d-flex justify-content-center align-items-center w-100" v-if="drunkenList.length && drunkenList.includes(streamManager.stream.connection.connectionId) && isLeftPanel && currentMode !== 'anonymous'">
 			<img width="10%" src="@/assets/images/drunken.png" alt="">
 			<p class="mb-0 mx-2 black">나는 고주망태입니다.</p>
 			<img width="10%" src="@/assets/images/drunken.png" alt="">
 		</div>
-		<div class="d-flex justify-content-between">
-			<div class="overlay-name d-flex justify-content-center align-items-center" v-if="isLeftPanel && nickName">
+
+		<div class="d-flex justify-content-between" v-if="isLeftPanel">
+			<div class="overlay-name d-flex justify-content-center align-items-center" v-if="nickName">
 				<p class="px-2 client-name">{{ clientData }}</p>
 			</div>
-			<div class="overlay-drink-count d-flex" v-if="isLeftPanel  && currentMode !== 'anonymous'">
-					<div v-if="isPublisher">
+
+			<div class="overlay-drink-count d-flex" v-if="currentMode !== 'anonymous'">
+				<div v-if="isPublisher">
+					<div class="drink-count-container">
+						<img width="15px" src="@/assets/images/shot.png" alt=""> x {{totalDrink}}  
+					</div>
+				</div>
+				<div v-else> <!--subscriber-->
+					<div v-if="streamManager.totalDrink">
 						<div class="drink-count-container">
-							<img width="15px" src="@/assets/images/shot.png" alt=""> x {{totalDrink}}  
+							<img width="15px" src="@/assets/images/shot.png" alt=""> x {{streamManager.totalDrink}} 
 						</div>
 					</div>
-					<div v-else> <!--subscriber-->
-						<div v-if="this.streamManager.totalDrink">
-							<div class="drink-count-container">
-								<img width="15px" src="@/assets/images/shot.png" alt=""> x {{this.streamManager.totalDrink}} 
-							</div>
-						</div>
-						<div v-else>
-							<div class="drink-count-container">
-								<img width="15px" src="@/assets/images/shot.png" alt=""> x 0
-							</div>
+					<div v-else>
+						<div class="drink-count-container">
+							<img width="15px" src="@/assets/images/shot.png" alt=""> x 0
 						</div>
 					</div>
 				</div>
 			</div>
-
 		</div>
+
+	</div>
 	
 </div>
 </template>
@@ -131,7 +135,8 @@ export default {
 			'publisher',
 			'totalDrink',
 			'nickName',
-			'drunkenList'
+			'drunkenList',
+			'changedFlag'
 			]),
 		...mapState(['user']),
 		...mapGetters("meetingStore", ['getImgsrc']),
@@ -139,6 +144,11 @@ export default {
 		clientData () {
 			const { clientData } = this.getConnectionData();
 			return clientData;
+		}
+	},
+	watch: {
+		changedFlag() {
+			this.$forceUpdate();
 		}
 	},
 	methods: {
