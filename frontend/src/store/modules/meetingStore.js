@@ -775,36 +775,43 @@ const meetingStore = {
 
       commit('SET_CURRENT_DRINK', enterData.currentDrink);
       let user = rootGetters.getUser;
-      //다른 애들도 넣어주자
-      for(let i=0; i<user.drinks.length; i++){
-        if(!(user.drinks[i].liquorName==state.currentDrink)){
-          let drinkData = {
-            "liquorLimit": 0,
-            "liquorName": user.drinks[i].liquorName,
-            "recordId": 0
-          }
-          axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
+
+      //DB에 기록이 있는지 조회 후 없으면 0인 Record 생성
+      axios.get(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, rootGetters.config)
               .then(res => {
-                //alert(res.data);
-                user.drinks[i].liquorId = res.data;
-                user.drinks[i].liquorNum = 0;
+                let totalDrink = 0;
+                if(res.data.length !== 0){
+                  for(let i=0; i<res.data.length; i++){
+                    for(let j=0; j<user.drinks.length; j++){
+                      if(res.data[i].liquorName == user.drinks[j].liquorName){
+                        //이중포문 쓰기 싫은데... 방법이 생각이 안남
+                        user.drinks[j].liquorNum = res.data[i].liquorLimit;
+                        user.drinks[j].liquorId = res.data[i].id;
+                        totalDrink += res.data[i].liquorLimit;
+                      }
+                    }
+                  }
+                  commit('SET_TOTAL_DRINK', totalDrink);  //totalDrink갱신
+                }
+                else{
+                  for(let i=0; i<user.drinks.length; i++){
+                      let drinkData = {
+                        "liquorLimit": 0,
+                        "liquorName": user.drinks[i].liquorName,
+                        "liquorId": 0
+                      }
+                      axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
+                        .then(res => {
+                          user.drinks[i].liquorId = res.data;
+                          user.drinks[i].liquorNum = 0;
+                        })
+                  }//for
+                }
               })
-        }
-      }
-      const drinkData = {
-        "liquorLimit": 0,
-        "liquorName": enterData.currentDrink,
-        "recordId": 0
-      }
-      axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
-        .then(res => {
-          for(let i=0; i<user.drinks.length; i++){  //현재 DB ID 저장
-            if(user.drinks[i].liquorName==state.currentDrink){
-              user.drinks[i].liquorNum = 0;
-              user.drinks[i].liquorId = res.data;
-            }
-          }
-          commit('setUser', user, { root:true });
+          
+      commit('setUser', user, { root:true });
+
+      try{
           state.session.connect(state.ovToken, { clientData: enterData.nickName })
 					.then(() => {
             commit('SET_NICKNAME', enterData.nickName);
@@ -1220,13 +1227,13 @@ const meetingStore = {
               icon: "error",
             })
 					});
-        })
-        .catch(() => {
+        }//try
+        catch{
           Swal.fire({
             title: "오류가 발생했습니다. 입장 정보를 다시 한 번 확인해주세요.",
             icon: "error",
           })
-        })
+        }
     },
     sendMessage({ state }, message) {
       var messageData = {
@@ -1466,7 +1473,7 @@ const meetingStore = {
       const drinkData = {
         "liquorLimit": currentDrinkNum,
         "liquorName": state.currentDrink,
-        "recordId": currentDrinkId,
+        "id": currentDrinkId,
       }
       axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
     },
