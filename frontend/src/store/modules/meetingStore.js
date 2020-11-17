@@ -792,6 +792,16 @@ const meetingStore = {
                     }
                   }
                   commit('SET_TOTAL_DRINK', totalDrink);  //totalDrink갱신
+                  //신호보내기
+                  let data = {
+                    "userId": state.publisher.stream.connection.connectionId,
+                    "totalDrink" : state.totalDrink
+                  }
+                  state.session.signal({
+                    data: JSON.stringify(data),
+                    to: [],
+                    type: 'drink'
+                  })
                 }
                 else{
                   for(let i=0; i<user.drinks.length; i++){
@@ -1458,7 +1468,7 @@ const meetingStore = {
       commit('setUser', user, { root:true });
 
       commit('SET_TOTAL_DRINK', num);
-      //send drink signal JSON.stringify(song),
+      //send drink signal
       let data = {
         "userId": state.publisher.stream.connection.connectionId,
         "totalDrink" : state.totalDrink
