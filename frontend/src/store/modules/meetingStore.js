@@ -544,31 +544,34 @@ const meetingStore = {
     changeMeetingLogDialog({ commit }, value) {
       commit('SET_MEETINGLOG_DIALOG', value);
     },
-    createSessionId({ rootGetters, commit, dispatch }) {
-      const ct = new Date();
-      const createData = {
-        "hostId": rootGetters.getId,
-        "startTime": moment(ct).format('YYYY-MM-DDTHH:mm:ss'),
-        "hostNickName" : " ",
-      };
-      axios.post(SERVER.URL + SERVER.ROUTES.room, createData, rootGetters.config)
+    createSessionId({ rootGetters, dispatch }) {
+      axios.get(SERVER.URL + SERVER.ROUTES.room+"/code", rootGetters.config)
         .then(res => {
-          commit('SET_ROOMID', res.data.roomId);
           dispatch('joinSession', {
-            code: res.data.code,
+            code: res.data,
             isCreator: true
           });
         })
     },
     checkSessionId({ rootGetters, commit, dispatch }, sessionId) {
-      axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${sessionId}/with/${rootGetters.getId}`,null,rootGetters.config)
+      axios.get(`${SERVER.URL + SERVER.ROUTES.room}/${sessionId}`,rootGetters.config)
         .then(res => {
-          commit('SET_ROOMID', res.data);
-          dispatch('joinSession', {
-            code: sessionId,
-            isCreator: false
-          });
+          if(res.data != ""){
+            console.log(res);
+            commit('SET_ROOMID', res.data);
+            dispatch('joinSession', {
+              code: sessionId,
+              isCreator: false
+            });
           return true;
+          }
+          else{
+            Swal.fire({
+              title: "초대코드가 유효하지 않습니다.",
+              icon: "error",
+            })
+            return false;
+          } 
         })
         .catch(() => {
           Swal.fire({
@@ -792,27 +795,12 @@ const meetingStore = {
         state.publisher.publishAudio(true) 
       }
     },
-    enterSession({ state, rootGetters, commit, dispatch }, enterData) {
-      if(enterData.roomName){ // 호스트 요청
-        const createData = {
-          "hostId" : rootGetters.getId,
-          "hostNickName" : enterData.nickName,
-          "roomId" : state.roomId,
-          "roomName" : enterData.roomName,
-        };
-        axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${state.mySessionId}/host`, createData, rootGetters.config,)
-      }else{  //유저 요청
-        const MemberData = {
-          "nickName": enterData.nickName,
-        }
-        axios.put(`${SERVER.URL + SERVER.ROUTES.room}/${state.mySessionId}/with/${rootGetters.getId}`,MemberData,rootGetters.config)
-      }
-
+    setDrinkRecord({state, rootGetters, commit}, enterData){
       commit('SET_CURRENT_DRINK', enterData.currentDrink);
       let user = rootGetters.getUser;
 
       //DB에 기록이 있는지 조회 후 없으면 0인 Record 생성
-      axios.get(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, rootGetters.config)
+      axios.get(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${enterData.roomId}`, rootGetters.config)
               .then(res => {
                 let totalDrink = 0;
                 if(res.data.length !== 0){
@@ -855,6 +843,30 @@ const meetingStore = {
               })
           
       commit('setUser', user, { root:true });
+    },
+    enterSession({ state, rootGetters, commit, dispatch }, enterData) {
+      if(enterData.roomName){ // 호스트 요청
+        const createData = {
+          "hostId" : rootGetters.getId,
+          "hostNickName" : enterData.nickName,
+          "roomName" : enterData.roomName,
+        };
+        axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${state.mySessionId}/host`, createData, rootGetters.config)
+        .then(res =>{
+          commit('SET_ROOMID', res.data.roomId);
+          enterData.roomId = res.data.roomId;
+          dispatch('setDrinkRecord', enterData);
+        })
+      }else{  //유저 요청
+        const MemberData = {
+          "nickName": enterData.nickName,
+        }
+        axios.put(`${SERVER.URL + SERVER.ROUTES.room}/${state.mySessionId}/with/${rootGetters.getId}`,MemberData,rootGetters.config)
+        .then(()=>{
+          enterData.roomId = state.roomId;
+          dispatch('setDrinkRecord', enterData);
+        })
+      }
 
       try{
           state.session.connect(state.ovToken, { clientData: enterData.nickName })

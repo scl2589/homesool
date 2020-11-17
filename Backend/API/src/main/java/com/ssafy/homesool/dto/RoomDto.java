@@ -73,9 +73,6 @@ public class RoomDto {
 		@ApiModelProperty(value = "Host nickname", example = "지은")
 		private String hostNickName;
 		
-		@ApiModelProperty(value = "Room Id", example = "1")
-		private long roomId;
-		
 		@ApiModelProperty(value = "Room Name", example = "오늘은 내가 술게임최강자")
 		private String roomName;
 	}

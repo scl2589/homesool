@@ -17,7 +17,7 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 	Room findOneByRoomId(long roomId);
 	
 	@Query(value = "select r.* from room r inner join member m on r.room_id = m.room_id "
-			+ "where m.user_id = :userId",
+			+ "where m.user_id = :userId and room_name not like ''",
 			nativeQuery = true)
 	List<Room> getRoomsInfo(@Param("userId") long userId);
 	

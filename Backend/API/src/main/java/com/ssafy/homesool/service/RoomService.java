@@ -33,6 +33,7 @@ public class RoomService {
 			code = Util.getRandomCode();
 			if(!set.contains(code)) break;
 		}
+		
 		Room room = Room.builder()
 				.hostId(insertRoomInfo.getHostId())
 				.startTime(insertRoomInfo.getStartTime())
@@ -43,6 +44,30 @@ public class RoomService {
 				roomRepository.save(room)
 		);
 	}
+	
+	public RoomDto.RoomResponse addBycode(String code, long hostId, String roomName) {
+		Room room = Room.builder()
+				.hostId(hostId)
+				.code(code)
+				.roomName(roomName)
+				.build();
+		return RoomMapper.INSTANCE.toResponse(
+				roomRepository.save(room)
+		);
+	}
+	
+	public String getCode() {
+		String code;
+		// 무한루프는 그대로지만 HashSet 활용해서 DB 접근 최소화!
+		HashSet<String> set = new HashSet<>(roomRepository.findAllCode());
+		while (true) {
+			code = Util.getRandomCode();
+			if(!set.contains(code)) break;
+		}
+		
+		return code;
+	}
+
 
 	public Room updateRoomName(long roomId, String roomName) {
 		Room room= roomRepository.findOneByRoomId(roomId);
@@ -76,5 +101,12 @@ public class RoomService {
 		return RoomMapper.INSTANCE.toInfo(roomRepository.getRoomsInfo(userId));
 	}
 	
+	public long getRoomValid(String code) {
+		Room room = roomRepository.findOneByCode(code);
+		if(room != null) 
+			return room.getRoomId();
+		else
+			return 0;
+	}
 	
 }
