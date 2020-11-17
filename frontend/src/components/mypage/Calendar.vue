@@ -30,10 +30,11 @@
       v-model="meetingLogDialog"
       persistent
       max-width="600px"
-      max-height="80vh"
-        
       >
-      <v-card class="d-flex flex-column justify-content-between scroll-sect">
+      <v-card 
+        class="d-flex flex-column justify-content-between scroll-sect"
+        :class="{ 'h-75': (logs.roomInfo && logs.srcs.length >= 1), 'h-50': (logs.roomInfo && logs.srcs.length === 0)}"
+      >
         <v-card-title class="d-flex justify-content-center">
           <h4>
             <span v-if="logs.roomInfo">
@@ -302,5 +303,13 @@ hr {
 
 button:focus {
   outline: none;
+}
+
+.h-50 {
+  height: 50vh !important;
+}
+
+.h-75 {
+  height: 75vh !important;
 }
 </style>
