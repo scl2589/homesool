@@ -385,7 +385,8 @@ const meetingStore = {
 
   },
   actions: {
-    changeMode({ state, getters }, mode) {
+    changeMode({ state, getters, dispatch }, mode) {
+      let isPermitted = true;
       if (getters.notModeHost) {
         // modeHost가 아닌 경우
         if (state.currentMode && state.modeHost) {          
@@ -400,9 +401,19 @@ const meetingStore = {
           } else {
             // 현재 모드를 중단해도 되는 경우
             if (state.currentMode !== mode) {
-              if (!confirm('현재 모드를 중단하시겠습니까?')) {
-                return;
-              }
+              isPermitted = false;
+              Swal.fire({
+                html: "현재 모드를 중단하시겠습니까?",
+                showCancelButton: true,
+                confirmButtonText: '네',
+                cancelButtonText: '아니요',
+                icon: "warning",
+              })
+              .then((result) => {
+                if (result.value) {
+                  dispatch('sendModeSignal', mode);
+                }
+              });
             }
           }
         } else {
@@ -416,21 +427,46 @@ const meetingStore = {
           } else {
             // modeHost가 중간에 나가버린 경우
             if (state.currentMode && state.currentMode !== mode) {
-              if (!confirm('현재 모드를 중단하시겠습니까?')) {
-                return;
-              }
+              isPermitted = false;
+              Swal.fire({
+                html: "현재 모드를 중단하시겠습니까?",
+                showCancelButton: true,
+                confirmButtonText: '네',
+                cancelButtonText: '아니요',
+                icon: "warning",
+              })
+              .then((result) => {
+                if (result.value) {
+                  dispatch('sendModeSignal', mode);
+                }
+              });
             }
           }
         }
       } else {
         // modeHost인 경우
         if (state.currentMode && state.currentMode !== mode) {
-          if (!confirm('현재 모드를 중단하시겠습니까?')) {
-            return;
-          }
+          isPermitted = false;
+          Swal.fire({
+            html: "현재 모드를 중단하시겠습니까?",
+            showCancelButton: true,
+            confirmButtonText: '네',
+            cancelButtonText: '아니요',
+            icon: "warning",
+          })
+          .then((result) => {
+            if (result.value) {
+              dispatch('sendModeSignal', mode);
+            }
+          });
         }
       }
-
+      
+      if (isPermitted) {
+        dispatch('sendModeSignal', mode);
+      }
+    },
+    sendModeSignal({ state }, mode) {
       state.session.signal({
         type: 'mode',
         data: mode,
