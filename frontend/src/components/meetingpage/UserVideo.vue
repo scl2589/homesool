@@ -18,7 +18,7 @@
 		<div class="overlay-anonymous d-flex justify-content-center align-items-center" v-if="currentMode === 'anonymous'">
 			<img class="anonymous-img" :src="require(`@/assets/images/${anonyMousImg(streamManager.stream.connection.connectionId)}.png`)" alt="">
 		</div>
-		<div class="overlay-drunken d-flex justify-content-center align-items-center w-100" v-if="gotWasted && streamManager.stream.connection.connectionId === gotWasted && isLeftPanel && currentMode !== 'anonymous'">
+		<div class="overlay-drunken d-flex justify-content-center align-items-center w-100" v-if="drunkenList.length && drunkenList.includes(streamManager.stream.connection.connectionId) && isLeftPanel && currentMode !== 'anonymous'">
 			<img width="10%" src="@/assets/images/drunken.png" alt="">
 			<p class="mb-0 mx-2 black">나는 고주망태입니다.</p>
 			<img width="10%" src="@/assets/images/drunken.png" alt="">
@@ -125,7 +125,14 @@ export default {
     }
   },
 	computed: {
-		...mapState('meetingStore', ['currentMode','gotWasted','currentDrink','publisher','totalDrink', 'nickName']),
+		...mapState('meetingStore', [
+			'currentMode',
+			'currentDrink',
+			'publisher',
+			'totalDrink',
+			'nickName',
+			'drunkenList'
+			]),
 		...mapState(['user']),
 		...mapGetters("meetingStore", ['getImgsrc']),
 
@@ -134,17 +141,8 @@ export default {
 			return clientData;
 		}
 	},
-	watch: {
-		gotWasted(value) {
-			if (value) {
-				setTimeout(() => {
-					this.offGotWasted();
-				}, 120000);
-			}
-		},
-	},
 	methods: {
-		...mapActions('meetingStore', ['updateUserDrinkRecord','offGotWasted', 'changeCurrentDrink']),
+		...mapActions('meetingStore', ['updateUserDrinkRecord', 'changeCurrentDrink']),
 		getConnectionData() {
 			const { connection } = this.streamManager.stream;
 			return JSON.parse(connection.data);
