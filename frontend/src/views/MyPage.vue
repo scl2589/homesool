@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container mx-auto">
     <div class="d-flex mx-auto profile">
       <img src="@/assets/images/host.png" alt="프로필" />
     </div>
