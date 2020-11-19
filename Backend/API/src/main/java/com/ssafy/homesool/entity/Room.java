@@ -31,7 +31,7 @@ public class Room {
 	@Column(nullable =false)
 	private long hostId;
 	
-	@Column(nullable = true, updatable = false)
+	@Column
 	private Date startTime;
 	
 	@Column
@@ -46,4 +46,12 @@ public class Room {
 	
 	@Column(nullable = true)
 	private String roomName;
+
+	@Override
+	public String toString() {
+		return "Room [roomId=" + roomId + ", hostId=" + hostId + ", startTime=" + startTime + ", endTime=" + endTime
+				+ ", code=" + code + ", roomName=" + roomName + "]";
+	}
+	
+	
 }

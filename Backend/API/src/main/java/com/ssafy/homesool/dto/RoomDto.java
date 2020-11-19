@@ -80,17 +80,6 @@ public class RoomDto {
 	@Data
 	@AllArgsConstructor
 	@NoArgsConstructor
-	public static class UpdateRoomInfo {
-		@ApiModelProperty(value = "Room Id", example = "1")
-		private long roomId;
-
-		@ApiModelProperty(value = "End time", example = "")
-		private Date endTime;
-	}
-	
-	@Data
-	@AllArgsConstructor
-	@NoArgsConstructor
 	public static class UpdateMemberInfo {
 		@ApiModelProperty(value = "User Nickname", example = "지은")
 		private String nickName;
