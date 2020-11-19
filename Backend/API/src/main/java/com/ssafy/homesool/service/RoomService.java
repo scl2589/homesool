@@ -28,31 +28,12 @@ public class RoomService {
 	private final MemberRepository memberRepository;
 	private final TagRepository tagRepository;
 
-	public RoomDto.RoomResponse add(InsertRoomInfo insertRoomInfo) {
-		
-		String code;
-		// 무한루프는 그대로지만 HashSet 활용해서 DB 접근 최소화!
-		HashSet<String> set = new HashSet<>(roomRepository.findAllCode());
-		while (true) {
-			code = Util.getRandomCode();
-			if(!set.contains(code)) break;
-		}
-		
-		Room room = Room.builder()
-				.hostId(insertRoomInfo.getHostId())
-				.startTime(insertRoomInfo.getStartTime())
-				.code(code)
-				.roomName("")
-				.build();
-		return RoomMapper.INSTANCE.toResponse(
-				roomRepository.save(room)
-		);
-	}
 	
 	public RoomDto.RoomResponse addBycode(String code, RoomDto.InsertHostInfo insertHostInfo) {
 		Room room = Room.builder()
 				.hostId(insertHostInfo.getHostId())
 				.code(code)
+				.startTime(new Date())
 				.isPublic(insertHostInfo.getIsPublic())
 				.roomName(insertHostInfo.getRoomName())
 				.build();
