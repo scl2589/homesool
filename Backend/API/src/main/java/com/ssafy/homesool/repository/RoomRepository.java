@@ -31,4 +31,9 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 			+ "limit 10",
 			nativeQuery = true)
 	List<String> get10days(@Param("userId") long userId);
+	
+	@Query(value = "select * from room "
+			+ "where is_public = 1 and end_time is NULL",
+			nativeQuery = true)
+	List<Room> getPublicRoomsInfo();
 }
