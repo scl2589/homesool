@@ -83,9 +83,11 @@ public class RoomService {
 		return roomRepository.save(newroom);
 	}
 	
-	public Room update(long roomId, Date endTime) {
+	public Room finishRoom(long roomId) {
 		Room room= roomRepository.findOneByRoomId(roomId);
-		room.updateEndTime(endTime);
+		System.out.println(room);
+		room.updateEndTime(new Date());
+		System.out.println(room);
 		return roomRepository.save(room);
 	}
 

@@ -48,23 +48,6 @@ public class RoomController {
 	private final RoomService roomService;
 	private final PhotoService photoService;
 
-	@PostMapping
-	@ApiOperation(value = "미팅 시작", notes = "새로 미팅을 주최한다. response로 10자리 code를 반환한다", response = RoomDto.InsertRoomInfo.class)
-	@ApiResponses(value = {
-		@ApiResponse(code = 201, message = "Created"),
-		@ApiResponse(code = 400, message = "Bad Request"),
-		@ApiResponse(code = 401, message = "Unauthorized"),
-		@ApiResponse(code = 403, message = "Forbidden"),
-		@ApiResponse(code = 404, message = "Not Found")
-	})
-	private ResponseEntity<RoomDto.RoomResponse> addRoom(
-		@ApiParam(value = "호스트 유저 id와 시작 시각", required = true) @RequestBody RoomDto.InsertRoomInfo insertRoomInfo) {
-		logger.debug("add Room 호출\n" + insertRoomInfo.toString());
-		//방 생성
-		RoomDto.RoomResponse roomResponse = roomService.add(insertRoomInfo);
-		return new ResponseEntity<>(roomResponse, HttpStatus.OK);
-	}
-	
 	@GetMapping("code")
 	@ApiOperation(value = "미팅 코드 조회", notes = "미팅 코드로 이 미팅이 유효한지 반환한다", response = String.class)
 	@ApiResponses(value = {
@@ -79,8 +62,8 @@ public class RoomController {
 		return roomService.getCode();
 	}
 	
-	@PutMapping
-	@ApiOperation(value = "미팅 종료", notes = "미팅을 종료하고 종료 시각을 기록한다.", response = RoomDto.UpdateRoomInfo.class)
+	@PutMapping("finish/{roomId}")
+	@ApiOperation(value = "미팅 종료", notes = "미팅을 종료하고 종료 시각을 기록한다.", response = String.class)
 	@ApiResponses(value = {
 		@ApiResponse(code = 200, message = "OK"),
 		@ApiResponse(code = 400, message = "Bad Request"),
@@ -88,10 +71,10 @@ public class RoomController {
 		@ApiResponse(code = 403, message = "Forbidden"),
 		@ApiResponse(code = 404, message = "Not Found")
 	})
-	private ResponseEntity<Room> updateRoom(
-		@ApiParam(value = "미팅 id와 종료 시각",required = true) @RequestBody RoomDto.UpdateRoomInfo updateRoomInfo){
-		logger.debug(String.format("update Room {%s} end time {%s} 호출",updateRoomInfo.getRoomId(), updateRoomInfo.getEndTime().toString()));
-		return new ResponseEntity<Room>(roomService.update(updateRoomInfo.getRoomId(), updateRoomInfo.getEndTime()),HttpStatus.OK);
+	private ResponseEntity<Room> finishRoom(
+		@ApiParam(value = "미팅 id와 종료 시각",required = true) @PathVariable long roomId){
+		logger.debug(String.format("finishRoom Room {%s} 호출",roomId));
+		return new ResponseEntity<Room>(roomService.finishRoom(roomId),HttpStatus.OK);
 	}
 	
 	@PostMapping("{code}/host")

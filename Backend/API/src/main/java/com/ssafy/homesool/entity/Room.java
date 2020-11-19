@@ -34,7 +34,7 @@ public class Room {
 	@Column(nullable =false)
 	private long hostId;
 	
-	@Column(nullable = true, updatable = false)
+	@Column
 	private Date startTime;
 	
 	@Column

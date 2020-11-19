@@ -159,10 +159,8 @@ export default {
               title: event.data[i].roomName,
               class: this.color[Math.floor(Math.random()*6)]+' lighten-3 text-white',
             }
-            let year = event.data[i].startTime.slice(0,4)
-            let month = event.data[i].startTime.slice(5,7)
-            let day = event.data[i].startTime.slice(8,10)
-            log.dates = new Date(year,month-1,day)
+            log.dates = new Date(event.data[i].startTime)
+            console.log(log.dates)
             this.attributes.push(log)
           }
         })
