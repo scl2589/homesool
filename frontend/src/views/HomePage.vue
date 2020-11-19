@@ -239,6 +239,7 @@ export default {
       this.leaveSession();
       this.changeMeetingDialog(false);
       this.nickName = this.user.name;
+      this.roomName = `${this.nickName}의 방`;
       this.currentDrink = null;
     },
     clickEnter() {
