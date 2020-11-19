@@ -6,10 +6,12 @@ import HomePage from '@/views/HomePage';
 import RegisterPage from '@/views/RegisterPage';
 import ProfilePage from '@/views/ProfilePage';
 import MeetingPage from '@/views/MeetingPage';
+import OpenRoom from '@/views/OpenRoom/'
 // MyPage
 import MyPage from '@/views/MyPage';
 import Analysis from '@/components/mypage/Analysis'
 import Calendar from '@/components/mypage/Calendar'
+
 
 Vue.use(VueRouter);
 
@@ -50,6 +52,11 @@ const routes = [
         name: 'Analysis'
       }
     ]
+  }, 
+  {
+    path:'/open',
+    name: 'OpenRoom',
+    component: OpenRoom
   }
 ];
 
