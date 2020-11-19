@@ -23,31 +23,12 @@ import com.ssafy.homesool.repository.RoomRepository;
 public class RoomService {
 	private final RoomRepository roomRepository;
 	private final MemberRepository memberRepository;
-
-	public RoomDto.RoomResponse add(InsertRoomInfo insertRoomInfo) {
-		
-		String code;
-		// 무한루프는 그대로지만 HashSet 활용해서 DB 접근 최소화!
-		HashSet<String> set = new HashSet<>(roomRepository.findAllCode());
-		while (true) {
-			code = Util.getRandomCode();
-			if(!set.contains(code)) break;
-		}
-		
-		Room room = Room.builder()
-				.hostId(insertRoomInfo.getHostId())
-				.startTime(insertRoomInfo.getStartTime())
-				.code(code)
-				.roomName("")
-				.build();
-		return RoomMapper.INSTANCE.toResponse(
-				roomRepository.save(room)
-		);
-	}
 	
 	public RoomDto.RoomResponse addBycode(String code, long hostId, String roomName) {
+		
 		Room room = Room.builder()
 				.hostId(hostId)
+				.startTime(new Date())
 				.code(code)
 				.roomName(roomName)
 				.build();
@@ -81,9 +62,11 @@ public class RoomService {
 		return roomRepository.save(newroom);
 	}
 	
-	public Room update(long roomId, Date endTime) {
+	public Room finishRoom(long roomId) {
 		Room room= roomRepository.findOneByRoomId(roomId);
-		room.updateEndTime(endTime);
+		System.out.println(room);
+		room.updateEndTime(new Date());
+		System.out.println(room);
 		return roomRepository.save(room);
 	}
 
