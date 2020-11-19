@@ -704,10 +704,33 @@ const meetingStore = {
       }
 		},
 		leaveSession ({ state, commit }) {
+      // if (!state.subscribers.length) {
+      //   axios.put(SERVER.URL + SERVER.ROUTES.room + `/finish/${state.roomId}`, null, rootGetters.config)
+      //     .catch(err => {
+      //       console.log(err.response.data)
+      //     })
+      // }
 			// --- Leave the session by calling 'disconnect' method over the Session object ---
 			if (state.session) {
+        // const request = new XMLHttpRequest();
+        // request.open('PUT', `https://k3a503.p.ssafy.io:8889/room/finish/${state.roomId}`);
+        // request.setRequestHeader('X-AUTH-TOKEN', 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxNTE1NDk2ODk1IiwiaWF0IjoxNjA1NzUyNjE0LCJleHAiOjE2MDU3NzQyMTR9.TV_0nZJZHn17xgTvmzo2-2C8pLNt3_KabaaxgjLHCO8')
+        // request.send();
+        // if (!state.subscribers.length) {
+        //   axios.put(SERVER.URL + SERVER.ROUTES.room + `/finish/${state.roomId}`, null, rootGetters.config)
+        //     .catch(err => {
+        //       console.log(err.response.data)
+        //     })
+        // }
+        if (!state.subscribers.length) {
+          state.session.signal({
+            data: state.roomId,
+            to: [],
+            type: 'leave'
+          })
+        }
         state.publisher.stream.disposeWebRtcPeer();
-        state.publisher.stream.disposeMediaStream() 
+        state.publisher.stream.disposeMediaStream() ;
         state.session.disconnect();
         commit('SET_OV', undefined);
         commit('SET_SESSION', undefined);
@@ -735,6 +758,8 @@ const meetingStore = {
         commit('SET_SCREEN_PUBLISHER', undefined);
         commit('SET_SCREEN_OVTOKEN', null);
       }
+
+      
 		},
 		updateMainVideoStreamManager ({ state, commit }, stream) {
 			if (state.mainStreamManager === stream) return;
