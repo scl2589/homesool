@@ -6,6 +6,7 @@ import { OpenVidu } from 'openvidu-browser';
 import moment from 'moment';
 import Swal from 'sweetalert2'
 import firebase from 'firebase'
+import cookies from 'vue-cookies';
 
 const OPENVIDU_SERVER_SECRET = "MY_SECRET";
 
@@ -704,27 +705,14 @@ const meetingStore = {
       }
 		},
 		leaveSession ({ state, commit }) {
-      // if (!state.subscribers.length) {
-      //   axios.put(SERVER.URL + SERVER.ROUTES.room + `/finish/${state.roomId}`, null, rootGetters.config)
-      //     .catch(err => {
-      //       console.log(err.response.data)
-      //     })
-      // }
-			// --- Leave the session by calling 'disconnect' method over the Session object ---
 			if (state.session) {
-        // const request = new XMLHttpRequest();
-        // request.open('PUT', `https://k3a503.p.ssafy.io:8889/room/finish/${state.roomId}`);
-        // request.setRequestHeader('X-AUTH-TOKEN', 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxNTE1NDk2ODk1IiwiaWF0IjoxNjA1NzUyNjE0LCJleHAiOjE2MDU3NzQyMTR9.TV_0nZJZHn17xgTvmzo2-2C8pLNt3_KabaaxgjLHCO8')
-        // request.send();
-        // if (!state.subscribers.length) {
-        //   axios.put(SERVER.URL + SERVER.ROUTES.room + `/finish/${state.roomId}`, null, rootGetters.config)
-        //     .catch(err => {
-        //       console.log(err.response.data)
-        //     })
-        // }
         if (!state.subscribers.length) {
+          var requestData = {
+            roomId: state.roomId,
+            JWT: cookies.get('auth-token')
+          }
           state.session.signal({
-            data: state.roomId,
+            data: JSON.stringify(requestData),
             to: [],
             type: 'leave'
           })
