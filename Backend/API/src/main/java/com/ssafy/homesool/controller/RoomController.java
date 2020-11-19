@@ -4,7 +4,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
+import java.util.List;
 
 import org.mariadb.jdbc.internal.logging.Logger;
 import org.mariadb.jdbc.internal.logging.LoggerFactory;
@@ -95,7 +95,7 @@ public class RoomController {
 	}
 	
 	@PostMapping("{code}/host")
-	@ApiOperation(value = "미팅 시작 후 호스트 정보 업데이트", notes = "초기 정보 업데이트", response = RoomDto.RoomResponse.class)
+	@ApiOperation(value = "진짜 미팅 시작 API, 호스트 정보와 룸 정보 넘겨주기", notes = "초기 정보 업데이트", response = RoomDto.RoomResponse.class)
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "OK"),
 			@ApiResponse(code = 400, message = "Bad Request"),
@@ -108,7 +108,9 @@ public class RoomController {
 		@ApiParam(value = "호스트 유저 id와 시작 시각", required = true) @RequestBody RoomDto.InsertHostInfo insertHostInfo) {
 		logger.debug("update host in Room 호출\n" );
 		//방 제목 추가
-		RoomDto.RoomResponse roomResponse = roomService.addBycode(code, insertHostInfo.getHostId(), insertHostInfo.getRoomName());
+		RoomDto.RoomResponse roomResponse = roomService.addBycode(code, insertHostInfo);
+		//방에 태그 추가
+		roomService.addTags(insertHostInfo, roomResponse.getRoomId());
 		//호스트 닉네임 업데이트
 		roomService.addMember(code, insertHostInfo.getHostId(), insertHostInfo.getHostNickName(), 1);
 		return new ResponseEntity<>(roomResponse, HttpStatus.OK);
@@ -186,4 +188,18 @@ public class RoomController {
 			return new ResponseEntity<>(null, HttpStatus.OK);
 	}
 
+	@GetMapping("list")
+	@ApiOperation(value = "열려있는 미팅 조회", notes = "현재 진행중인 공개방 리스트를 반환한다", response = RoomDto.RoomInfo.class)
+	@ApiResponses(value = {
+		@ApiResponse(code = 200, message = "OK"),
+		@ApiResponse(code = 400, message = "Bad Request"),
+		@ApiResponse(code = 401, message = "Unauthorized"),
+		@ApiResponse(code = 403, message = "Forbidden"),
+		@ApiResponse(code = 404, message = "Not Found")
+	})
+	private ResponseEntity<List<RoomDto.RoomInfo>> getRoomlist() {
+		logger.debug(String.format("get Public Rooms 호출"));
+		return new ResponseEntity<>(roomService.getPublicRooms(),HttpStatus.OK);	
+	}
+	
 }

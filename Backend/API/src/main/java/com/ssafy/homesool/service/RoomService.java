@@ -13,16 +13,20 @@ import com.ssafy.homesool.dto.RoomDto;
 import com.ssafy.homesool.dto.RoomDto.InsertRoomInfo;
 import com.ssafy.homesool.entity.Member;
 import com.ssafy.homesool.entity.Room;
+import com.ssafy.homesool.entity.Tag;
+import com.ssafy.homesool.entity.UserDrink;
 import com.ssafy.homesool.exception.RoomNotFoundException;
 import com.ssafy.homesool.mapper.RoomMapper;
 import com.ssafy.homesool.repository.MemberRepository;
 import com.ssafy.homesool.repository.RoomRepository;
+import com.ssafy.homesool.repository.TagRepository;
 
 @RequiredArgsConstructor
 @Service
 public class RoomService {
 	private final RoomRepository roomRepository;
 	private final MemberRepository memberRepository;
+	private final TagRepository tagRepository;
 
 	public RoomDto.RoomResponse add(InsertRoomInfo insertRoomInfo) {
 		
@@ -45,15 +49,32 @@ public class RoomService {
 		);
 	}
 	
-	public RoomDto.RoomResponse addBycode(String code, long hostId, String roomName) {
+	public RoomDto.RoomResponse addBycode(String code, RoomDto.InsertHostInfo insertHostInfo) {
 		Room room = Room.builder()
-				.hostId(hostId)
+				.hostId(insertHostInfo.getHostId())
 				.code(code)
-				.roomName(roomName)
+				.isPublic(insertHostInfo.getIsPublic())
+				.roomName(insertHostInfo.getRoomName())
 				.build();
 		return RoomMapper.INSTANCE.toResponse(
 				roomRepository.save(room)
 		);
+	}
+	
+	//태그 추가
+	public void addTags(RoomDto.InsertHostInfo insertHostInfo, long roomId) {
+		//기존 태그 삭제
+		tagRepository.deleteAllByRoomId(roomId);
+		if(insertHostInfo.getTags() != null) {		
+			//saveAll 사용하면 한번에 넣을 수 있을텐데 잘 모르겠음
+			for(String tagname : insertHostInfo.getTags()) {
+				Tag tag = Tag.builder()
+					.roomId(roomId)
+					.tagName(tagname)
+					.build();
+				tagRepository.save(tag);
+			}	
+		}
 	}
 	
 	public String getCode() {
@@ -109,4 +130,7 @@ public class RoomService {
 			return 0;
 	}
 	
+	public List<RoomDto.RoomInfo> getPublicRooms(){
+		return RoomMapper.INSTANCE.toInfo(roomRepository.getPublicRoomsInfo());
+	}
 }

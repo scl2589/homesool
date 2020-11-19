@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.ssafy.homesool.entity.Tag;
 import com.ssafy.homesool.entity.UserDrink;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -33,6 +34,9 @@ public class RoomDto {
 		
 		@ApiModelProperty(value = "Room Name", example = "오늘은 내가 술게임최강자")
 		private String roomName;
+		
+		@ApiModelProperty(value = "Tag Info", example = "태그 이름들")
+		private List<Tag> tags;
 	}
 	
 	@Data
@@ -75,6 +79,13 @@ public class RoomDto {
 		
 		@ApiModelProperty(value = "Room Name", example = "오늘은 내가 술게임최강자")
 		private String roomName;
+		
+		@ApiModelProperty(value = "public of private", example = "1(public) 0(private)")
+		private int isPublic;
+		
+		@ApiModelProperty(value = "Room Tags", example = "")
+		private List<String> tags;
+		
 	}
 	
 	@Data
