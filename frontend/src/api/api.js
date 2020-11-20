@@ -10,6 +10,8 @@ export default {
     room: '/room',
     rooms: '/room/list/',
     roomCount: '/room/list/count',
+    searchName: '/room/list/name/',
+    searchTag: '/room/list/tag/',
     photo: '/room/photo',
     voice: '/v1/recongnize'
   }
