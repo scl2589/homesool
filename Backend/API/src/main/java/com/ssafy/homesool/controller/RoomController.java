@@ -1,9 +1,5 @@
 package com.ssafy.homesool.controller;
 
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.mariadb.jdbc.internal.logging.Logger;
@@ -16,10 +12,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
+
+import com.ssafy.homesool.dto.PhotoDto;
+import com.ssafy.homesool.dto.RoomDto;
+import com.ssafy.homesool.entity.Room;
+import com.ssafy.homesool.service.PhotoService;
+import com.ssafy.homesool.service.RoomService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,14 +27,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-
-import com.ssafy.homesool.dto.PhotoDto;
-import com.ssafy.homesool.dto.RoomDto;
-import com.ssafy.homesool.dto.UserDto;
-import com.ssafy.homesool.entity.Room;
-import com.ssafy.homesool.entity.Member;
-import com.ssafy.homesool.service.PhotoService;
-import com.ssafy.homesool.service.RoomService;
 
 @RequiredArgsConstructor
 @RestController
@@ -185,6 +176,21 @@ public class RoomController {
 		return new ResponseEntity<>(roomService.getPublicRoomsCount(), HttpStatus.OK);	
 	}
 	
+	@GetMapping("list/count/{keyword}")
+	@ApiOperation(value = "검색한 미팅 개수 조회", notes = "검색된 현재 진행중인 공개방 리스트의 개수를 반환한다", response = Long.class)
+	@ApiResponses(value = {
+		@ApiResponse(code = 200, message = "OK"),
+		@ApiResponse(code = 400, message = "Bad Request"),
+		@ApiResponse(code = 401, message = "Unauthorized"),
+		@ApiResponse(code = 403, message = "Forbidden"),
+		@ApiResponse(code = 404, message = "Not Found")
+	})
+	private ResponseEntity<Long> getRoomSearchCount(
+			@ApiParam(value = "검색어",required = true, example = "술게임") @PathVariable String keyword) {
+		logger.debug(String.format("get Public Rooms Count 호출"));
+		return new ResponseEntity<>(roomService.getPublicRoomsSearchCount(keyword), HttpStatus.OK);	
+	}
+	
 	@GetMapping("list/{pagenum}")
 	@ApiOperation(value = "열려있는 미팅 조회", notes = "현재 진행중인 공개방 리스트를 반환한다", response = RoomDto.RoomInfoPlus.class)
 	@ApiResponses(value = {
@@ -195,9 +201,24 @@ public class RoomController {
 		@ApiResponse(code = 404, message = "Not Found")
 	})
 	private ResponseEntity<List<RoomDto.RoomInfoPlus>> getRoomlist(
-			@ApiParam(value = "페이지 번호",required = true, example = "1~") @PathVariable int pagenum) {
+			@ApiParam(value = "페이지 번호",required = true, example = "1") @PathVariable int pagenum) {
 		logger.debug(String.format("get Public Rooms 호출"));
 		return new ResponseEntity<>(roomService.getPublicRooms(pagenum), HttpStatus.OK);	
+	}
+	@GetMapping("list/search/{keyword}/{pagenum}")
+	@ApiOperation(value = "검색한 미팅 조회", notes = "현재 진행중인 공개방 리스트를 방 이름으로 검색한다", response = RoomDto.RoomInfo.class)
+	@ApiResponses(value = {
+		@ApiResponse(code = 200, message = "OK"),
+		@ApiResponse(code = 400, message = "Bad Request"),
+		@ApiResponse(code = 401, message = "Unauthorized"),
+		@ApiResponse(code = 403, message = "Forbidden"),
+		@ApiResponse(code = 404, message = "Not Found")
+	})
+	private ResponseEntity<List<RoomDto.RoomInfo>> getRoomlistByNameOrTag(
+			@ApiParam(value = "검색어",required = true, example = "술게임") @PathVariable String keyword,
+			@ApiParam(value = "페이지 번호",required = true, example = "1") @PathVariable int pagenum) {
+		logger.debug(String.format("get Public Rooms By Name 호출"));
+		return new ResponseEntity<>(roomService.getPublicRoomsByNameOrTag(keyword, pagenum),HttpStatus.OK);	
 	}
 	
 	@PutMapping
@@ -219,38 +240,6 @@ public class RoomController {
 		return new ResponseEntity<>(roomResponse, HttpStatus.OK);
 	}
 
-	@GetMapping("list/name/{roomName}/{pagenum}")
-	@ApiOperation(value = "열려있는 미팅 조회", notes = "현재 진행중인 공개방 리스트를 방 이름으로 검색한다", response = RoomDto.RoomInfo.class)
-	@ApiResponses(value = {
-		@ApiResponse(code = 200, message = "OK"),
-		@ApiResponse(code = 400, message = "Bad Request"),
-		@ApiResponse(code = 401, message = "Unauthorized"),
-		@ApiResponse(code = 403, message = "Forbidden"),
-		@ApiResponse(code = 404, message = "Not Found")
-	})
-	private ResponseEntity<List<RoomDto.RoomInfo>> getRoomlistByName(
-			@ApiParam(value = "방 제목",required = true, example = "술게임") @PathVariable String roomName,
-			@ApiParam(value = "페이지 번호",required = true, example = "1") @PathVariable int pagenum) {
-		logger.debug(String.format("get Public Rooms By Name 호출"));
-		return new ResponseEntity<>(roomService.getPublicRoomsByName(roomName, pagenum),HttpStatus.OK);	
-	}
-	
-	@GetMapping("list/tag/{tag}/{pagenum}")
-	@ApiOperation(value = "열려있는 미팅 조회", notes = "현재 진행중인 공개방 리스트를 태그로 검색한다", response = RoomDto.RoomInfo.class)
-	@ApiResponses(value = {
-		@ApiResponse(code = 200, message = "OK"),
-		@ApiResponse(code = 400, message = "Bad Request"),
-		@ApiResponse(code = 401, message = "Unauthorized"),
-		@ApiResponse(code = 403, message = "Forbidden"),
-		@ApiResponse(code = 404, message = "Not Found")
-	})
-	private ResponseEntity<List<RoomDto.RoomInfo>> getRoomlistByTag(
-			@ApiParam(value = "태그 이름",required = true, example = "테스트") @PathVariable String tag,
-			@ApiParam(value = "페이지 번호",required = true, example = "1") @PathVariable int pagenum) {
-		logger.debug(String.format("get Public Rooms By Tag 호출"));
-		return new ResponseEntity<>(roomService.getPublicRoomsByTag(tag, pagenum),HttpStatus.OK);	
-	}
-	
 	@GetMapping("info/{roomId}")
 	@ApiOperation(value = "방 정보 조회", notes = "roomId로 해당 방의 이름, 태그, 공개정보를 비롯한 방정보 조회", response = RoomDto.RoomInfo.class)
 	@ApiResponses(value = {
@@ -279,4 +268,37 @@ public class RoomController {
 		logger.debug(String.format("get All Tags 호출"));
 		return new ResponseEntity<>(roomService.getAllTags(),HttpStatus.OK);	
 	}
+	
+//	제목/태그별 검색
+//	@GetMapping("list/name/{roomName}/{pagenum}")
+//	@ApiOperation(value = "열려있는 미팅 조회", notes = "현재 진행중인 공개방 리스트를 방 이름으로 검색한다", response = RoomDto.RoomInfo.class)
+//	@ApiResponses(value = {
+//		@ApiResponse(code = 200, message = "OK"),
+//		@ApiResponse(code = 400, message = "Bad Request"),
+//		@ApiResponse(code = 401, message = "Unauthorized"),
+//		@ApiResponse(code = 403, message = "Forbidden"),
+//		@ApiResponse(code = 404, message = "Not Found")
+//	})
+//	private ResponseEntity<List<RoomDto.RoomInfo>> getRoomlistByName(
+//			@ApiParam(value = "방 제목",required = true, example = "술게임") @PathVariable String roomName,
+//			@ApiParam(value = "페이지 번호",required = true, example = "1") @PathVariable int pagenum) {
+//		logger.debug(String.format("get Public Rooms By Name 호출"));
+//		return new ResponseEntity<>(roomService.getPublicRoomsByName(roomName, pagenum),HttpStatus.OK);	
+//	}
+//	
+//	@GetMapping("list/tag/{tag}/{pagenum}")
+//	@ApiOperation(value = "열려있는 미팅 조회", notes = "현재 진행중인 공개방 리스트를 태그로 검색한다", response = RoomDto.RoomInfo.class)
+//	@ApiResponses(value = {
+//		@ApiResponse(code = 200, message = "OK"),
+//		@ApiResponse(code = 400, message = "Bad Request"),
+//		@ApiResponse(code = 401, message = "Unauthorized"),
+//		@ApiResponse(code = 403, message = "Forbidden"),
+//		@ApiResponse(code = 404, message = "Not Found")
+//	})
+//	private ResponseEntity<List<RoomDto.RoomInfo>> getRoomlistByTag(
+//			@ApiParam(value = "태그 이름",required = true, example = "테스트") @PathVariable String tag,
+//			@ApiParam(value = "페이지 번호",required = true, example = "1") @PathVariable int pagenum) {
+//		logger.debug(String.format("get Public Rooms By Tag 호출"));
+//		return new ResponseEntity<>(roomService.getPublicRoomsByTag(tag, pagenum),HttpStatus.OK);	
+//	}
 }
