@@ -212,6 +212,6 @@ public class RoomController {
 	private ResponseEntity<List<RoomDto.RoomInfo>> getRoomlistByTag(
 			@ApiParam(value = "태그 이름",required = true, example = "테스트") @PathVariable String tag) {
 		logger.debug(String.format("get Public Rooms By Tag 호출"));
-		return new ResponseEntity<>(roomService.getPublicRoomByTag(tag),HttpStatus.OK);	
+		return new ResponseEntity<>(roomService.getPublicRoomsByTag(tag),HttpStatus.OK);	
 	}
 }

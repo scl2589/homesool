@@ -118,11 +118,11 @@ public class RoomService {
 	}
 	
 	public List<RoomDto.RoomInfo> getPublicRoomsByName(String roomName) {
-		return RoomMapper.INSTANCE.toInfo(roomRepository.findByIsPublicAndRoomNameLike(roomName));
+		return RoomMapper.INSTANCE.toInfo(roomRepository.getPublicRoomsByRoomName(roomName));
 	}
 	
-	public List<RoomDto.RoomInfo> getPublicRoomByTag(String tag) {
-		return RoomMapper.INSTANCE.toInfo(roomRepository.findByIsPublicAndTagsLike(tag));
+	public List<RoomDto.RoomInfo> getPublicRoomsByTag(String tag) {
+		return RoomMapper.INSTANCE.toInfo(roomRepository.getPublicRoomsByTag(tag));
 	}
 
 	
