@@ -8,6 +8,8 @@ export default {
     user: '/user',
     login: '/user/login',
     room: '/room',
+    rooms: '/room/list/',
+    roomCount: '/room/list/count',
     photo: '/room/photo',
     voice: '/v1/recongnize'
   }

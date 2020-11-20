@@ -10,6 +10,7 @@ import cookies from 'vue-cookies';
 import SERVER from '@/api/api';
 import meetingStore from '@/store/modules/meetingStore';
 import mypageStore from '@/store/modules/mypageStore';
+import openroomStore from '@/store/modules/openroomStore'
 
 import Swal from "sweetalert2";
 
@@ -139,5 +140,6 @@ export default new Vuex.Store({
   modules: {
     meetingStore: meetingStore,
     mypageStore: mypageStore,
+    openroomStore: openroomStore,
   },
 });
