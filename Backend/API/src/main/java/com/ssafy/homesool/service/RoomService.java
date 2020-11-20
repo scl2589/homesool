@@ -150,5 +150,13 @@ public class RoomService {
 	public long getPublicRoomsCount() {
 		return roomRepository.getPublicRoomsCount();
 	}
+	
+	public RoomDto.RoomInfo getRoomByRoomId(long roomId){
+		return RoomMapper.INSTANCE.toInfoOne(roomRepository.findOneByRoomId(roomId));
+	}
+	
+	public List<String> getAllTags(){
+		return tagRepository.findAllTags();
+	}
 
 }
