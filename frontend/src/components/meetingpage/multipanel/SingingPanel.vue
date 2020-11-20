@@ -1,6 +1,17 @@
 <template>
-  <div class="d-flex flex-column justify-content-between p-2 px-5 w-100">
+  <div class="d-flex flex-column justify-content-center p-2 px-5 w-100">
     <h3>홈술이 노래방</h3>
+    <div
+      class="d-flex justify-content-center mt-3"
+      v-if="!selectedSong & flag"
+    >
+      <img
+        src="@/assets/images/microphone.png"
+        width="100vh"
+        @click="clickSelectSong(song)"
+      >
+    </div>
+
     <!-- 노래 중 -->
     <div class="song-screen" v-if="selectedSong">
       <div class="embed-responsive embed-responsive-16by9">
@@ -37,8 +48,11 @@
       
       <div v-else>
         <!-- 선곡 중(!modeHost) -->
-        <div v-if="notModeHost">
-          <p>{{ notModeHost.name }} 님이 선곡 중입니다 :)</p>
+        <div 
+          class="mt-3"
+          v-if="notModeHost"
+        >
+          <p><span class="color-yellow">{{ notModeHost.name }}</span>님이 선곡 중입니다 :)</p>
         </div>
 
         <!-- 선곡 중(modeHost) -->
@@ -48,7 +62,7 @@
             label="노래를 검색하세요 :)"
             color="#BDBDBD"
             dark
-            @keyup.enter="searchSong(songKeyword)"
+            @keyup.enter="enterSong(songKeyword)"
           ></v-text-field>
           <div class="row">
             <div
@@ -83,7 +97,8 @@ export default {
       songKeyword: null,
       ytPlayer: null,
       timerId: null,
-      checksync: null
+      checksync: null,
+      flag: true
     }
   },
 
@@ -158,6 +173,10 @@ export default {
     clickSelectSong(song) {
       this.selectSong(song);
       this.songKeyword = null;
+    },
+    enterSong(song){
+      this.searchSong(song)
+      this.flag = false
     }
   },
 
@@ -169,15 +188,15 @@ export default {
 </script>
 
 <style scoped>
-* {
+h3, p {
   color: white;
   margin: 0;
   padding: 0;
 }
 
 .song-thumbnail {
-  max-width: 150px;
-  max-height: 84px;
+  max-width: 10vw;
+  max-height: 10vh;
   cursor: pointer;
 }
 </style>
