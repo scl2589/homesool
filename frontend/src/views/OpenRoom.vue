@@ -1,7 +1,13 @@
 <template>
   <div>
     <div class="search-bar">
-      <input type="text" placeholder="" required>
+      <input 
+        v-model="search"
+        type="text" 
+        placeholder="" 
+        required
+        @keyup.enter="searchRoom(search)"
+      >
       <div class="search-icon"></div>
     </div>
 
@@ -42,7 +48,7 @@
     </div>
     <div class="d-flex justify-content-center">
       <div 
-        @click="fetchRooms(num)"
+        @click="clickPage(num)"
         v-for="num in roomCount"
         :key="num"
       >
@@ -110,20 +116,29 @@ export default {
 				'048-knight-1',
 				'049-mummy',
 				'050-ninja'
-      ]
+      ],
+      search: null,
     }
   },
   computed: {
-    ...mapState('openroomStore', ['rooms', 'roomCount']),
+    ...mapState('openroomStore', ['rooms', 'roomCount', 'searchNameRooms', 'searchTagRooms']),
   },
   methods: {
-    ...mapActions('openroomStore', ['fetchRooms', 'findRoomCount']),
+    ...mapActions('openroomStore', ['fetchRooms', 'findRoomCount', 'searchName', 'searchTag']),
     anonyMousImg(index) {
       return this.anonymousImages[index % 50]
     },
     clickRoom(code) {
       this.$router.push({ name: 'MeetingPage', params: { sessionId: code } })
     },
+    searchRoom(search) {
+      this.searchName(search)
+      this.searchTag(search)
+    },
+    clickPage(num) {
+      if (this.searchNameRooms !== "" && this.searchTagRooms !== "")
+        this.fetchRooms(num)
+    }
   },
   created() {
     this.fetchRooms(1)
