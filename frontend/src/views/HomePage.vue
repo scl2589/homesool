@@ -57,12 +57,12 @@
                 </v-col>
                 
                 <v-col
-                  class="room-name"
-                  cols="12"
+                  cols="6"
                   v-if="ishost"
                 >
                   <v-text-field
                     v-model="roomName"
+                    label="방 제목"
                     hint="방 제목을 입력해주세요"
                     persistent-hint
                     required
@@ -101,6 +101,68 @@
                     color="#84669a"
                   >
                   </v-select>
+                </v-col>
+
+                <v-col
+                  cols="6"
+                  v-if="ishost"
+                >
+                  <v-select
+                    v-model="isPublic"
+                    :items="publicItems"
+                    item-text="title"
+                    item-value="value"
+                    label="공개 여부"
+                    hint="미팅의 공개 여부를 입력해주세요"
+                    persistent-hint
+                    required
+                    color="#84669a"
+                  >
+                  </v-select>
+                </v-col>
+
+                <v-col
+                  cols="12"
+                  v-if="ishost"
+                >
+                  <v-combobox
+                    v-model="tags"
+                    :items="allTags"
+                    :search-input.sync="searchTag"
+                    hide-selected
+                    counter="5"
+                    :rules="[
+                      v => (v.length < 6) || '최대 5개의 태그를 고를 수 있습니다.'
+                    ]"
+                    color="blue-grey lighten-2"
+                    label="태그"
+                    multiple
+                    item-text="tagName"
+                    item-value="tagName"
+                    :return-object="false"
+                    persistent-hint
+                    small-chips
+                    hint="미팅을 설명하는 태그를 작성해주세요"
+                  >
+                    <template v-slot:selection="data">
+                      <v-chip
+                        v-bind="data.attrs"
+                        close
+                        @click:close="remove(tags, data.item)"
+                      >
+                        {{ data.item }}
+                      </v-chip>
+                    </template>
+                    <template v-slot:no-data>
+                      <v-list-item>
+                        <v-list-item-content>
+                          <v-list-item-title>
+                            "<strong>{{ searchTag }}</strong>"를 찾을 수 없습니다. <kbd>enter</kbd>를 눌러 새로운 태그를 만들어보세요. 
+                          </v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </template>
+                  </v-combobox>
                 </v-col>
 
                 <v-col
@@ -184,12 +246,17 @@ export default {
       lazy:false,
       ishost:false,
       roomName : null,
+      publicItems: [{ title: '공개', value: 1}, { title: '비공개', value: 0}],
+      isPublic: 1,
+      tags: [],
+      searchTag: null,
+
     };
   },
   computed: {
     ...mapGetters(['getId']),
     ...mapState(['token', 'user']),
-    ...mapState('meetingStore', ['mySessionId', 'session', 'mainStreamManager', 'publisher', 'subscribers', 'meetingDialog'])
+    ...mapState('meetingStore', ['mySessionId', 'session', 'mainStreamManager', 'publisher', 'subscribers', 'meetingDialog', 'allTags'])
   },
   watch: {
     user(value) {
@@ -209,8 +276,13 @@ export default {
       'clickMuteAudio',
       'enterSession',
       'changeMeetingDialog',
-      'updateUserNickname'
+      'updateUserNickname',
+      'fetchAllTags'
     ]),
+    remove (data, item) {
+      const index = data.indexOf(item)
+      if (index >= 0) data.splice(index, 1)
+    },
     hostbtn() {
       if (!this.getId) {
         Swal.fire({
@@ -245,15 +317,18 @@ export default {
       this.nickName = this.user.name;
       this.roomName = `${this.nickName}의 방`;
       this.currentDrink = null;
+      this.isPublic = 1;
     },
     clickEnter() {
       const enterData = {
         nickName: this.nickName,
         currentDrink: this.currentDrink
       }
-      //호스트라면 방 제목 변경
+      //호스트라면 방 제목, 공개여부, 태그
       if(this.ishost){
-        enterData.roomName = this.roomName
+        enterData.roomName = this.roomName;
+        enterData.isPublic = this.isPublic;
+        enterData.tags = this.tags;
       }
 
       this.enterSession(enterData)
@@ -295,6 +370,7 @@ export default {
       this.nickName = this.user.name;
       this.roomName = `${this.nickName}의 방`
     }
+    this.fetchAllTags();
   }
 };
 </script>
