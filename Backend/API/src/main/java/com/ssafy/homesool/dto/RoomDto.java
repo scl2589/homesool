@@ -39,6 +39,9 @@ public class RoomDto {
 		
 		@ApiModelProperty(value = "Tag Info", example = "태그 이름들")
 		private List<Tag> tags;
+		
+		@ApiModelProperty(value = "Open info", example = "공개 여부")
+		private int isPublic;
 	}
 	
 	@Data
