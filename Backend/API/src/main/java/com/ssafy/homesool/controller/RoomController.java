@@ -185,7 +185,7 @@ public class RoomController {
 		return new ResponseEntity<>(roomService.getPublicRooms(),HttpStatus.OK);	
 	}
 	
-	@PostMapping("list/name/{roomName}")
+	@GetMapping("list/name/{roomName}")
 	@ApiOperation(value = "열려있는 미팅 조회", notes = "현재 진행중인 공개방 리스트를 방 이름으로 검색한다", response = RoomDto.RoomInfo.class)
 	@ApiResponses(value = {
 		@ApiResponse(code = 200, message = "OK"),
@@ -200,7 +200,7 @@ public class RoomController {
 		return new ResponseEntity<>(roomService.getPublicRoomsByName(roomName),HttpStatus.OK);	
 	}
 	
-	@PostMapping("list/tag/{tag}")
+	@GetMapping("list/tag/{tag}")
 	@ApiOperation(value = "열려있는 미팅 조회", notes = "현재 진행중인 공개방 리스트를 태그로 검색한다", response = RoomDto.RoomInfo.class)
 	@ApiResponses(value = {
 		@ApiResponse(code = 200, message = "OK"),
