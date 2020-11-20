@@ -93,7 +93,7 @@ public class RoomController {
 		//방 제목 추가
 		RoomDto.RoomResponse roomResponse = roomService.addBycode(code, insertHostInfo);
 		//방에 태그 추가
-		roomService.addTags(insertHostInfo, roomResponse.getRoomId());
+		roomService.addTags(insertHostInfo.getTags(), roomResponse.getRoomId());
 		//호스트 닉네임 업데이트
 		roomService.addMember(code, insertHostInfo.getHostId(), insertHostInfo.getHostNickName(), 1);
 		return new ResponseEntity<>(roomResponse, HttpStatus.OK);
@@ -171,8 +171,8 @@ public class RoomController {
 			return new ResponseEntity<>(null, HttpStatus.OK);
 	}
 
-	@GetMapping("list")
-	@ApiOperation(value = "열려있는 미팅 조회", notes = "현재 진행중인 공개방 리스트를 반환한다", response = RoomDto.RoomInfo.class)
+	@GetMapping("list/{pagenum}")
+	@ApiOperation(value = "열려있는 미팅 조회", notes = "현재 진행중인 공개방 리스트를 반환한다", response = RoomDto.RoomInfoPlus.class)
 	@ApiResponses(value = {
 		@ApiResponse(code = 200, message = "OK"),
 		@ApiResponse(code = 400, message = "Bad Request"),
@@ -180,9 +180,28 @@ public class RoomController {
 		@ApiResponse(code = 403, message = "Forbidden"),
 		@ApiResponse(code = 404, message = "Not Found")
 	})
-	private ResponseEntity<List<RoomDto.RoomInfo>> getRoomlist() {
+	private ResponseEntity<List<RoomDto.RoomInfoPlus>> getRoomlist(
+			@ApiParam(value = "페이지 번호",required = true, example = "1~") @PathVariable int pagenum) {
 		logger.debug(String.format("get Public Rooms 호출"));
-		return new ResponseEntity<>(roomService.getPublicRooms(),HttpStatus.OK);	
+		return new ResponseEntity<>(roomService.getPublicRooms(pagenum), HttpStatus.OK);	
 	}
 	
+	@PutMapping
+	@ApiOperation(value = "미팅 정보 업데이트", notes = "방제목, 태그, 공개여부 설정", response = RoomDto.RoomResponse.class)
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "OK"),
+			@ApiResponse(code = 400, message = "Bad Request"),
+			@ApiResponse(code = 401, message = "Unauthorized"),
+			@ApiResponse(code = 403, message = "Forbidden"),
+			@ApiResponse(code = 404, message = "Not Found")
+	})
+	private ResponseEntity<RoomDto.RoomInfo> UpdateRoom(
+		@ApiParam(value = "방제목,태그,공개여부 설정", required = true) @RequestBody RoomDto.UpdateRoomInfo updateRoomInfo) {
+		logger.debug("update Room 호출\n" );
+		//방 정보 변경
+		RoomDto.RoomInfo roomResponse = roomService.updateRoom(updateRoomInfo);
+		//방에 태그 추가
+		roomService.addTags(updateRoomInfo.getTags(), updateRoomInfo.getRoomId());
+		return new ResponseEntity<>(roomResponse, HttpStatus.OK);
+	}
 }
