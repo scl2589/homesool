@@ -8,9 +8,13 @@
           <button @click="hostbtn">주최하기</button>
         </div>
         <div id="guest" class="p-1 bd-highlight">
-          <img src="@/assets/images/guest.png" alt="게스트" />
+          <img src="@/assets/images/meeting.png" alt="게스트" />
           <input placeholder="입장 코드를 입력하세요" v-model="inputSessionId" />
           <button v-show="inputSessionId" @click="guestbtn">입장하기</button>
+        </div>
+        <div id="host" class="p-1 bd-highlight">
+          <img src="@/assets/images/guest.png" alt="호스트" />
+          <button @click="openbtn">공개방 보기</button>
         </div>
       </div>
     </div>
@@ -356,6 +360,9 @@ export default {
           },
         }
       })
+    },
+    openbtn() {
+      this.$router.push({ name: 'OpenRoom' })
     }
   },
   mounted() {

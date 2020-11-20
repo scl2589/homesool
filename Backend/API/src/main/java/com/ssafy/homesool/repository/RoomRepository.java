@@ -33,7 +33,29 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 	List<String> get10days(@Param("userId") long userId);
 	
 	@Query(value = "select * from room "
+			+ "where is_public = 1 and end_time is NULL "
+			+ "lIMIT :start,:end",
+			nativeQuery = true)
+	List<Room> getPublicRoomsInfo(@Param("start") int start, @Param("end") int end);
+
+	@Query(value = "select *"
+			+ "from room "
+			+ "where is_public = 1 and end_time is NULL and room_name like %:roomName% "
+			+ "lIMIT :start,:end",
+			nativeQuery = true)
+	List<Room> getPublicRoomsByRoomName(@Param("roomName") String roomName, @Param("start") int start, @Param("end") int end);
+	
+	@Query(value = "select r.is_public, r.room_id, r.start_time, r.end_time, r.host_id, r.code, r.room_name, t.tag_name "
+			+ "from room r join tag t on r.room_id = t.room_id "
+			+ "where r.is_public = 1 and r.end_time is NULL and t.tag_name like %:tag% "
+			+ "group by r.room_id "
+			+ "lIMIT :start,:end",
+			nativeQuery = true)	
+	List<Room> getPublicRoomsByTag(@Param("tag") String tag, @Param("start") int start, @Param("end") int end);
+	
+	@Query(value = "select COUNT(*) from room "
 			+ "where is_public = 1 and end_time is NULL",
 			nativeQuery = true)
-	List<Room> getPublicRoomsInfo();
+	long getPublicRoomsCount();
+
 }

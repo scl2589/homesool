@@ -1,6 +1,7 @@
 package com.ssafy.homesool.service;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
 import com.ssafy.homesool.dto.RoomDto;
-import com.ssafy.homesool.dto.RoomDto.InsertRoomInfo;
 import com.ssafy.homesool.entity.Member;
 import com.ssafy.homesool.entity.Room;
 import com.ssafy.homesool.entity.Tag;
@@ -43,12 +43,12 @@ public class RoomService {
 	}
 	
 	//태그 추가
-	public void addTags(RoomDto.InsertHostInfo insertHostInfo, long roomId) {
+	public void addTags(List<String> tags, long roomId) {
 		//기존 태그 삭제
 		tagRepository.deleteAllByRoomId(roomId);
-		if(insertHostInfo.getTags() != null) {		
+		if(tags != null) {		
 			//saveAll 사용하면 한번에 넣을 수 있을텐데 잘 모르겠음
-			for(String tagname : insertHostInfo.getTags()) {
+			for(String tagname : tags) {
 				Tag tag = Tag.builder()
 					.roomId(roomId)
 					.tagName(tagname)
@@ -70,7 +70,7 @@ public class RoomService {
 		return code;
 	}
 
-
+	//이거 사용안할걸..?
 	public Room updateRoomName(long roomId, String roomName) {
 		Room room= roomRepository.findOneByRoomId(roomId);
 		Room newroom = Room.builder()
@@ -113,7 +113,50 @@ public class RoomService {
 			return 0;
 	}
 	
-	public List<RoomDto.RoomInfo> getPublicRooms(){
-		return RoomMapper.INSTANCE.toInfo(roomRepository.getPublicRoomsInfo());
+	public List<RoomDto.RoomInfoPlus> getPublicRooms(int pagenum){
+		List<RoomDto.RoomInfoPlus> roomlist = new ArrayList<>();
+		List<RoomDto.RoomInfo> roominfolist = RoomMapper.INSTANCE.toInfo(roomRepository.getPublicRoomsInfo((pagenum-1)*12,pagenum*12));
+		for(int i=0; i<roominfolist.size(); i++) {
+			RoomDto.RoomInfoPlus roominfoplus = new RoomDto.RoomInfoPlus();
+			roominfoplus.setRoominfo(roominfolist.get(i));
+			roominfoplus.setHost(memberRepository.findHostnameByroomId(roominfoplus.getRoominfo().getRoomId()));
+			roominfoplus.setUsers(memberRepository.findNicknameByroomId(roominfoplus.getRoominfo().getRoomId()));
+			roomlist.add(roominfoplus);
+		}
+		return roomlist;
 	}
+
+	public RoomDto.RoomInfo updateRoom(RoomDto.UpdateRoomInfo updateRoomInfo) {
+		Room room= roomRepository.findOneByRoomId(updateRoomInfo.getRoomId());
+		Room newroom = Room.builder()
+				.hostId(room.getHostId())
+				.startTime(room.getStartTime())
+				.code(room.getCode())
+				.roomId(room.getRoomId())
+				.roomName(updateRoomInfo.getRoomName())
+				.isPublic(updateRoomInfo.getIsPublic())
+				.build();
+		return RoomMapper.INSTANCE.toInfoOne(roomRepository.save(newroom));
+	}
+	
+	public List<RoomDto.RoomInfo> getPublicRoomsByName(String roomName, int pagenum) {
+		return RoomMapper.INSTANCE.toInfo(roomRepository.getPublicRoomsByRoomName(roomName, (pagenum-1)*12,pagenum*12));
+	}
+	
+	public List<RoomDto.RoomInfo> getPublicRoomsByTag(String tag, int pagenum) {
+		return RoomMapper.INSTANCE.toInfo(roomRepository.getPublicRoomsByTag(tag, (pagenum-1)*12,pagenum*12));
+	}
+	
+	public long getPublicRoomsCount() {
+		return roomRepository.getPublicRoomsCount();
+	}
+	
+	public RoomDto.RoomInfo getRoomByRoomId(long roomId){
+		return RoomMapper.INSTANCE.toInfoOne(roomRepository.findOneByRoomId(roomId));
+	}
+	
+	public List<String> getAllTags(){
+		return tagRepository.findAllTags();
+	}
+
 }

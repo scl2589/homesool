@@ -14,4 +14,5 @@ public interface RoomMapper {
 	
 	RoomDto.RoomResponse toResponse(Room room);
 	List<RoomDto.RoomInfo> toInfo(List<Room> rooms);
+	RoomDto.RoomInfo toInfoOne(Room room);
 }

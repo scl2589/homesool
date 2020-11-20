@@ -9,6 +9,8 @@ export default {
     login: '/user/login',
     room: '/room',
     info: '/room/info',
+    rooms: '/room/list/',
+    roomCount: '/room/list/count',
     photo: '/room/photo',
     tags: '/room/tags',
     voice: '/v1/recongnize'
