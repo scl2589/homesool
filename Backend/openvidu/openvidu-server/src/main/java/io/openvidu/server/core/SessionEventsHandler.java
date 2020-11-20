@@ -28,10 +28,17 @@ import org.kurento.client.GenericMediaEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import io.openvidu.client.OpenViduException;
 import io.openvidu.client.OpenViduException.Code;
@@ -335,9 +342,25 @@ public class SessionEventsHandler {
 				return;
 			}
 		}
-
+		// 마지막 사용자가 나갈 떄 ( 방 닫힐 떄 )
+		if (message.has("type") && message.get("type").getAsString().equals("signal:leave")) {
+			JsonObject data = (JsonObject) JsonParser.parseString(message.get("data").getAsString());
+			// roomId와 jwt토큰 받아옴
+			int roomId = data.get("roomId").getAsInt();
+			String JWT = data.get("JWT").getAsString();
+			
+			String homesoolUrl = "https://k3a503.p.ssafy.io:8889/room/finish/"+roomId;
+			
+			// API서버로 /room/finish/{roomId} 요청 보냄
+			// endTime 저장됨!
+			RestTemplate restTemplate = new RestTemplate();
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.add("X-AUTH-TOKEN", JWT);
+			UriComponents uri = UriComponentsBuilder.fromHttpUrl(homesoolUrl).build();
+			HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
+			restTemplate.exchange(uri.toString(), HttpMethod.PUT, httpEntity, String.class);
+		}
 		if (message.has("type") && message.get("type").getAsString().equals("signal:game")) {
-			System.out.println("=============GAMESTART=============");
 			gameService.controlGame(participant, message, participants, rpcNotificationService);
 		} else {
 			JsonObject params = new JsonObject();

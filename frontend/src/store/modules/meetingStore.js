@@ -6,6 +6,7 @@ import { OpenVidu } from 'openvidu-browser';
 import moment from 'moment';
 import Swal from 'sweetalert2'
 import firebase from 'firebase'
+import cookies from 'vue-cookies';
 
 const OPENVIDU_SERVER_SECRET = "MY_SECRET";
 
@@ -704,10 +705,20 @@ const meetingStore = {
       }
 		},
 		leaveSession ({ state, commit }) {
-			// --- Leave the session by calling 'disconnect' method over the Session object ---
 			if (state.session) {
+        if (!state.subscribers.length) {
+          var requestData = {
+            roomId: state.roomId,
+            JWT: cookies.get('auth-token')
+          }
+          state.session.signal({
+            data: JSON.stringify(requestData),
+            to: [],
+            type: 'leave'
+          })
+        }
         state.publisher.stream.disposeWebRtcPeer();
-        state.publisher.stream.disposeMediaStream() 
+        state.publisher.stream.disposeMediaStream() ;
         state.session.disconnect();
         commit('SET_OV', undefined);
         commit('SET_SESSION', undefined);
@@ -735,6 +746,8 @@ const meetingStore = {
         commit('SET_SCREEN_PUBLISHER', undefined);
         commit('SET_SCREEN_OVTOKEN', null);
       }
+
+      
 		},
 		updateMainVideoStreamManager ({ state, commit }, stream) {
 			if (state.mainStreamManager === stream) return;

@@ -125,7 +125,7 @@ public class RoomService {
 		}
 		return roomlist;
 	}
-	
+
 	public RoomDto.RoomInfo updateRoom(RoomDto.UpdateRoomInfo updateRoomInfo) {
 		Room room= roomRepository.findOneByRoomId(updateRoomInfo.getRoomId());
 		Room newroom = Room.builder()
@@ -139,4 +139,12 @@ public class RoomService {
 		return RoomMapper.INSTANCE.toInfoOne(roomRepository.save(newroom));
 	}
 	
+	public List<RoomDto.RoomInfo> getPublicRoomsByName(String roomName) {
+		return RoomMapper.INSTANCE.toInfo(roomRepository.getPublicRoomsByRoomName(roomName));
+	}
+	
+	public List<RoomDto.RoomInfo> getPublicRoomsByTag(String tag) {
+		return RoomMapper.INSTANCE.toInfo(roomRepository.getPublicRoomsByTag(tag));
+	}
+
 }
