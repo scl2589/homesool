@@ -5,33 +5,56 @@
       <div class="search-icon"></div>
     </div>
 
-    <div class="d-flex justify-content-between row no-gutters mt-10 p-5">
+    <div 
+      class="d-flex justify-content-between align-items-center row no-gutters cards p-5"
+      v-if="rooms"
+    >
       <div 
-        class="card2 mb-3 rounded" 
-        v-for="(i) in 12" 
-        :key="i" 
-        style="border:1px solid white; width:20vw"
+        class="card2 mb-3 rounded mx-2" 
+        v-for="(room, i) in rooms" 
+        :key="i"
       >
-        <div class="card-top mt-5">
-          <p class="text-right text-muted">주최자 000</p>
+        <div 
+          class="card-top mt-5"
+          @click="clickRoom(room.roominfo.code)"
+        >
+          <p class="text-right text-muted">주최자 {{room.host}}</p>
           <hr>
           <img width="50px"
           :src="require(`@/assets/images/${anonyMousImg(i)}.png`)"
           >
         </div>
         <div class="d-flex justify-content-start align-items-start flex-column pl-4">
-          <small class="text-muted">5명 입장 중</small>
-          <p class="strong">다같이 달려보자~~</p>
+          <small class="text-muted">{{room.users.length}}명 입장 중</small>
+          <p class="strong">{{ room.roominfo.roomName }}</p>
         </div>
         <div class="pl-4 pb-2 d-flex justify-content-start">
-          <small class="text-muted">#술게임 #술자리 #홈술이</small>
+          <small class="text-muted">
+            <span 
+              v-for="tag in room.roominfo.tags" 
+              :key="tag.tagId"
+              >
+              #{{ tag.tagName }}
+            </span>
+          </small>
         </div>
       </div>
     </div>
+    <div class="d-flex justify-content-center">
+      <div 
+        @click="fetchRooms(num)"
+        v-for="num in roomCount"
+        :key="num"
+      >
+        <span class="mr-3 color-white pointer">{{ num }}</span>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
 export default {
   name: 'OpenRoom',
   data() {
@@ -90,10 +113,21 @@ export default {
       ]
     }
   },
+  computed: {
+    ...mapState('openroomStore', ['rooms', 'roomCount']),
+  },
   methods: {
+    ...mapActions('openroomStore', ['fetchRooms', 'findRoomCount']),
     anonyMousImg(index) {
       return this.anonymousImages[index % 50]
-    }
+    },
+    clickRoom(code) {
+      this.$router.push({ name: 'MeetingPage', params: { sessionId: code } })
+    },
+  },
+  created() {
+    this.fetchRooms(1)
+    this.findRoomCount()
   }
 }
 </script>
@@ -102,6 +136,13 @@ export default {
 p, h3{
   color: white;
   margin: 0 10px 0 0;
+}
+
+.cards {
+  margin-top: 3vh;
+  margin-left: 3vw;
+  margin-right: 3vw;
+  min-height: 80vh;
 }
 
 hr {
@@ -125,6 +166,19 @@ img {
   border: 1px solid white;
 }
 
+.card2 {
+  border: 1px solid white;
+  width: 20vw;
+  min-height: 23vh;
+}
+
+.card2:hover {
+  background-color: rgb(1, 1, 1, 0.3)
+}
+
+.pointer {
+  cursor: pointer;
+}
 </style>
 
 <style scoped lang="scss">
