@@ -171,6 +171,20 @@ public class RoomController {
 			return new ResponseEntity<>(null, HttpStatus.OK);
 	}
 
+	@GetMapping("list/count")
+	@ApiOperation(value = "열려있는 미팅 개수 조회", notes = "현재 진행중인 공개방 리스트의 개수를 반환한다", response = Long.class)
+	@ApiResponses(value = {
+		@ApiResponse(code = 200, message = "OK"),
+		@ApiResponse(code = 400, message = "Bad Request"),
+		@ApiResponse(code = 401, message = "Unauthorized"),
+		@ApiResponse(code = 403, message = "Forbidden"),
+		@ApiResponse(code = 404, message = "Not Found")
+	})
+	private ResponseEntity<Long> getRoomCount() {
+		logger.debug(String.format("get Public Rooms Count 호출"));
+		return new ResponseEntity<>(roomService.getPublicRoomsCount(), HttpStatus.OK);	
+	}
+	
 	@GetMapping("list/{pagenum}")
 	@ApiOperation(value = "열려있는 미팅 조회", notes = "현재 진행중인 공개방 리스트를 반환한다", response = RoomDto.RoomInfoPlus.class)
 	@ApiResponses(value = {

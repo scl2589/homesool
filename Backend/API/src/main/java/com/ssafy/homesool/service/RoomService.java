@@ -146,5 +146,9 @@ public class RoomService {
 	public List<RoomDto.RoomInfo> getPublicRoomsByTag(String tag, int pagenum) {
 		return RoomMapper.INSTANCE.toInfo(roomRepository.getPublicRoomsByTag(tag, (pagenum-1)*12,pagenum*12));
 	}
+	
+	public long getPublicRoomsCount() {
+		return roomRepository.getPublicRoomsCount();
+	}
 
 }
