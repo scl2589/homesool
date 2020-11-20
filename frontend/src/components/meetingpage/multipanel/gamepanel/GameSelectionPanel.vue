@@ -2,7 +2,13 @@
   <div class="panel">
     <!-- !modeHost -->
     <div v-if="notModeHost">
-      <p>{{ notModeHost.name }}님이 게임을 고르는 중입니다 :)</p>
+      <h3>게임 모드</h3>
+      <img
+        src="@/assets/images/joystick.png"
+        width="100vh"
+        @click="clickSelectSong(song)"
+      >
+      <p class="mt-5"><span class="color-yellow">{{ notModeHost.name }}</span>님이 게임을 고르는 중입니다 :)</p>
     </div>
 
     <!-- modeHost -->
@@ -187,7 +193,7 @@ export default {
 
 <style scoped>
 .panel {
-  background-color: #707070;
+  /* background-color: #707070; */
   height: 100%;
   max-height: 46vh;
 }

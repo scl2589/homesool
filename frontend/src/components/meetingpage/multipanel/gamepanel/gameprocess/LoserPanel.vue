@@ -32,13 +32,12 @@
     </div>
     <img class="w-50" :src="smileURL" alt="" v-if="selectedGame == 4 && smileURL">
     <div class="w-100 mt-3" v-if="selectedGame==5">
-      <p class="w-100 color-gray answers p-0">읽은 문장: {{sentence}}</p>
+      <p class="w-100 color-gray answers p-0"><span class="highlight">읽은 문장</span>: {{sentence}}</p>
     </div>
     <user-video
       class="w-50"
       :class="{'w-45': game2, 'w-35':six, 'w-20':nine}"
       :stream-manager="loser"
-      @click.native="updateMainVideoStreamManager(loser)"
       v-if="selectedGame != 4"
     />
     <div v-if="selectedGame == 1">
@@ -97,21 +96,12 @@ export default {
   },
   watch: {
     gameAnswerWords() {
-      if (this.gameAnswerWords.length <= 3) {
-        this.six = false
-        this.nine = false
-      } else if (this.gameAnswerwords.length <= 6) {
-        this.six = true
-        this.nine = false
-      } else {
-        this.nine = true
-        this.six = false
-      }
+      this.findWidth()
     },
     selectedGame() {
       if (this.selectedGame === 2) {
         this.game2 = true
-      }
+      } 
     }
   },
   components: {
@@ -138,6 +128,24 @@ export default {
       request.gameStatus=0;
       var jsonRequest = JSON.stringify(request);
       this.sendGameRequest(jsonRequest);
+    },
+    findWidth() {
+      if ( this.gameAnswerWords) {
+        if ( this.gameAnswerWords.length <= 3 ) {
+          this.six = false
+          this.nine = false
+        } else if ( this.gameAnswerWords.length <= 6 ) {
+          this.six = true
+          this.nine = false
+        } else {
+          this.nine = true
+          this.six = false
+        }
+      }
+
+    },
+    created() {
+      this.findWidth()
     }
   }
 }
@@ -153,7 +161,7 @@ export default {
 }
 
 .w-35 {
-  width: 35% !important;
+  width: 30% !important;
 }
 
 .w-20 {
@@ -180,5 +188,9 @@ button {
 .nanum-font {
   font-family: 'Nanum Gothic', sans-serif;
   font-weight:600;
+}
+
+.highlight {
+  color:#ffffa4;
 }
 </style>
