@@ -15,6 +15,7 @@ export default {
     search: '/room/list/tag/',
     photo: '/room/photo',
     tags: '/room/tags',
-    voice: '/v1/recongnize'
+    voice: '/v1/recongnize',
+    liveNumber: '/openvidu/api/sessions/'
   }
 }

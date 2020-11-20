@@ -7,6 +7,7 @@ const openroomStore = {
     rooms : null,
     roomCount: 0,
     searchedRooms: null,
+    liveMembers: 0,
   },
   getters: {
   },
@@ -20,6 +21,9 @@ const openroomStore = {
     SET_SEARCHED_ROOMS(state, value) {
       state.searchedRooms = value
     },
+    SET_LIVE_MEMBERS(state, value) {
+      state.liveMembers = value
+    }
   },
   actions: {
     findRoomCount({ commit, rootGetters }) {
@@ -42,13 +46,22 @@ const openroomStore = {
     },
     searchRoom({ commit, rootGetters }, data) {
       axios.get(SERVER.URL + SERVER.ROUTES.searchRoom + data.search + '/' + data.pageNum , rootGetters.config)
-      .then((res) => {
-        commit('SET_SEARCHED_ROOMS', res.data)
-      })
-      .catch((err) => {
-        console.log(err)
-      })
+        .then((res) => {
+          commit('SET_SEARCHED_ROOMS', res.data)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     },
+    findLiveMembers({ commit, rootGetters }, data) {
+      axios.get(SERVER.OPENVIDU_URL + SERVER.ROUTES.liveNumber + data, rootGetters.config)
+        .then((res) => {
+          commit('SET_LIVE_MEMBERS', res.data)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    }
   }
 }
 
