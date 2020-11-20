@@ -368,7 +368,8 @@ export default {
   mounted() {
     if (this.user) {
       this.nickName = this.user.name;
-      this.roomName = `${this.nickName}의 방`
+      this.roomName = `${this.nickName}의 방`;
+      this.tags = [];
     }
     this.fetchAllTags();
   }
