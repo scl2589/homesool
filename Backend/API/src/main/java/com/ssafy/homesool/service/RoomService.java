@@ -139,12 +139,12 @@ public class RoomService {
 		return RoomMapper.INSTANCE.toInfoOne(roomRepository.save(newroom));
 	}
 	
-	public List<RoomDto.RoomInfo> getPublicRoomsByName(String roomName) {
-		return RoomMapper.INSTANCE.toInfo(roomRepository.getPublicRoomsByRoomName(roomName));
+	public List<RoomDto.RoomInfo> getPublicRoomsByName(String roomName, int pagenum) {
+		return RoomMapper.INSTANCE.toInfo(roomRepository.getPublicRoomsByRoomName(roomName, (pagenum-1)*12,pagenum*12));
 	}
 	
-	public List<RoomDto.RoomInfo> getPublicRoomsByTag(String tag) {
-		return RoomMapper.INSTANCE.toInfo(roomRepository.getPublicRoomsByTag(tag));
+	public List<RoomDto.RoomInfo> getPublicRoomsByTag(String tag, int pagenum) {
+		return RoomMapper.INSTANCE.toInfo(roomRepository.getPublicRoomsByTag(tag, (pagenum-1)*12,pagenum*12));
 	}
 
 }

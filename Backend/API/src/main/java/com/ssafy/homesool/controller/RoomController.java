@@ -203,8 +203,9 @@ public class RoomController {
 		//방에 태그 추가
 		roomService.addTags(updateRoomInfo.getTags(), updateRoomInfo.getRoomId());
 		return new ResponseEntity<>(roomResponse, HttpStatus.OK);
+	}
 
-	@GetMapping("list/name/{roomName}")
+	@GetMapping("list/name/{roomName}/{pagenum}")
 	@ApiOperation(value = "열려있는 미팅 조회", notes = "현재 진행중인 공개방 리스트를 방 이름으로 검색한다", response = RoomDto.RoomInfo.class)
 	@ApiResponses(value = {
 		@ApiResponse(code = 200, message = "OK"),
@@ -214,12 +215,13 @@ public class RoomController {
 		@ApiResponse(code = 404, message = "Not Found")
 	})
 	private ResponseEntity<List<RoomDto.RoomInfo>> getRoomlistByName(
-			@ApiParam(value = "방 제목",required = true, example = "술게임") @PathVariable String roomName) {
+			@ApiParam(value = "방 제목",required = true, example = "술게임") @PathVariable String roomName,
+			@ApiParam(value = "페이지 번호",required = true, example = "1") @PathVariable int pagenum) {
 		logger.debug(String.format("get Public Rooms By Name 호출"));
-		return new ResponseEntity<>(roomService.getPublicRoomsByName(roomName),HttpStatus.OK);	
+		return new ResponseEntity<>(roomService.getPublicRoomsByName(roomName, pagenum),HttpStatus.OK);	
 	}
 	
-	@GetMapping("list/tag/{tag}")
+	@GetMapping("list/tag/{tag}/{pagenum}")
 	@ApiOperation(value = "열려있는 미팅 조회", notes = "현재 진행중인 공개방 리스트를 태그로 검색한다", response = RoomDto.RoomInfo.class)
 	@ApiResponses(value = {
 		@ApiResponse(code = 200, message = "OK"),
@@ -229,8 +231,9 @@ public class RoomController {
 		@ApiResponse(code = 404, message = "Not Found")
 	})
 	private ResponseEntity<List<RoomDto.RoomInfo>> getRoomlistByTag(
-			@ApiParam(value = "태그 이름",required = true, example = "테스트") @PathVariable String tag) {
+			@ApiParam(value = "태그 이름",required = true, example = "테스트") @PathVariable String tag,
+			@ApiParam(value = "페이지 번호",required = true, example = "1") @PathVariable int pagenum) {
 		logger.debug(String.format("get Public Rooms By Tag 호출"));
-		return new ResponseEntity<>(roomService.getPublicRoomsByTag(tag),HttpStatus.OK);	
+		return new ResponseEntity<>(roomService.getPublicRoomsByTag(tag, pagenum),HttpStatus.OK);	
 	}
 }
