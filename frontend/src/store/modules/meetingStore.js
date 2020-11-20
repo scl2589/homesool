@@ -47,6 +47,11 @@ const meetingStore = {
     mySessionId: null,
     roomId: null,
     totalDrink : 0,
+    roomHost: null,
+    isHost: null,
+    nextRoomHost: null,
+    allTags: null,
+    roomInfo: null,
 
     // openvidu
     OV: undefined,
@@ -197,6 +202,21 @@ const meetingStore = {
     },
     RESET_TOTAL_DRINK(state) {
       state.totalDrink = 0;
+    },
+    SET_ROOM_HOST(state, value) {
+      state.roomHost = value;
+    },
+    SET_IS_HOST(state, value) {
+      state.isHost = value;
+    },
+    SET_NEXT_ROOM_HOST(state, value) {
+      state.nextRoomHost = value;
+    },
+    SET_ALL_TAGS(state, value) {
+      state.allTags = value;
+    },
+    SET_ROOM_INFO(state, value) {
+      state.roomInfo = value;
     },
 
     // Openvidu
@@ -716,6 +736,14 @@ const meetingStore = {
             to: [],
             type: 'leave'
           })
+        } else {
+          if (state.nextRoomHost) {
+            state.session.signal({
+              data: JSON.stringify(state.nextRoomHost),
+              to: [],
+              type: 'roomhostleave'
+            })
+          }
         }
         state.publisher.stream.disposeWebRtcPeer();
         state.publisher.stream.disposeMediaStream() ;
@@ -735,6 +763,10 @@ const meetingStore = {
         commit('SET_THEME', 'basic');
         commit('SET_NICKNAME', null);
         commit('RESET_TOTAL_DRINK');
+        commit('SET_ROOM_HOST', null);
+        commit('SET_IS_HOST', null);
+        commit('SET_NEXT_ROOM_HOST', null);
+        commit('roomInfo', null);
       }
 
       if (state.screenSession) {
@@ -896,12 +928,16 @@ const meetingStore = {
           "hostId" : rootGetters.getId,
           "hostNickName" : enterData.nickName,
           "roomName" : enterData.roomName,
+          "isPublic" : enterData.isPublic,
+          "tags" : enterData.tags
         };
         axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${state.mySessionId}/host`, createData, rootGetters.config)
         .then(res =>{
           commit('SET_ROOMID', res.data.roomId);
+          commit('SET_ROOM_HOST', 'temp');
           enterData.roomId = res.data.roomId;
           dispatch('setDrinkRecord', enterData);
+          dispatch('findRoomInfo', res.data.roomId);
         })
       }else{  //유저 요청
         const MemberData = {
@@ -960,20 +996,41 @@ const meetingStore = {
                 selectedGame: state.selectedGame,
                 isSongEnded: state.isSongEnded,
                 isSharingMode: state.isSharingMode,
-                totalDrink: state.totalDrink
+                totalDrink: state.totalDrink,
+                roomHost: state.roomHost
+              }
+              if (state.isHost) {
+                let nextRoomHost = Object()
+                if (state.subscribers.length) {
+                  nextRoomHost.name = state.subscribers[0].stream.connection.data.slice(15, -2);
+                  nextRoomHost.id = state.subscribers[0].stream.connection.connectionId;
+                  commit('SET_NEXT_ROOM_HOST', nextRoomHost);
+                } else {
+                  nextRoomHost.name = event.data.slice(15, -2);
+                  nextRoomHost.id = event.from.connectionId
+                  commit('SET_NEXT_ROOM_HOST', nextRoomHost);
+                }
               }
               state.session.signal({
                 type: 'status',
                 data: JSON.stringify(status),
                 to: [event.stream.connection.connectionId],
-              })              
+              })
             })
+            state.session.on('signal:roomhost', (event) => {
+              if (event.data && event.data !== 'temp') {
+                commit('SET_ROOM_HOST', event.data);
+              }
+            });
 
             state.session.on('signal:status', (event) => {
               let status = JSON.parse(event.data);
               if (!state.currentMode && !state.modeHost) {
                 commit('SET_THEME', status.theme);
                 commit('SET_MODE_HOST', status.modeHost);
+                if (status.roomHost && status.roomHost !== 'temp') {
+                  commit('SET_ROOM_HOST', status.roomHost);
+                }
                 commit('SET_IS_SHARING_MODE', status.isSharingMode);
 
                 if (status.currentMode === 'anonymous') {
@@ -1012,7 +1069,22 @@ const meetingStore = {
                 }
                 commit('SET_CHANGED_FLAG');
               }
-            })
+            });
+
+            state.session.on('signal:roomhostleave', (event) => {
+              let data = JSON.parse(event.data);
+              commit('SET_ROOM_HOST', data.id);
+              
+              if (state.publisher.stream.connection.connectionId === data.id) {
+                commit('SET_IS_HOST', data.id);
+                if (state.subscribers.length) {
+                  let nextRoomHost = Object()
+                  nextRoomHost.name = state.subscribers[0].stream.connection.data.slice(15, -2);
+                  nextRoomHost.id = state.subscribers[0].stream.connection.connectionId;
+                  commit('SET_NEXT_ROOM_HOST', nextRoomHost);
+                }
+              }
+            });
 
             state.session.on('signal:mode', (event) => {
               let mode = event.data
@@ -1309,6 +1381,19 @@ const meetingStore = {
                   commit('SET_MODE_HOST', null);
                 }
               }
+
+              if (state.isHost && state.nextRoomHost) {
+                if (state.nextRoomHost.id === event.stream.connection.connectionId) {
+                  if (state.subscribers.length) {
+                    let nextRoomHost = Object();
+                    nextRoomHost.name = state.subscribers[0].stream.connection.data.slice(15, -2);
+                    nextRoomHost.id = state.subscribers[0].stream.connection.connectionId;
+                    commit('SET_NEXT_ROOM_HOST', nextRoomHost);
+                  } else {
+                    commit('SET_NEXT_ROOM_HOST', null);
+                  }
+                }
+              }
             });
 
             state.session.on('signal:drink', (event) => {
@@ -1588,6 +1673,47 @@ const meetingStore = {
     },
     changeSpinner({ commit }, value) {
       commit('SET_SPINNER', value)
+    },
+    setRoomHost({ state, commit }, id) {
+      commit('SET_ROOM_HOST', id);
+      commit('SET_IS_HOST', id);
+      state.session.signal({
+        type: 'roomhost',
+        data: id,
+        to: [],
+      });
+    },
+    fetchAllTags({ commit, rootGetters }) {
+      axios.get(SERVER.URL + SERVER.ROUTES.tags, rootGetters.config)
+        .then(res => {
+          commit('SET_ALL_TAGS', res.data);
+        })
+        .catch(err => {
+          console.log(err.response.data);
+        })
+    },
+    findRoomInfo({ commit, rootGetters }, roomId) {
+      axios.get(SERVER.URL + SERVER.ROUTES.info + `/${roomId}`, rootGetters.config)
+        .then(res => {
+          commit('SET_ROOM_INFO', res.data);
+        })
+        .catch(err => {
+          console.log(err.response.data);
+        })
+    },
+    updateRoomInfo({ state, commit, rootGetters }, updateData) {
+      updateData.roomId = state.roomId;
+      axios.put(SERVER.URL + SERVER.ROUTES.room, updateData, rootGetters.config)
+        .then(res => {
+          commit('SET_ROOM_INFO', res.data);
+          Swal.fire({
+            title: "미팅 정보가 수정되었습니다",
+            icon: "success",
+          })
+        })
+        .catch(err => {
+          console.log(err.response.data);
+        })
     }
   }
 }

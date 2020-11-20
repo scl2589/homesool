@@ -160,7 +160,6 @@ export default {
               class: this.color[Math.floor(Math.random()*6)]+' lighten-3 text-white',
             }
             log.dates = new Date(event.data[i].startTime)
-            console.log(log.dates)
             this.attributes.push(log)
           }
         })

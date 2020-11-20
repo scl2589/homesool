@@ -29,7 +29,7 @@
 		<div class="d-flex justify-content-around align-items-center" v-if="isLeftPanel">
 			<div class="overlay-name d-flex justify-content-center align-items-center" v-if="nickName">
 				<p class="px-2 mb-0 client-name">{{ clientData }}</p>
-				<v-tooltip bottom>
+				<v-tooltip bottom v-if="isRoomHost(streamManager.stream.connection.connectionId)">
 					<template v-slot:activator="{ on, attrs }">
 						<v-img
 							class="small-icon"
@@ -40,7 +40,7 @@
 						>
 						</v-img>
 					</template>
-					<span>미팅 주최자</span>
+					<span>미팅장</span>
 				</v-tooltip>
 				<v-tooltip bottom v-if="isModeHost(streamManager.stream.connection.connectionId)">
 					<template v-slot:activator="{ on, attrs }">
@@ -165,7 +165,8 @@ export default {
 			'nickName',
 			'drunkenList',
 			'changedFlag',
-			'modeHost'
+			'modeHost',
+			'roomHost'
 			]),
 		...mapState(['user']),
 		...mapGetters("meetingStore", ['getImgsrc']),
@@ -202,6 +203,13 @@ export default {
 		},
 		isModeHost(connectionId) {
 			if (this.modeHost && this.modeHost.id === connectionId) {
+				return true;
+			} else {
+				return false;
+			}
+		},
+		isRoomHost(connectionId) {
+			if (this.roomHost && this.roomHost === connectionId) {
 				return true;
 			} else {
 				return false;
