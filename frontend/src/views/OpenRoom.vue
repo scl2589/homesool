@@ -66,7 +66,7 @@
           >
         </div>
         <div class="d-flex justify-content-start align-items-start flex-column pl-4">
-          <small class="text-muted" v-if="room.users">{{ room.users.length }}명 입장 중</small>
+          <small class="text-muted" >{{ live[i] }}명 입장 중</small>
           <p class="strong">{{ room.roomName }}</p>
         </div>
         <div class="pl-4 pb-2 d-flex justify-content-start">
@@ -155,13 +155,22 @@ export default {
       search: null,
       pageNum: 1,
       flag: true,
+      live: new Array()
+    }
+  },
+  watch: {
+    searchedRooms() {
+      for (let room of this.searchedRooms) {
+        this.findLiveMembers(room.code)
+        this.live.push(this.liveMembers)
+      }
     }
   },
   computed: {
-    ...mapState('openroomStore', ['rooms', 'roomCount', 'searchedRooms']),
+    ...mapState('openroomStore', ['rooms', 'roomCount', 'searchedRooms', 'liveMembers']),
   },
   methods: {
-    ...mapActions('openroomStore', ['fetchRooms', 'findRoomCount', 'searchRoom']),
+    ...mapActions('openroomStore', ['fetchRooms', 'findRoomCount', 'searchRoom', 'findLiveMembers']),
     anonyMousImg(index) {
       return this.anonymousImages[index % 50]
     },
@@ -185,6 +194,7 @@ export default {
         data.pageNum = this.pageNum
         this.searchRoom(data)
         this.flag = false
+        this.live = []
       }
     }
   },
