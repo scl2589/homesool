@@ -32,12 +32,12 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 			nativeQuery = true)
 	List<String> get10days(@Param("userId") long userId);
 	
-	@Query(value = "select *"
-			+ "from room "
-			+ "where is_public = 1 and end_time is NULL",
+	@Query(value = "select * from room "
+			+ "where is_public = 1 and end_time is NULL "
+			+ "lIMIT :start,:end",
 			nativeQuery = true)
-	List<Room> getPublicRoomsInfo();
-	
+	List<Room> getPublicRoomsInfo(@Param("start") int start, @Param("end") int end);
+
 	@Query(value = "select *"
 			+ "from room "
 			+ "where is_public = 1 and end_time is NULL and room_name like %:roomName%",
@@ -48,7 +48,6 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 			+ "where r.is_public = 1 and r.end_time is NULL and t.tag_name like %:tag% "
 			+ "group by r.room_id",
 			nativeQuery = true)	
-	List<Room>getPublicRoomsByTag(@Param("tag") String tag);
+	List<Room> getPublicRoomsByTag(@Param("tag") String tag);
 
-	
 }
