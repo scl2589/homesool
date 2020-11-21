@@ -30,14 +30,16 @@ const openroomStore = {
           commit('SET_ROOMCOUNT', res.data)
         })
         .catch((err) => {
-          console.log(err)
+          console.log(err.response.data);
         })
     },
     fetchRooms({commit, rootGetters}, num) {
       axios.get(SERVER.URL + SERVER.ROUTES.rooms + num, rootGetters.config)
         .then((res) => {
-          for(let room of res.data){
-            axios.get(SERVER.OPENVIDU_URL + SERVER.ROUTES.liveNumber + room.roominfo.code , {
+          let rooms = res.data;
+          const promises = [];
+          for(let room of rooms){
+            const task = axios.get(SERVER.OPENVIDU_URL + SERVER.ROUTES.liveNumber + room.roominfo.code , {
               headers: {
                 'Content-Type': 'application/json'
               },
@@ -47,24 +49,28 @@ const openroomStore = {
               },
             })
             .then((res) => {
-              console.log(res.data.connections.numberOfElements)
               room.numberOfElements = res.data.connections.numberOfElements
             })
             .catch((err) => {
-              console.log(err)
+              console.log(err.response.data);
             })
+            promises.push(task);
           }
-          commit('SET_ROOMS', res.data)
+          Promise.all(promises).then(() => {
+            commit('SET_ROOMS', rooms);
+          });
         })
         .catch((err) => {
-          console.log(err)
+          console.log(err.response.data);
         })
     },
     searchRoom({ commit, rootGetters }, data) {
       axios.get(SERVER.URL + SERVER.ROUTES.searchRoom + data.search + '/' + data.pageNum , rootGetters.config)
         .then((res) => {
-          for(let room of res.data){
-            axios.get(SERVER.OPENVIDU_URL + SERVER.ROUTES.liveNumber + room.code , {
+          let rooms = res.data;
+          const promises = [];
+          for(let room of rooms){
+            const task = axios.get(SERVER.OPENVIDU_URL + SERVER.ROUTES.liveNumber + room.code , {
               headers: {
                 'Content-Type': 'application/json'
               },
@@ -74,19 +80,21 @@ const openroomStore = {
               },
             })
             .then((res) => {
-              console.log(res.data.connections.numberOfElements)
               room.numberOfElements = res.data.connections.numberOfElements
             })
             .catch((err) => {
-              console.log(err)
+              console.log(err.response.data);
             })
+            promises.push(task);
           }
-          commit('SET_SEARCHED_ROOMS', res.data)
+          Promise.all(promises).then(() => {
+            commit('SET_SEARCHED_ROOMS', rooms);
+          });
         })
         .catch((err) => {
-          console.log(err)
+          console.log(err.response.data);
         })
-    },
+    }
   }
 }
 
