@@ -1105,6 +1105,10 @@ const meetingStore = {
               }
 
               if (mode === 'anonymous') {
+                let TruthStartSound = new Audio(require('@/assets/sounds/truthStart.wav'));
+                TruthStartSound.volume = 0.2
+                TruthStartSound.play();
+
                 let pitchs = ['0.76', '0.77', '0.78', '0.79', '0.80', '1.3', '1.4', '1.5', '1.6', '1.7']
                 let pitch = pitchs[Math.floor(Math.random() * pitchs.length)]
                 state.publisher.stream.applyFilter("GStreamerFilter", {"command": `pitch pitch=${pitch}`});
@@ -1115,9 +1119,19 @@ const meetingStore = {
                   text: '진실의 방 모드가 켜졌습니다!'
                 });
               } else if (mode === 'singing') {
+                //효과음
+                let modeChangeSound = new Audio(require('@/assets/sounds/modeChange.mp3'));
+                modeChangeSound.volume = 0.1
+                modeChangeSound.play();
+
                 commit('SET_IS_SONG_ENDED', false);
                 commit('SET_CURRENT_MODE', mode);
               } else if (mode === 'snapshot') {
+                //효과음
+                let modeChangeSound = new Audio(require('@/assets/sounds/modeChange.mp3'));
+                modeChangeSound.volume = 0.1
+                modeChangeSound.play();
+
                 if (state.currentMode === 'snapshot') {
                   commit('SET_CURRENT_MODE', null);
                   setTimeout(() => {
@@ -1127,6 +1141,10 @@ const meetingStore = {
                   commit('SET_CURRENT_MODE', mode);
                 }
               } else {
+                 //효과음
+                 let modeChangeSound = new Audio(require('@/assets/sounds/modeChange.mp3'));
+                 modeChangeSound.volume = 0.1
+                 modeChangeSound.play();
                 commit('SET_CURRENT_MODE', mode);
               }
 
@@ -1183,6 +1201,13 @@ const meetingStore = {
                     }
                   });
                 }
+                if(event.data.gameStatus == 2){
+                  //게임 진행 중일 때만
+                  //효과음
+                  let turnSound = new Audio(require('@/assets/sounds/turnchange.mp3'));
+                  turnSound.volume = 0.1
+                  turnSound.play();
+                }
               }
 
               if(event.data.gameStatus == 0){
@@ -1200,6 +1225,10 @@ const meetingStore = {
                 commit('SET_SELECTED_GAME', event.data.gameId);
                 commit('SET_GAME_STATUS', event.data.gameStatus);
                 commit('SET_PENALTY', event.data.panelty)
+
+                let gameStartSound = new Audio(require('@/assets/sounds/gameStart.wav'));
+                gameStartSound.volume = 0.3
+                gameStartSound.play();
                 if(state.selectedGame == 1){  //업다운
                   commit('SET_GAME_UPDOWN_INDEX',event.data.index)
                   commit('SET_GAME_UPDOWN_NUMBER',event.data.number)
@@ -1216,6 +1245,11 @@ const meetingStore = {
                 }
                 if(state.selectedGame == 2){  //초성게임
                   if(event.data.isCorrect == 2){
+                    //정답일때 효과음
+                    let rightAnswerSound = new Audio(require('@/assets/sounds/rightAnswer.wav'));
+                    rightAnswerSound.volume = 0.1
+                    rightAnswerSound.play();
+
                     if (state.publisher.stream.connection.connectionId === event.from.connectionId) {
                       let data = {
                         nickName : state.publisher.stream.connection.data.slice(15,-2),
@@ -1239,6 +1273,12 @@ const meetingStore = {
                   }
                   if(event.from.connectionId == state.publisher.stream.connection.connectionId){
                     commit('SET_GAME_WORDRESULT',event.data.result);
+                    if(event.data.isCorrect != 2){
+                      //정답이 아닐 때 효과음
+                      let wrongAnswerSound = new Audio(require('@/assets/sounds/wrongAnswer.mp3'));
+                      wrongAnswerSound.volume = 0.1
+                      wrongAnswerSound.play();
+                    }
                   }
                 }
                 if(state.selectedGame == 3){  //라이어게임
@@ -1247,6 +1287,16 @@ const meetingStore = {
                   commit('SET_GAME_LIAR', event.data.liarId);
                   if(event.data.turn==1){
                     commit('SET_GAME_THEME', event.data.theme);
+                    //효과음
+                    let turnSound = new Audio(require('@/assets/sounds/turnchange.mp3'));
+                    turnSound.volume = 0.1
+                    turnSound.play();
+                  }
+                  else if(event.data.turn==2){
+                    //효과음
+                    let turnSound = new Audio(require('@/assets/sounds/turnchange.mp3'));
+                    turnSound.volume = 0.1
+                    turnSound.play();
                   }
                 }
                 if(state.selectedGame == 4){  //웃으면 술이와요
@@ -1330,6 +1380,11 @@ const meetingStore = {
                       }
                     });
                   }
+                  
+                  let paneltySound = new Audio(require('@/assets/sounds/panelty2.mp3'));
+                  paneltySound.volume = 0.1
+                  paneltySound.play();
+
                 }
                 else{
                   if (state.publisher.stream.connection.connectionId === event.from.connectionId) {
