@@ -31,7 +31,7 @@
           >
         </div>
         <div class="d-flex justify-content-start align-items-start flex-column pl-4">
-          <small class="text-muted" v-if="room.users">{{ room.users.length }}명 입장 중</small>
+          <small class="text-muted" v-if="room.users">{{ room.numberOfElements }}명 입장 중</small>
           <p class="strong">{{ room.roominfo.roomName }}</p>
         </div>
         <div class="pl-4 pb-2 d-flex justify-content-start">
@@ -57,7 +57,7 @@
       >
         <div 
           class="card-top mt-5"
-          @click="clickRoom(room.code)"
+          @click="clickRoom(room.roominfo.code)"
         >
           <p class="text-right text-muted">주최자 {{ room.host }}</p>
           <hr>
@@ -66,13 +66,13 @@
           >
         </div>
         <div class="d-flex justify-content-start align-items-start flex-column pl-4">
-          <small class="text-muted" >{{ live[i] }}명 입장 중</small>
-          <p class="strong">{{ room.roomName }}</p>
+          <small class="text-muted" >{{ room.numberOfElements }}명 입장 중</small>
+          <p class="strong">{{ room.roominfo.roomName }}</p>
         </div>
         <div class="pl-4 pb-2 d-flex justify-content-start">
           <small class="text-muted">
             <span 
-              v-for="tag in room.tags" 
+              v-for="tag in room.roominfo.tags" 
               :key="tag.tagId"
               >
               #{{ tag.tagName }}
@@ -155,15 +155,12 @@ export default {
       search: null,
       pageNum: 1,
       flag: true,
-      live: new Array()
+      // live: new Array()
     }
   },
   watch: {
-    searchedRooms() {
-      for (let room of this.searchedRooms) {
-        this.findLiveMembers(room.code)
-        this.live.push(this.liveMembers)
-      }
+    searchedRooms: {
+      deep : true
     }
   },
   computed: {
@@ -194,7 +191,7 @@ export default {
         data.pageNum = this.pageNum
         this.searchRoom(data)
         this.flag = false
-        this.live = []
+        // this.live = []
       }
     }
   },
