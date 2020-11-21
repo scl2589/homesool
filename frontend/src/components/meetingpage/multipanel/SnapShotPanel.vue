@@ -93,6 +93,11 @@ export default {
             this.remain--;
           }, 1000)
         } else {
+          //효과음
+          let cameraSound = new Audio(require('@/assets/sounds/camera.mp3'));
+          cameraSound.volume = 0.1
+          cameraSound.play();
+
           this.changeSpinner(true)
           if ( !this.notModeHost ) {
             let canvas = document.getElementById('canvas');
