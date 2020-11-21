@@ -158,11 +158,6 @@ export default {
       // live: new Array()
     }
   },
-  watch: {
-    searchedRooms: {
-      deep : true
-    }
-  },
   computed: {
     ...mapState('openroomStore', ['rooms', 'roomCount', 'searchedRooms', 'liveMembers']),
   },
