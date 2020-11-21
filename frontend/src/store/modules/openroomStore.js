@@ -39,6 +39,7 @@ const openroomStore = {
           let rooms = res.data;
           const promises = [];
           for(let room of rooms){
+            console.log(room)
             const task = axios.get(SERVER.OPENVIDU_URL + SERVER.ROUTES.liveNumber + room.roominfo.code , {
               headers: {
                 'Content-Type': 'application/json'
@@ -70,7 +71,7 @@ const openroomStore = {
           let rooms = res.data;
           const promises = [];
           for(let room of rooms){
-            const task = axios.get(SERVER.OPENVIDU_URL + SERVER.ROUTES.liveNumber + room.code , {
+            const task = axios.get(SERVER.OPENVIDU_URL + SERVER.ROUTES.liveNumber + room.roominfo.code , {
               headers: {
                 'Content-Type': 'application/json'
               },
