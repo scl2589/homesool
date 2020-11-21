@@ -37,7 +37,7 @@ const openroomStore = {
       axios.get(SERVER.URL + SERVER.ROUTES.rooms + num, rootGetters.config)
         .then((res) => {
           for(let room of res.data){
-            axios.get(SERVER.OPENVIDU_URL + SERVER.ROUTES.liveNumber + room.code , {
+            axios.get(SERVER.OPENVIDU_URL + SERVER.ROUTES.liveNumber + room.roominfo.code , {
               headers: {
                 'Content-Type': 'application/json'
               },

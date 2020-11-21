@@ -159,11 +159,8 @@ export default {
     }
   },
   watch: {
-    searchedRooms() {
-      // for (let room of this.searchedRooms) {
-      //   this.findLiveMembers(room.code)
-      //   this.live.push(this.liveMembers)
-      // }
+    searchedRooms: {
+      deep : true
     }
   },
   computed: {
