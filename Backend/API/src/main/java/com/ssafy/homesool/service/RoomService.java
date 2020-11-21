@@ -139,8 +139,17 @@ public class RoomService {
 		return RoomMapper.INSTANCE.toInfoOne(roomRepository.save(newroom));
 	}
 	
-	public List<RoomDto.RoomInfo> getPublicRoomsByNameOrTag(String keyword, int pagenum) {
-		return RoomMapper.INSTANCE.toInfo(roomRepository.getPublicRoomsByRoomNameOrTag(keyword, (pagenum-1)*12,pagenum*12));
+	public List<RoomDto.RoomInfoPlus> getPublicRoomsByNameOrTag(String keyword, int pagenum) {
+		List<RoomDto.RoomInfoPlus> roomlist = new ArrayList<>();
+		List<RoomDto.RoomInfo> roominfolist = RoomMapper.INSTANCE.toInfo(roomRepository.getPublicRoomsByRoomNameOrTag(keyword, (pagenum-1)*12,pagenum*12));
+		for(int i=0; i<roominfolist.size(); i++) {
+			RoomDto.RoomInfoPlus roominfoplus = new RoomDto.RoomInfoPlus();
+			roominfoplus.setRoominfo(roominfolist.get(i));
+			roominfoplus.setHost(memberRepository.findHostnameByroomId(roominfoplus.getRoominfo().getRoomId()));
+			roominfoplus.setUsers(memberRepository.findNicknameByroomId(roominfoplus.getRoominfo().getRoomId()));
+			roomlist.add(roominfoplus);
+		}
+		return roomlist;
 	}
 	
 	public List<RoomDto.RoomInfo> getPublicRoomsByName(String roomName, int pagenum) {

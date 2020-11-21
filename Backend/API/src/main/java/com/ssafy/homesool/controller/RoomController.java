@@ -206,7 +206,7 @@ public class RoomController {
 		return new ResponseEntity<>(roomService.getPublicRooms(pagenum), HttpStatus.OK);	
 	}
 	@GetMapping("list/search/{keyword}/{pagenum}")
-	@ApiOperation(value = "검색한 미팅 조회", notes = "현재 진행중인 공개방 리스트를 방 이름으로 검색한다", response = RoomDto.RoomInfo.class)
+	@ApiOperation(value = "검색한 미팅 조회", notes = "현재 진행중인 공개방 리스트를 방 이름으로 검색한다", response = RoomDto.RoomInfoPlus.class)
 	@ApiResponses(value = {
 		@ApiResponse(code = 200, message = "OK"),
 		@ApiResponse(code = 400, message = "Bad Request"),
@@ -214,7 +214,7 @@ public class RoomController {
 		@ApiResponse(code = 403, message = "Forbidden"),
 		@ApiResponse(code = 404, message = "Not Found")
 	})
-	private ResponseEntity<List<RoomDto.RoomInfo>> getRoomlistByNameOrTag(
+	private ResponseEntity<List<RoomDto.RoomInfoPlus>> getRoomlistByNameOrTag(
 			@ApiParam(value = "검색어",required = true, example = "술게임") @PathVariable String keyword,
 			@ApiParam(value = "페이지 번호",required = true, example = "1") @PathVariable int pagenum) {
 		logger.debug(String.format("get Public Rooms By Name 호출"));
