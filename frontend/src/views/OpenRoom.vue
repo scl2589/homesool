@@ -11,11 +11,10 @@
       <div class="search-icon"></div>
     </div>
 
-    <div 
-      class="d-flex justify-content-between align-items-center row no-gutters cards p-5"
-      v-if="flag"
-    >
-      <div v-if="rooms.length>=1">
+    <div v-if="flag">
+      <div 
+        class="d-flex justify-content-between align-items-center row no-gutters cards p-5"
+        v-if="rooms.length>=1">
         <div 
           class="card2 mb-3 rounded mx-2" 
           v-for="(room, i) in rooms" 
@@ -53,13 +52,14 @@
       >
         <h3 class="text-center">공개된 방이 존재하지 않습니다.</h3>
       </div>
-
     </div>
-    <div 
-      class="d-flex justify-content-between align-items-center row no-gutters cards p-5"
+    <div
       v-if="!flag"
     >
-      <div v-if="searchedRooms.length >= 1">
+      <div
+        class="d-flex justify-content-between align-items-center row no-gutters cards p-5"
+        v-if="searchedRooms.length >= 1"
+      >
         <div 
           class="card2 mb-3 rounded mx-2" 
           v-for="(room, i) in searchedRooms" 
