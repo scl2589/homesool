@@ -11,7 +11,7 @@
       <div class="search-icon"></div>
     </div>
 
-    <div class="h-100" v-if="flag">
+    <div class="h-90" v-if="flag">
       <div 
         class="d-flex justify-content-between align-items-center row no-gutters cards p-5"
         v-if="rooms.length>=1">
@@ -262,6 +262,10 @@ img {
 
 .pointer {
   cursor: pointer;
+}
+
+.h-90 {
+  height: 90%!important;
 }
 </style>
 
