@@ -15,71 +15,89 @@
       class="d-flex justify-content-between align-items-center row no-gutters cards p-5"
       v-if="flag"
     >
-      <div 
-        class="card2 mb-3 rounded mx-2" 
-        v-for="(room, i) in rooms" 
-        :key="i"
-      >
+      <div v-if="rooms.length>=1">
         <div 
-          class="card-top mt-5"
-          @click="clickRoom(room.roominfo.code)"
+          class="card2 mb-3 rounded mx-2" 
+          v-for="(room, i) in rooms" 
+          :key="i"
         >
-          <p class="text-right text-muted">주최자 {{ room.host }}</p>
-          <hr>
-          <img width="50px"
-          :src="require(`@/assets/images/${anonyMousImg(i)}.png`)"
+          <div 
+            class="card-top mt-5"
+            @click="clickRoom(room.roominfo.code)"
           >
-        </div>
-        <div class="d-flex justify-content-start align-items-start flex-column pl-4">
-          <small class="text-muted" v-if="room.users">{{ room.numberOfElements }}명 입장 중</small>
-          <p class="strong">{{ room.roominfo.roomName }}</p>
-        </div>
-        <div class="pl-4 pb-2 d-flex justify-content-start">
-          <small class="text-muted">
-            <span 
-              v-for="tag in room.roominfo.tags" 
-              :key="tag.tagId"
-              >
-              #{{ tag.tagName }}
-            </span>
-          </small>
+            <p class="text-right text-muted">주최자 {{ room.host }}</p>
+            <hr>
+            <img width="50px"
+            :src="require(`@/assets/images/${anonyMousImg(i)}.png`)"
+            >
+          </div>
+          <div class="d-flex justify-content-start align-items-start flex-column pl-4">
+            <small class="text-muted" v-if="room.users">{{ room.numberOfElements }}명 입장 중</small>
+            <p class="strong">{{ room.roominfo.roomName }}</p>
+          </div>
+          <div class="pl-4 pb-2 d-flex justify-content-start">
+            <small class="text-muted">
+              <span 
+                v-for="tag in room.roominfo.tags" 
+                :key="tag.tagId"
+                >
+                #{{ tag.tagName }}
+              </span>
+            </small>
+          </div>
         </div>
       </div>
+      <div 
+        class="d-flex justify-content-center w-100"
+        v-else
+      >
+        <h3 class="text-center">공개된 방이 존재하지 않습니다.</h3>
+      </div>
+
     </div>
     <div 
       class="d-flex justify-content-between align-items-center row no-gutters cards p-5"
       v-if="!flag"
     >
-      <div 
-        class="card2 mb-3 rounded mx-2" 
-        v-for="(room, i) in searchedRooms" 
-        :key="i"
-      >
+      <div v-if="searchedRooms.length >= 1">
         <div 
-          class="card-top mt-5"
-          @click="clickRoom(room.roominfo.code)"
+          class="card2 mb-3 rounded mx-2" 
+          v-for="(room, i) in searchedRooms" 
+          :key="i"
         >
-          <p class="text-right text-muted">주최자 {{ room.host }}</p>
-          <hr>
-          <img width="50px"
-          :src="require(`@/assets/images/${anonyMousImg(i)}.png`)"
+          <div 
+            class="card-top mt-5"
+            @click="clickRoom(room.roominfo.code)"
           >
-        </div>
-        <div class="d-flex justify-content-start align-items-start flex-column pl-4">
-          <small class="text-muted" >{{ room.numberOfElements }}명 입장 중</small>
-          <p class="strong">{{ room.roominfo.roomName }}</p>
-        </div>
-        <div class="pl-4 pb-2 d-flex justify-content-start">
-          <small class="text-muted">
-            <span 
-              v-for="tag in room.roominfo.tags" 
-              :key="tag.tagId"
-              >
-              #{{ tag.tagName }}
-            </span>
-          </small>
+            <p class="text-right text-muted">주최자 {{ room.host }}</p>
+            <hr>
+            <img width="50px"
+            :src="require(`@/assets/images/${anonyMousImg(i)}.png`)"
+            >
+          </div>
+          <div class="d-flex justify-content-start align-items-start flex-column pl-4">
+            <small class="text-muted" >{{ room.numberOfElements }}명 입장 중</small>
+            <p class="strong">{{ room.roominfo.roomName }}</p>
+          </div>
+          <div class="pl-4 pb-2 d-flex justify-content-start">
+            <small class="text-muted">
+              <span 
+                v-for="tag in room.roominfo.tags" 
+                :key="tag.tagId"
+                >
+                #{{ tag.tagName }}
+              </span>
+            </small>
+          </div>
         </div>
       </div>
+      <div 
+        class="d-flex justify-content-center w-100"
+        v-else
+      >
+        <h3 class="text-center">검색 결과가 존재하지 않습니다.</h3>
+      </div>
+
     </div>
     <div class="d-flex justify-content-center">
       <div 
