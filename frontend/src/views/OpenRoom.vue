@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="h-100">
     <div class="search-bar">
       <input 
         v-model="search"
@@ -11,7 +11,7 @@
       <div class="search-icon"></div>
     </div>
 
-    <div v-if="flag">
+    <div class="h-100" v-if="flag">
       <div 
         class="d-flex justify-content-between align-items-center row no-gutters cards p-5"
         v-if="rooms.length>=1">
@@ -47,13 +47,14 @@
         </div>
       </div>
       <div 
-        class="d-flex justify-content-center w-100"
+        class="d-flex justify-content-center align-items-center w-100 h-100"
         v-else
       >
         <h3 class="text-center">공개된 방이 존재하지 않습니다.</h3>
       </div>
     </div>
     <div
+      class="h-100"
       v-if="!flag"
     >
       <div
@@ -92,7 +93,7 @@
         </div>
       </div>
       <div 
-        class="d-flex justify-content-center w-100"
+        class="d-flex justify-content-center align-items-center w-100 h-100"
         v-else
       >
         <h3 class="text-center">검색 결과가 존재하지 않습니다.</h3>
