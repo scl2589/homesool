@@ -83,6 +83,11 @@
   - <img src="images/README/theme.JPG" alt="theme" style="zoom: 50%;" />
   - 기본 테마 뿐만 아니라 크리스마스, 생일, 봄 테마를 지원하여 술자리의 분위기를 낼 수 있도록 합니다.
 - 또한 모두가 BGM을 공유하는 기능을 제공합니다.
+- 공개방
+  - 홈술이는 새로운 사람들과의 소통을 즐길 수 있도록 공개방을 지원합니다. 
+    - ![공개방](../공개방.png)
+  - 방 생성 시 공개방으로 설정하면 모든 사람이 참여가 가능합니다. 
+    - <img src="images/README/image-20201123101859623.png" alt="image-20201123101859623" style="zoom:50%;" />
 
 ### 즐거운 술자리
 
@@ -162,7 +167,7 @@ python app.py
 
 <br>
 
-## :yum: 개발 환경 및 IDE
+## ⚙​ 개발 환경 및 IDE
 
 - Java : jdk11 (11.0.9.1)
 - Docker : 19.03.13 
@@ -188,9 +193,14 @@ python app.py
 
 ## 🎞 최종산출물
 
-<a href="https://www.youtube.com/watch?v=4IB_dOKe60E&feature=youtu.be">서울 5반 발표 시연영상</a>
+<a href="https://youtu.be/W_Vz41kadvQ">최종 발표 시연영상</a>
+
 <br>
-<a href="Documentation/Presentation/1116_자율프로젝트_서울5반_최종발표.pdf">최종발표 pdf</a>
+<a href="Documentation/Presentation/1116_자율프로젝트_서울5반_최종발표.pdf">서울 5반 최종발표 pdf</a>
+
+<br>
+
+<a href="Documentation/Presentation/1123_자율프로젝트_전국발표.pdf">자율프로젝트 전국발표 pdf</a>
 
 
 
