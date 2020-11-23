@@ -1396,6 +1396,10 @@ const meetingStore = {
                       }
                     });
                   }
+
+                  let paneltySound = new Audio(require('@/assets/sounds/panelty2.mp3'));
+                  paneltySound.volume = 0.1
+                  paneltySound.play();
                 }
               }
               
