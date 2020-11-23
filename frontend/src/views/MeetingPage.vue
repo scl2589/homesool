@@ -433,6 +433,7 @@ export default {
   },
 
   computed: {
+    ...mapState(['user']),
     ...mapState('meetingStore', [
       'isChatPanel',
       'theme',
@@ -518,7 +519,6 @@ export default {
   },
 
   methods: {
-    ...mapState(['user']),
     ...mapActions('meetingStore', [
       'toggleChatPanel',
       'changeTheme',
