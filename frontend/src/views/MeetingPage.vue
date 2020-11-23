@@ -590,14 +590,14 @@ export default {
     },
     clickCopyURL() {
       const copyText = document.createElement("input");
-      copyText.value = `https://k3a503.p.ssafy.io/meet/${this.mySessionId}`
+      copyText.value = `https://homesuli.com/meet/${this.mySessionId}`
       document.body.appendChild(copyText)
       copyText.select();
       document.execCommand("copy");
       document.body.removeChild(copyText)
       Swal.fire({
           icon: 'success',
-          html: `<p>https://k3a503.p.ssafy.io/meet/${this.mySessionId}</p><h5>주소가 복사되었습니다</h5>`
+          html: `<p>https://homesuli.com/meet/${this.mySessionId}</p><h5>주소가 복사되었습니다</h5>`
         })
     },
     clickKakaoShare() {
@@ -608,8 +608,8 @@ export default {
           description: '링크로 들어와 술자리 미팅에 참여해주세요 :)',
           imageUrl: 'https://user-images.githubusercontent.com/57381062/97659870-6c195600-1ab3-11eb-9084-05a7a2e01c96.png',
           link: {
-            mobileWebUrl: `https://k3a503.p.ssafy.io/meet/${this.mySessionId}`,
-            webUrl: `https://k3a503.p.ssafy.io/meet/${this.mySessionId}`,
+            mobileWebUrl: `https://homesuli.com/meet/${this.mySessionId}`,
+            webUrl: `https://homesuli.com/meet/${this.mySessionId}`,
           },
         }
       })
