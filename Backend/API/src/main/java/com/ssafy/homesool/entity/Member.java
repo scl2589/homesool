@@ -31,6 +31,6 @@ public class Member implements Serializable{
 	@Column(nullable = true)
 	private String nickname;
 	
-	@Column(nullable = false)
+	@Column(nullable = false, updatable = false)
 	private int ishost;
 }

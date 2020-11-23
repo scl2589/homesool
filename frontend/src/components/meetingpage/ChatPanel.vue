@@ -10,37 +10,37 @@
         </button>
       </div>
       <!-- 채팅 내역 -->
-        <div id="chat-area">
-          <div 
-            class="mt-2 text-left message" 
-            v-for="(message, i) of messages" 
-            :key="i"
-          >
-            <div class="message-title">
-              <span class="mr-2 message-header">{{ message.sender }}</span>
-              <span class="message-header">{{ message.time }}</span>
-            </div>
-            <div>
-              {{ message.message }}
-            </div>
+      <div id="chat-area" :height="chatHeight">
+        <div 
+          class="mt-2 text-left message" 
+          v-for="(message, i) of messages" 
+          :key="i"
+        >
+          <div class="message-title">
+            <span class="mr-2 message-header">{{ message.sender }}</span>
+            <span class="message-header">{{ message.time }}</span>
+          </div>
+          <div>
+            {{ message.message }}
           </div>
         </div>
-        <div class="footer d-flex mt-auto">
-          <div class="col-10 px-1 py-0">
-            <input 
-              @keyup.enter="clickSendMessage"
-              class="text-box"
-              v-model="message"
-            >
-          </div>
-          <div class="col-2 p-0">
-            <button
-              class="send-btn"
-              @click="clickSendMessage"
-            >
-              <i class="fas fa-paper-plane"></i>
-            </button>
-          </div>
+      </div>
+      <div class="footer d-flex mt-auto">
+        <div class="col-10 px-1 py-0">
+          <input 
+            @keyup.enter="clickSendMessage"
+            class="text-box"
+            v-model="message"
+          >
+        </div>
+        <div class="col-2 p-0">
+          <button
+            class="send-btn"
+            @click="clickSendMessage"
+          >
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -53,6 +53,7 @@ export default {
   data() {
     return {
       message: "",
+      chatHeight: "33vh"
     };
   },
   watch: {
@@ -60,14 +61,21 @@ export default {
       setTimeout(() => {
         var chatDiv = document.getElementById("chat-area");
         chatDiv.scrollTo({
-        top: chatDiv.scrollHeight - chatDiv.clientHeight,
-        behavior: 'smooth'
-      })
+          top: chatDiv.scrollHeight - chatDiv.clientHeight,
+          behavior: 'smooth'
+        })
       }, 50);
+    },
+    currentMode() {
+      if (this.currentMode === "") {
+        this.chatHeight = "80vh"
+      } else {
+        this.chatHeight="33vh"
+      }
     }
   },
   computed: {
-    ...mapState("meetingStore", ["messages"]),
+    ...mapState("meetingStore", ["messages", "currentMode"]),
   },
   methods: {
     ...mapActions("meetingStore", [
@@ -146,4 +154,29 @@ export default {
 #chat-area {
   overflow-y: auto;
 }
+
+#chat-area::-webkit-scrollbar {
+  width: 8px; 
+  height: 8px;
+}
+
+#chat-area::-webkit-scrollbar-track {
+  background: #37474F;
+}
+
+#chat-area::-webkit-scrollbar-corner {
+  background: #37474F; 
+}
+
+#chat-area::-webkit-scrollbar-thumb {
+  background:  #b0a2c8;
+}
+
+#chat-area::-webkit-scrollbar-button {
+  background-color: #37474F;
+  height: 0;
+}
+
+
+
 </style>

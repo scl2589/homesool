@@ -2,12 +2,15 @@ package com.ssafy.homesool.entity;
 
 
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -31,7 +34,7 @@ public class Room {
 	@Column(nullable =false)
 	private long hostId;
 	
-	@Column(nullable = false, updatable = false)
+	@Column
 	private Date startTime;
 	
 	@Column
@@ -46,4 +49,13 @@ public class Room {
 	
 	@Column(nullable = true)
 	private String roomName;
+	
+	@Column(nullable = false,  columnDefinition = "TINYINT", length=1)
+	private int isPublic;
+	
+	@OneToMany(
+			cascade = CascadeType.ALL,
+			mappedBy = "roomId")
+	private List<Tag> tags;
+	
 }

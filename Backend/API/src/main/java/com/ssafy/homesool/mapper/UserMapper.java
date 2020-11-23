@@ -15,4 +15,5 @@ public interface UserMapper {
 
 	UserDto.UserInfo to(User user);
 	List<UserDto.UserRecord2> toRecord(List<UserRecord> userRecords);
+	List<UserDto.UserRecord> toRecordList(List<UserRecord> userRecords);
 }

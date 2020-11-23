@@ -30,10 +30,11 @@
       v-model="meetingLogDialog"
       persistent
       max-width="600px"
-      max-height="80vh"
-        
       >
-      <v-card class="d-flex flex-column justify-content-between scroll-sect">
+      <v-card 
+        class="d-flex flex-column justify-content-between scroll-sect"
+        :class="{ 'h-75': (logs.roomInfo && logs.srcs.length >= 1), 'h-50': (logs.roomInfo && logs.srcs.length === 0)}"
+      >
         <v-card-title class="d-flex justify-content-center">
           <h4>
             <span v-if="logs.roomInfo">
@@ -158,10 +159,7 @@ export default {
               title: event.data[i].roomName,
               class: this.color[Math.floor(Math.random()*6)]+' lighten-3 text-white',
             }
-            let year = event.data[i].startTime.slice(0,4)
-            let month = event.data[i].startTime.slice(5,7)
-            let day = event.data[i].startTime.slice(8,10)
-            log.dates = new Date(year,month-1,day)
+            log.dates = new Date(event.data[i].startTime)
             this.attributes.push(log)
           }
         })
@@ -302,5 +300,13 @@ hr {
 
 button:focus {
   outline: none;
+}
+
+.h-50 {
+  height: 50vh !important;
+}
+
+.h-75 {
+  height: 75vh !important;
 }
 </style>

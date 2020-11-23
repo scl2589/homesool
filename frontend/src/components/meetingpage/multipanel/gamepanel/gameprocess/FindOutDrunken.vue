@@ -152,7 +152,7 @@ p, h1, h2, h3, h4, h5, h6, button {
 }
 
 .sentence {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
 
 .video {

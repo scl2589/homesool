@@ -22,4 +22,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 			+ "where room_id = :roomId and ishost = 1 ",
 			nativeQuery = true)
 	String findHostnameByroomId(@Param("roomId") long roomId);
+	
+	@Query(value = "select  from member "
+			+ "where room_id = :roomId and userId = :userId ",
+			nativeQuery = true)
+	Member findOneByRoomIdAndUserId(@Param("roomId") long roomId,@Param("userId") long userId);
 }

@@ -79,127 +79,135 @@ export default {
       remain: 5,
       expired: false,
       captured: null,
-      spinner: false,
     }
   },
   computed: {
-    ...mapState('meetingStore', ['isSnapshotMode', 'mySessionId', 'roomId']),
+    ...mapState('meetingStore', ['isSnapshotMode', 'mySessionId', 'roomId', 'spinner']),
     ...mapGetters('meetingStore', ['notModeHost'])
   },
   watch: {
     remain: {
       handler(value) {
-        if (value > 0) {
+        if (value > 1) {
           setTimeout(() => {
             this.remain--;
           }, 1000)
         } else {
-          this.spinner = true
-          if ( !this.notModeHost ) {
-            let canvas = document.getElementById('canvas');
-            let ctx = canvas.getContext('2d');
-            let videos = document.querySelectorAll('video');
-            let w, h;
-            if (videos.length == 1) {
-              for (let i = 0, len = videos.length; i < len; i++ ) {
-                const v = videos[i]
-                try {
-                  w = v.videoWidth
-                  h = v.videoHeight
-                  canvas.width = w * 2
-                  canvas.height = h * 2
-                  ctx.fillRect(w/2, 0, w, h) 
-                  ctx.drawImage(v, w/2, 0, w, h)
-                  v.style.backgroundImage = `url(${canvas.toDataURL()})`
-                  v.style.backgroundSize = 'cover'
-                  ctx.clearRect(0, 0, w, h);
-                } catch(e) {
-                  continue
+          
+          setTimeout(() => {
+            //효과음
+            let cameraSound = new Audio(require('@/assets/sounds/camera.mp3'));
+            cameraSound.volume = 0.1
+            cameraSound.play();
+            this.changeSpinner(true)
+
+            if ( !this.notModeHost ) {
+              let canvas = document.getElementById('canvas');
+              let ctx = canvas.getContext('2d');
+              let videos = document.querySelectorAll('video');
+              let w, h;
+              if (videos.length == 1) {
+                for (let i = 0, len = videos.length; i < len; i++ ) {
+                  const v = videos[i]
+                  try {
+                    w = v.videoWidth
+                    h = v.videoHeight
+                    canvas.width = w * 2
+                    canvas.height = h * 2
+                    ctx.fillRect(w/2, 0, w, h) 
+                    ctx.drawImage(v, w/2, 0, w, h)
+                    v.style.backgroundImage = `url(${canvas.toDataURL()})`
+                    v.style.backgroundSize = 'cover'
+                    ctx.clearRect(0, 0, w, h);
+                  } catch(e) {
+                    continue
+                  }
                 }
               }
-            }
-            else if (videos.length <= 3) {
-              for (let i = 0, len = videos.length; i < len; i++ ) {
-                const v = videos[i]
-                try {
-                  w = v.videoWidth
-                  h = v.videoHeight
-                  canvas.width = w * 2
-                  canvas.height = h * 2
-                  ctx.fillRect(0, h/2, w, h) 
-                  ctx.drawImage(v, 0, h/2, w, h)
-                  v.style.backgroundImage = `url(${canvas.toDataURL()})`
-                  v.style.backgroundSize = 'cover'
-                  ctx.clearRect(0, 0, w, h);
-                } catch(e) {
-                  continue
+              else if (videos.length <= 3) {
+                for (let i = 0, len = videos.length; i < len; i++ ) {
+                  const v = videos[i]
+                  try {
+                    w = v.videoWidth
+                    h = v.videoHeight
+                    canvas.width = w * 2
+                    canvas.height = h * 2
+                    ctx.fillRect(0, h/2, w, h) 
+                    ctx.drawImage(v, 0, h/2, w, h)
+                    v.style.backgroundImage = `url(${canvas.toDataURL()})`
+                    v.style.backgroundSize = 'cover'
+                    ctx.clearRect(0, 0, w, h);
+                  } catch(e) {
+                    continue
+                  }
+                }
+              } else {
+                for (let i = 0, len = videos.length; i < len; i++ ) {
+                  const v = videos[i]
+                  try {
+                    w = v.videoWidth
+                    h = v.videoHeight
+                    canvas.width = w * 2
+                    canvas.height = h * 2
+                    ctx.fillRect(w/2, h/2, w, h) 
+                    ctx.drawImage(v, w/2, h/2, w, h)
+                    v.style.backgroundImage = `url(${canvas.toDataURL()})`
+                    v.style.backgroundSize = 'cover'
+                    ctx.clearRect(0, 0, w, h);
+                  } catch(e) {
+                    continue
+                  }
                 }
               }
+
+              html2canvas(document.querySelector('#capture'), {
+                userCORS:true,
+              }).then(canvas => {
+                canvas.style.maxWidth="80%"
+                canvas.style.height="auto"
+                canvas.style.marginLeft="auto"
+                canvas.style.marginRight="auto"
+                this.captured = canvas
+                
+                for (let i = 0, len = videos.length; i < len; i++ ) {
+                  videos[i].style.background='none'
+                }
+
+                const promises = []
+                var storageRef = firebase.storage().ref() 
+
+                var converting = canvas.toDataURL("image/jpeg")
+                var ct = new Date()
+                var file_name =  moment(ct).format('YYYY-MM-DDTHH-mm-ss')
+                var file = this.dataURLtoFile(converting, file_name + '.jpg')
+                const uploadTask = storageRef.child(this.mySessionId).child('snapshot').child(file.name).put(file)
+                promises.push(uploadTask)
+                
+                Promise.all(promises).then(() => {
+                  this.changeSpinner(false)
+                  this.attachImage(file_name)
+                  var imageInfo = {
+                    "img" : file_name,
+                    "roomId": this.roomId,
+                  }
+                  this.saveScreenshotInfo(imageInfo)
+                  // let url = "https://firebasestorage.googleapis.com/v0/b/homesuli.appspot.com/o/" + image_url + "?alt=media&token=8ec754d3-c76c-4adf-9bef-abbe41171c81"
+                })
+                
+              });
+              this.expired = true;
             } else {
-              for (let i = 0, len = videos.length; i < len; i++ ) {
-                const v = videos[i]
-                try {
-                  w = v.videoWidth
-                  h = v.videoHeight
-                  canvas.width = w * 2
-                  canvas.height = h * 2
-                  ctx.fillRect(w/2, h/2, w, h) 
-                  ctx.drawImage(v, w/2, h/2, w, h)
-                  v.style.backgroundImage = `url(${canvas.toDataURL()})`
-                  v.style.backgroundSize = 'cover'
-                  ctx.clearRect(0, 0, w, h);
-                } catch(e) {
-                  continue
-                }
-              }
+              this.expired = true
             }
+          }, 1000);
 
-            html2canvas(document.querySelector('#capture'), {
-              userCORS:true,
-            }).then(canvas => {
-              canvas.style.maxWidth="80%"
-              canvas.style.height="auto"
-              canvas.style.marginLeft="auto"
-              canvas.style.marginRight="auto"
-              this.captured = canvas
-              
-              for (let i = 0, len = videos.length; i < len; i++ ) {
-                videos[i].style.background='none'
-              }
-
-              const promises = []
-              var storageRef = firebase.storage().ref() 
-
-              var converting = canvas.toDataURL("image/jpeg")
-              var ct = new Date()
-              var file_name =  moment(ct).format('YYYY-MM-DDTHH-mm-ss')
-              var file = this.dataURLtoFile(converting, file_name + '.jpg')
-              const uploadTask = storageRef.child(this.mySessionId).child('snapshot').child(file.name).put(file)
-              promises.push(uploadTask)
-              
-              Promise.all(promises).then(() => {
-                this.spinner = false;
-                this.attachImage(file_name)
-                var imageInfo = {
-                  "img" : file_name,
-                  "roomId": this.roomId,
-                }
-                this.saveScreenshotInfo(imageInfo)
-                // let url = "https://firebasestorage.googleapis.com/v0/b/homesuli.appspot.com/o/" + image_url + "?alt=media&token=8ec754d3-c76c-4adf-9bef-abbe41171c81"
-              })
-              
-          });
-          this.expired = true;
-          } else {
-            this.expired = true
-          }
         }
       },
       immediate: true
     }
   },
   methods: {
-    ...mapActions('meetingStore', ['changeMode', 'attachImage', 'saveScreenshot', 'saveScreenshotInfo']),
+    ...mapActions('meetingStore', ['changeMode', 'attachImage', 'saveScreenshot', 'saveScreenshotInfo', 'changeSpinner']),
     savePhoto() {
       // 파일로 저장하는 로직 
       var a = document.createElement('a');

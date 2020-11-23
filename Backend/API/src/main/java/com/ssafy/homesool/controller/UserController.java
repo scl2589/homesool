@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import com.ssafy.homesool.dto.LoginDto;
 import com.ssafy.homesool.dto.RoomDto;
 import com.ssafy.homesool.dto.UserDto;
+import com.ssafy.homesool.dto.UserDto.UserRecord;
 import com.ssafy.homesool.service.RoomService;
 import com.ssafy.homesool.service.UserService;
 
@@ -145,6 +146,21 @@ public class UserController {
 		@ApiParam(value = "미팅 id",required = true, example = "1") @PathVariable long roomId){
 		logger.debug(String.format("get Record {%d} room {%d} 호출",userId,roomId));
 		return new ResponseEntity<>(userService.getRecord(userId, roomId),HttpStatus.OK);
+	}
+	@GetMapping("{userId}/record/{roomId}")
+	@ApiOperation(value = "음주 기록 추가/수정", notes = "실시간 음주량을 갱신한다")
+	@ApiResponses(value = {
+		@ApiResponse(code = 200, message = "OK"),
+		@ApiResponse(code = 400, message = "Bad Request"),
+		@ApiResponse(code = 401, message = "Unauthorized"),
+		@ApiResponse(code = 403, message = "Forbidden"),
+		@ApiResponse(code = 404, message = "Not Found")
+	})
+	private ResponseEntity<List<UserDto.UserRecord>> getRecordByUserIdAndRoodId(
+		@ApiParam(value = "유저 id",required = true, example = "1404739104") @PathVariable long userId,
+		@ApiParam(value = "미팅 id",required = true, example = "1") @PathVariable long roomId){
+		logger.debug(String.format("get Record {%d} room {%d} 호출",userId,roomId));
+		return new ResponseEntity<>(userService.getRecordByUserIdAndRoomId(userId, roomId),HttpStatus.OK);
 	}
 	
 	@PutMapping("{userId}/record/{roomId}")

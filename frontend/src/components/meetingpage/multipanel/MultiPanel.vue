@@ -71,6 +71,7 @@ export default {
   position: absolute;
   top: 10px;
   right: 10px;
+  z-index: 100;
 }
 
 .goback-btn {

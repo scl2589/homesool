@@ -8,9 +8,13 @@
           <button @click="hostbtn">주최하기</button>
         </div>
         <div id="guest" class="p-1 bd-highlight">
-          <img src="@/assets/images/guest.png" alt="게스트" />
+          <img src="@/assets/images/meeting.png" alt="게스트" />
           <input placeholder="입장 코드를 입력하세요" v-model="inputSessionId" />
           <button v-show="inputSessionId" @click="guestbtn">입장하기</button>
+        </div>
+        <div id="entrance" class="p-1 bd-highlight">
+          <img src="@/assets/images/guest.png" alt="호스트" />
+          <button @click="openbtn">공개방 보기</button>
         </div>
       </div>
     </div>
@@ -25,13 +29,13 @@
       <div class="scroll-sect">
         <v-card v-if="user.drinks.length">
           <v-card-title>
-            <h3 class="m-0">입장하기</h3>
+            <h3 class="m-0 enter-title">입장하기</h3>
           </v-card-title>
           <v-form v-model="valid" :lazy-validation="lazy">  
             <v-container>
               <v-row>
                 <v-col
-                  class="d-flex justify-content-between align-items-center"
+                  class="d-flex justify-content-between align-items-center enter-code"
                   cols="12"
                 >
                   <h5 class="my-0">입장 코드</h5>
@@ -42,8 +46,9 @@
                     readonly
                     append-icon="far fa-clone"
                     @click:append="clickCopyURL"
+                    color="#84669a"
                   ></v-text-field>
-                  <div class="mb-1 pointer" @click="clickKakaoShare">
+                  <div class="mb-2 pointer" @click="clickKakaoShare">
                     <img
                       width="32vw"
                       src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png"
@@ -52,20 +57,22 @@
                 </v-col>
                 
                 <v-col
-                  cols="12"
+                  cols="6"
                   v-if="ishost"
                 >
                   <v-text-field
                     v-model="roomName"
+                    label="방 제목"
                     hint="방 제목을 입력해주세요"
                     persistent-hint
                     required
                     :rules="[v => !!v || '필수항목입니다.']"
+                    color="#84669a"
                   ></v-text-field>
                 </v-col>
 
                 <v-col
-                  cols="12"
+                  cols="6"
                 >
                   <v-text-field
                     v-model="nickName"
@@ -74,11 +81,12 @@
                     persistent-hint
                     required
                     :rules="[v => !!v || '필수항목입니다.']"
+                    color="#84669a"
                   ></v-text-field>
                 </v-col>
 
                 <v-col
-                  cols="12"
+                  cols="6"
                 >
                   <v-select
                     v-model="currentDrink"
@@ -90,8 +98,71 @@
                     persistent-hint
                     required
                     :rules="[v => !!v || '필수항목입니다.']"
+                    color="#84669a"
                   >
                   </v-select>
+                </v-col>
+
+                <v-col
+                  cols="6"
+                  v-if="ishost"
+                >
+                  <v-select
+                    v-model="isPublic"
+                    :items="publicItems"
+                    item-text="title"
+                    item-value="value"
+                    label="공개 여부"
+                    hint="미팅의 공개 여부를 입력해주세요"
+                    persistent-hint
+                    required
+                    color="#84669a"
+                  >
+                  </v-select>
+                </v-col>
+
+                <v-col
+                  cols="12"
+                  v-if="ishost"
+                >
+                  <v-combobox
+                    v-model="tags"
+                    :items="allTags"
+                    :search-input.sync="searchTag"
+                    hide-selected
+                    counter="5"
+                    :rules="[
+                      v => (v.length < 6) || '최대 5개의 태그를 고를 수 있습니다.'
+                    ]"
+                    color="blue-grey lighten-2"
+                    label="태그"
+                    multiple
+                    item-text="tagName"
+                    item-value="tagName"
+                    :return-object="false"
+                    persistent-hint
+                    small-chips
+                    hint="미팅을 설명하는 태그를 작성해주세요"
+                  >
+                    <template v-slot:selection="data">
+                      <v-chip
+                        v-bind="data.attrs"
+                        close
+                        @click:close="remove(tags, data.item)"
+                      >
+                        {{ data.item }}
+                      </v-chip>
+                    </template>
+                    <template v-slot:no-data>
+                      <v-list-item>
+                        <v-list-item-content>
+                          <v-list-item-title>
+                            "<strong>{{ searchTag }}</strong>"를 찾을 수 없습니다. <kbd>enter</kbd>를 눌러 새로운 태그를 만들어보세요. 
+                          </v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </template>
+                  </v-combobox>
                 </v-col>
 
                 <v-col
@@ -118,14 +189,14 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn
-              color="blue darken-1"
+              color="indigo"
               text
               @click="clickClose"
             >
               Close
             </v-btn>
             <v-btn
-              color="blue darken-1"
+              color="indigo"
               text
               :disabled="!valid"
               @click="clickEnter"
@@ -148,7 +219,6 @@
           </div>
         </v-card>
       </div>
-
       </v-dialog>
     </v-row>
   </div>
@@ -175,12 +245,17 @@ export default {
       lazy:false,
       ishost:false,
       roomName : null,
+      publicItems: [{ title: '공개', value: 1}, { title: '비공개', value: 0}],
+      isPublic: 1,
+      tags: [],
+      searchTag: null,
+
     };
   },
   computed: {
     ...mapGetters(['getId']),
     ...mapState(['token', 'user']),
-    ...mapState('meetingStore', ['mySessionId', 'session', 'mainStreamManager', 'publisher', 'subscribers', 'meetingDialog'])
+    ...mapState('meetingStore', ['mySessionId', 'session', 'mainStreamManager', 'publisher', 'subscribers', 'meetingDialog', 'allTags'])
   },
   watch: {
     user(value) {
@@ -200,8 +275,13 @@ export default {
       'clickMuteAudio',
       'enterSession',
       'changeMeetingDialog',
-      'updateUserNickname'
+      'updateUserNickname',
+      'fetchAllTags'
     ]),
+    remove (data, item) {
+      const index = data.indexOf(item)
+      if (index >= 0) data.splice(index, 1)
+    },
     hostbtn() {
       if (!this.getId) {
         Swal.fire({
@@ -234,16 +314,20 @@ export default {
       this.leaveSession();
       this.changeMeetingDialog(false);
       this.nickName = this.user.name;
+      this.roomName = `${this.nickName}의 방`;
       this.currentDrink = null;
+      this.isPublic = 1;
     },
     clickEnter() {
       const enterData = {
         nickName: this.nickName,
         currentDrink: this.currentDrink
       }
-      //호스트라면 방 제목 변경
+      //호스트라면 방 제목, 공개여부, 태그
       if(this.ishost){
-        enterData.roomName = this.roomName
+        enterData.roomName = this.roomName;
+        enterData.isPublic = this.isPublic;
+        enterData.tags = this.tags;
       }
 
       this.enterSession(enterData)
@@ -275,13 +359,18 @@ export default {
           },
         }
       })
+    },
+    openbtn() {
+      this.$router.push({ name: 'OpenRoom' })
     }
   },
   mounted() {
     if (this.user) {
       this.nickName = this.user.name;
-      this.roomName = `${this.nickName}의 방`
+      this.roomName = `${this.nickName}의 방`;
+      this.tags = [];
     }
+    this.fetchAllTags();
   }
 };
 </script>
@@ -354,6 +443,11 @@ $buttonheight: 50px;
       margin-top: 3%;
     }
   }
+  #entrance {
+    position: relative;
+    height: 100%;
+    width: 25%;
+  }
 }
 
 .btn {
@@ -397,7 +491,7 @@ $buttonheight: 50px;
 }
 
 .scroll-sect::-webkit-scrollbar-thumb {
-  background: #c1c56a;
+  background: #b0a2c8;
 }
 
 .scroll-sect::-webkit-scrollbar-button {
@@ -405,5 +499,45 @@ $buttonheight: 50px;
   height: 0;
 }
 
+button:focus {
+  outline: none;
+}
 
+.enter-title {
+  color: #b0a2c8;
+}
+
+.container, .v-card__title {
+  padding-bottom: 0!important;
+}
+
+.v-input__slot, .v-card__actions {
+  margin: 0!important;
+  padding-top: 0!important;
+}
+
+.room-name {
+  padding-top: 0;
+}
+
+.enter-code {
+  padding-bottom: 0;
+}
+
+.v-text-field__details {
+  padding-top: 2px;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap');
+.v-messages__message {
+  color: #b097c3;
+  font-family: 'Nanum Gothic', sans-serif;
+  font-size: 1.0em;
+  font-weight: 600;
+}
+
+.v-application .primary--text {
+  color: #84669a !important;
+  caret-color: #84669a !important;
+}
 </style>

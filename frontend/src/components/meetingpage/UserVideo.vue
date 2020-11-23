@@ -1,54 +1,84 @@
 <template>
 <div v-if="streamManager">
-	<ov-video :stream-manager="streamManager"/>
+	<ov-video :stream-manager="streamManager" :is-smile-game="isSmileGame" />
+
 	<div class="drink-container">
-		<div v-if="!($route.name==='HomePage')">
-			<div class="drink-overlay d-flex justify-content-around align-items-center" v-if="isPublisher">
-				<img class="drink-minus" src="@/assets/images/minus.png" alt="한잔 덜 마셨어요" @click="updateUserDrinkRecord(-1)"> 
-				<img class="drink" :src="getImgsrc" alt="현재주종" @click="setShowOthers">
-				<img class="drink-plus" src="@/assets/images/plus.png" alt="한잔 더 마셨어요" @click="updateUserDrinkRecord(1)">
-				<div class="select-other" v-if="showOthers">
-					<div class="other" v-for="drink in user.drinks" :key="drink.liquorName"
-						:v-model="pickedDrink" @click="setCurrentDrink(drink.liquorName)">
-						{{drink.liquorName}}
-					</div>
+
+		<div class="drink-overlay d-flex justify-content-around align-items-center" v-if="isLeftPanel && isPublisher">
+			<img class="drink-minus" src="@/assets/images/minus.png" alt="한잔 덜 마셨어요" @click="updateUserDrinkRecord(-1)"> 
+			<img class="drink" id="dropdown" :src="getImgsrc" alt="현재주종" @click="setShowOthers">
+			<img class="drink-plus" src="@/assets/images/plus.png" alt="한잔 더 마셨어요" @click="updateUserDrinkRecord(1)">
+			<div class="select-other" v-if="showOthers">
+				<div class="other" v-for="drink in user.drinks" :key="drink.liquorName"
+					:v-model="pickedDrink" @click="setCurrentDrink(drink.liquorName)">
+					{{drink.liquorName}}
 				</div>
 			</div>
 		</div>
+
 		<div class="overlay-anonymous d-flex justify-content-center align-items-center" v-if="currentMode === 'anonymous'">
 			<img class="anonymous-img" :src="require(`@/assets/images/${anonyMousImg(streamManager.stream.connection.connectionId)}.png`)" alt="">
 		</div>
-		<div class="overlay-drunken d-flex justify-content-center align-items-center w-100" v-if="gotWasted && streamManager.stream.connection.connectionId === gotWasted && isLeftPanel && currentMode !== 'anonymous'">
+
+		<div class="overlay-drunken d-flex justify-content-center align-items-center w-100" v-if="drunkenList.length && drunkenList.includes(streamManager.stream.connection.connectionId) && isLeftPanel && currentMode !== 'anonymous'">
 			<img width="10%" src="@/assets/images/drunken.png" alt="">
 			<p class="mb-0 mx-2 black">나는 고주망태입니다.</p>
 			<img width="10%" src="@/assets/images/drunken.png" alt="">
 		</div>
-		<div class="d-flex justify-content-between">
-			<div class="overlay-name d-flex justify-content-center align-items-center" v-if="isLeftPanel && nickName">
-				<p class="px-2 client-name">{{ clientData }}</p>
+
+		<div class="d-flex justify-content-around align-items-center" v-if="isLeftPanel">
+			<div class="overlay-name d-flex justify-content-center align-items-center" v-if="nickName">
+				<p class="px-2 mb-0 client-name">{{ clientData }}</p>
+				<v-tooltip bottom v-if="isRoomHost(streamManager.stream.connection.connectionId)">
+					<template v-slot:activator="{ on, attrs }">
+						<v-img
+							class="small-icon"
+							v-bind="attrs"
+							v-on="on"
+							:src="require('@/assets/images/crown.png')"
+							alt=""
+						>
+						</v-img>
+					</template>
+					<span>미팅장</span>
+				</v-tooltip>
+				<v-tooltip bottom v-if="isModeHost(streamManager.stream.connection.connectionId)">
+					<template v-slot:activator="{ on, attrs }">
+						<v-img
+							class="small-icon"
+							v-bind="attrs"
+							v-on="on"
+							:src="require('@/assets/images/push.png')"
+							alt=""
+						>
+						</v-img>
+					</template>
+					<span>현재 모드를 통제하고 있습니다</span>
+				</v-tooltip>
 			</div>
-			<div class="overlay-drink-count d-flex" v-if="isLeftPanel  && currentMode !== 'anonymous'">
-					<div v-if="isPublisher">
+
+			<div class="overlay-drink-count d-flex" v-if="currentMode !== 'anonymous'">
+				<div v-if="isPublisher">
+					<div class="drink-count-container">
+						<img width="15px" src="@/assets/images/shot.png" alt=""> x {{totalDrink}}  
+					</div>
+				</div>
+				<div v-else> <!--subscriber-->
+					<div v-if="streamManager.totalDrink">
 						<div class="drink-count-container">
-							<img width="15px" src="@/assets/images/shot.png" alt=""> x {{totalDrink}}  
+							<img width="15px" src="@/assets/images/shot.png" alt=""> x {{streamManager.totalDrink}} 
 						</div>
 					</div>
-					<div v-else> <!--subscriber-->
-						<div v-if="this.streamManager.totalDrink">
-							<div class="drink-count-container">
-								<img width="15px" src="@/assets/images/shot.png" alt=""> x {{this.streamManager.totalDrink}} 
-							</div>
-						</div>
-						<div v-else>
-							<div class="drink-count-container">
-								<img width="15px" src="@/assets/images/shot.png" alt=""> x 0
-							</div>
+					<div v-else>
+						<div class="drink-count-container">
+							<img width="15px" src="@/assets/images/shot.png" alt="">x 0
 						</div>
 					</div>
 				</div>
 			</div>
-
 		</div>
+
+	</div>
 	
 </div>
 </template>
@@ -64,11 +94,13 @@ export default {
 	props: {
 		streamManager: Object,
 		isPublisher: Boolean,
-		isLeftPanel: Boolean
+		isLeftPanel: Boolean,
+		isSmileGame: Boolean
 	},
 	data() {
     return {
 			showOthers : false,
+			dropdown : document.getElementById("dropdown"),
 			pickedDrink: null,
       anonymousImages: [
         '001-unicorn',
@@ -125,7 +157,17 @@ export default {
     }
   },
 	computed: {
-		...mapState('meetingStore', ['currentMode','gotWasted','currentDrink','publisher','totalDrink', 'nickName']),
+		...mapState('meetingStore', [
+			'currentMode',
+			'currentDrink',
+			'publisher',
+			'totalDrink',
+			'nickName',
+			'drunkenList',
+			'changedFlag',
+			'modeHost',
+			'roomHost'
+			]),
 		...mapState(['user']),
 		...mapGetters("meetingStore", ['getImgsrc']),
 
@@ -135,16 +177,12 @@ export default {
 		}
 	},
 	watch: {
-		gotWasted(value) {
-			if (value) {
-				setTimeout(() => {
-					this.offGotWasted();
-				}, 120000);
-			}
-		},
+		changedFlag() {
+			this.$forceUpdate();
+		}
 	},
 	methods: {
-		...mapActions('meetingStore', ['updateUserDrinkRecord','offGotWasted', 'changeCurrentDrink']),
+		...mapActions('meetingStore', ['updateUserDrinkRecord', 'changeCurrentDrink']),
 		getConnectionData() {
 			const { connection } = this.streamManager.stream;
 			return JSON.parse(connection.data);
@@ -162,7 +200,21 @@ export default {
         result += connectionId[i].charCodeAt(0);
       }
       return this.anonymousImages[result % 50]
-    }
+		},
+		isModeHost(connectionId) {
+			if (this.modeHost && this.modeHost.id === connectionId) {
+				return true;
+			} else {
+				return false;
+			}
+		},
+		isRoomHost(connectionId) {
+			if (this.roomHost && this.roomHost === connectionId) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 };
 </script>
@@ -314,5 +366,9 @@ p {
 
 .client-name {
 	text-shadow: #FC0 1px 0 10px;
+}
+
+.small-icon {
+	max-width: 20px;
 }
 </style>

@@ -6,6 +6,7 @@ import { OpenVidu } from 'openvidu-browser';
 import moment from 'moment';
 import Swal from 'sweetalert2'
 import firebase from 'firebase'
+import cookies from 'vue-cookies';
 
 const OPENVIDU_SERVER_SECRET = "MY_SECRET";
 
@@ -46,6 +47,11 @@ const meetingStore = {
     mySessionId: null,
     roomId: null,
     totalDrink : 0,
+    roomHost: null,
+    isHost: null,
+    nextRoomHost: null,
+    allTags: null,
+    roomInfo: null,
 
     // openvidu
     OV: undefined,
@@ -106,7 +112,7 @@ const meetingStore = {
     sentence: null,
     drunkenText: null,
     drunk: null,
-    gotWasted: null,
+    drunkenList: [],
 
     // theme
     theme: 'basic',
@@ -122,8 +128,11 @@ const meetingStore = {
 
     //capture
     screenshotInfo: null,
+    spinner: false,
 
-    isNewbie: true
+    isNewbie: true,
+
+    changedFlag: false
   },
   getters: {
     notModeHost(state) {
@@ -190,6 +199,24 @@ const meetingStore = {
     },
     SET_TOTAL_DRINK(state, value){
       state.totalDrink += value;
+    },
+    RESET_TOTAL_DRINK(state) {
+      state.totalDrink = 0;
+    },
+    SET_ROOM_HOST(state, value) {
+      state.roomHost = value;
+    },
+    SET_IS_HOST(state, value) {
+      state.isHost = value;
+    },
+    SET_NEXT_ROOM_HOST(state, value) {
+      state.nextRoomHost = value;
+    },
+    SET_ALL_TAGS(state, value) {
+      state.allTags = value;
+    },
+    SET_ROOM_INFO(state, value) {
+      state.roomInfo = value;
     },
 
     // Openvidu
@@ -317,12 +344,21 @@ const meetingStore = {
     },
     SET_DRUNK(state, data) {
       state.drunk = data
-    },
-    SET_GOT_WASTED(state, value) {
-      state.gotWasted = value
-    },
+    },   
     SET_SMILE_URL(state, value) {
       state.smileURL = value
+    },
+    SET_DRUNKEN_LIST(state, value) {
+      state.drunkenList.push(value)
+    },
+    REMOVE_DRUNKEN_LIST(state, value) {
+      const index = state.drunkenList.indexOf(value, 0);
+      if (index >= 0) {
+        state.drunkenList.splice(index, 1);
+      }
+    },
+    CLEAR_DRUNKEN_LIST(state) {
+      state.drunkenList = [];
     },
 
     // theme
@@ -357,13 +393,21 @@ const meetingStore = {
     SET_SCREENSHOT_INFO(state, data) {
       state.screenshotInfo = data;
     },
+    SET_SPINNER(state, data) {
+      state.spinner = data
+    },
     SET_IS_NEWBIE(state, value) {
       state.isNewbie = value
-    }
+    },
+
+    SET_CHANGED_FLAG(state) {
+      state.changedFlag = !state.changedFlag
+    },
 
   },
   actions: {
-    changeMode({ state, getters }, mode) {
+    changeMode({ state, getters, dispatch }, mode) {
+      let isPermitted = true;
       if (getters.notModeHost) {
         // modeHost가 아닌 경우
         if (state.currentMode && state.modeHost) {          
@@ -378,9 +422,19 @@ const meetingStore = {
           } else {
             // 현재 모드를 중단해도 되는 경우
             if (state.currentMode !== mode) {
-              if (!confirm('현재 모드를 중단하시겠습니까?')) {
-                return;
-              }
+              isPermitted = false;
+              Swal.fire({
+                html: "현재 모드를 중단하시겠습니까?",
+                showCancelButton: true,
+                confirmButtonText: '네',
+                cancelButtonText: '아니요',
+                icon: "warning",
+              })
+              .then((result) => {
+                if (result.value) {
+                  dispatch('sendModeSignal', mode);
+                }
+              });
             }
           }
         } else {
@@ -394,21 +448,46 @@ const meetingStore = {
           } else {
             // modeHost가 중간에 나가버린 경우
             if (state.currentMode && state.currentMode !== mode) {
-              if (!confirm('현재 모드를 중단하시겠습니까?')) {
-                return;
-              }
+              isPermitted = false;
+              Swal.fire({
+                html: "현재 모드를 중단하시겠습니까?",
+                showCancelButton: true,
+                confirmButtonText: '네',
+                cancelButtonText: '아니요',
+                icon: "warning",
+              })
+              .then((result) => {
+                if (result.value) {
+                  dispatch('sendModeSignal', mode);
+                }
+              });
             }
           }
         }
       } else {
         // modeHost인 경우
         if (state.currentMode && state.currentMode !== mode) {
-          if (!confirm('현재 모드를 중단하시겠습니까?')) {
-            return;
-          }
+          isPermitted = false;
+          Swal.fire({
+            html: "현재 모드를 중단하시겠습니까?",
+            showCancelButton: true,
+            confirmButtonText: '네',
+            cancelButtonText: '아니요',
+            icon: "warning",
+          })
+          .then((result) => {
+            if (result.value) {
+              dispatch('sendModeSignal', mode);
+            }
+          });
         }
       }
-
+      
+      if (isPermitted) {
+        dispatch('sendModeSignal', mode);
+      }
+    },
+    sendModeSignal({ state }, mode) {
       state.session.signal({
         type: 'mode',
         data: mode,
@@ -465,6 +544,16 @@ const meetingStore = {
     },
     toggleChatPanel({ state, commit }) {
       commit('SET_IS_CHATPANEL', !state.isChatPanel);
+      if (state.isChatPanel === true) {
+        setTimeout(() => {
+          var chatDiv = document.getElementById("chat-area");
+          chatDiv.scrollTo({
+            top: chatDiv.scrollHeight - chatDiv.clientHeight,
+            behavior: 'smooth'
+          })
+        }, 50);
+      }
+      
     },
     searchSong({ commit }, keyword) {
       axios.get(SERVER.YOUTUBE_URL, {
@@ -512,25 +601,33 @@ const meetingStore = {
     changeMeetingLogDialog({ commit }, value) {
       commit('SET_MEETINGLOG_DIALOG', value);
     },
-    createSessionId({ rootGetters, commit, dispatch }) {
-      const ct = new Date();
-      const createData = {
-        "hostId": rootGetters.getId,
-        "startTime": moment(ct).format('YYYY-MM-DDTHH:mm:ss'),
-        "hostNickName" : " ",
-      };
-      axios.post(SERVER.URL + SERVER.ROUTES.room, createData, rootGetters.config)
+    createSessionId({ rootGetters, dispatch }) {
+      axios.get(SERVER.URL + SERVER.ROUTES.room+"/code", rootGetters.config)
         .then(res => {
-          commit('SET_ROOMID', res.data.roomId);
-          dispatch('joinSession', res.data.code);
+          dispatch('joinSession', {
+            code: res.data,
+            isCreator: true
+          });
         })
     },
     checkSessionId({ rootGetters, commit, dispatch }, sessionId) {
-      axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${sessionId}/with/${rootGetters.getId}`,null,rootGetters.config)
+      axios.get(`${SERVER.URL + SERVER.ROUTES.room}/${sessionId}`,rootGetters.config)
         .then(res => {
-          commit('SET_ROOMID', res.data);
-          dispatch('joinSession', sessionId);
+          if(res.data != ""){
+            commit('SET_ROOMID', res.data);
+            dispatch('joinSession', {
+              code: sessionId,
+              isCreator: false
+            });
           return true;
+          }
+          else{
+            Swal.fire({
+              title: "초대코드가 유효하지 않습니다.",
+              icon: "error",
+            })
+            return false;
+          } 
         })
         .catch(() => {
           Swal.fire({
@@ -543,8 +640,9 @@ const meetingStore = {
       axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${state.mySessionId}/with/${rootGetters.getId}`, roomdata, rootGetters.config)
     },
     // openvidu
-    joinSession ({ state, commit, dispatch }, mySessionId) {
-      commit('SET_MYSESSIONID', mySessionId);
+    joinSession ({ state, commit, dispatch }, joinData) {
+
+      commit('SET_MYSESSIONID', joinData.code);
 			// --- Get an OpenVidu object ---
 			const OV = new OpenVidu();
 			// --- Init a session ---
@@ -586,30 +684,69 @@ const meetingStore = {
 			// --- Connect to the session with a valid user token ---
 			// 'getToken' method is simulating what your server-side should do.
 			// 'token' parameter should be retrieved and returned by your own backend
-			dispatch('getToken', mySessionId).then(token => {
-        let publisher = OV.initPublisher(undefined, {
-          audioSource: undefined, // The source of audio. If undefined default microphone
-          videoSource: undefined, // The source of video. If undefined default webcam
-          publishAudio: true,  	// Whether you want to start publishing with your audio unmuted or not
-          publishVideo: true,  	// Whether you want to start publishing with your video enabled or not
-          resolution: '640x480',  // The resolution of your video
-          frameRate: 30,			// The frame rate of your video
-          insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
-          mirror: true,       	// Whether to mirror your local video or not
+      if (joinData.isCreator) {
+        dispatch('getToken', joinData.code).then(token => {
+          let publisher = OV.initPublisher(undefined, {
+            audioSource: undefined, // The source of audio. If undefined default microphone
+            videoSource: undefined, // The source of video. If undefined default webcam
+            publishAudio: true,  	// Whether you want to start publishing with your audio unmuted or not
+            publishVideo: true,  	// Whether you want to start publishing with your video enabled or not
+            resolution: '640x480',  // The resolution of your video
+            frameRate: 30,			// The frame rate of your video
+            insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
+            mirror: true,       	// Whether to mirror your local video or not
+          });
+          commit('SET_OV', OV);
+          commit('SET_MAINSTREAMMANAGER', publisher);
+          commit('SET_PUBLISHER', publisher);
+          commit('SET_SESSION', session);
+          commit('SET_SUBSCRIBERS', subscribers);
+          commit('SET_OVTOKEN', token);
         });
-        commit('SET_OV', OV);
-        commit('SET_MAINSTREAMMANAGER', publisher);
-        commit('SET_PUBLISHER', publisher);
-        commit('SET_SESSION', session);
-        commit('SET_SUBSCRIBERS', subscribers);
-        commit('SET_OVTOKEN', token);
-			});
+      } else {
+        dispatch('createToken', joinData.code).then(token => {
+          let publisher = OV.initPublisher(undefined, {
+            audioSource: undefined, // The source of audio. If undefined default microphone
+            videoSource: undefined, // The source of video. If undefined default webcam
+            publishAudio: true,  	// Whether you want to start publishing with your audio unmuted or not
+            publishVideo: true,  	// Whether you want to start publishing with your video enabled or not
+            resolution: '640x480',  // The resolution of your video
+            frameRate: 30,			// The frame rate of your video
+            insertMode: 'APPEND',	// How the video is inserted in the target element 'video-container'
+            mirror: true,       	// Whether to mirror your local video or not
+          });
+          commit('SET_OV', OV);
+          commit('SET_MAINSTREAMMANAGER', publisher);
+          commit('SET_PUBLISHER', publisher);
+          commit('SET_SESSION', session);
+          commit('SET_SUBSCRIBERS', subscribers);
+          commit('SET_OVTOKEN', token);
+        });
+      }
 		},
 		leaveSession ({ state, commit }) {
-			// --- Leave the session by calling 'disconnect' method over the Session object ---
 			if (state.session) {
+        if (!state.subscribers.length) {
+          var requestData = {
+            roomId: state.roomId,
+            JWT: cookies.get('auth-token')
+          }
+          state.session.signal({
+            data: JSON.stringify(requestData),
+            to: [],
+            type: 'leave'
+          })
+        } else {
+          if (state.nextRoomHost) {
+            state.session.signal({
+              data: JSON.stringify(state.nextRoomHost),
+              to: [],
+              type: 'roomhostleave'
+            })
+          }
+        }
         state.publisher.stream.disposeWebRtcPeer();
-        state.publisher.stream.disposeMediaStream() 
+        state.publisher.stream.disposeMediaStream() ;
         state.session.disconnect();
         commit('SET_OV', undefined);
         commit('SET_SESSION', undefined);
@@ -619,6 +756,17 @@ const meetingStore = {
         commit('SET_MYSESSIONID', null);
         commit('SET_CLEARMESSAGES');
         commit('SET_OVTOKEN', null);
+        commit('SET_CURRENT_MODE', null);
+        commit('SET_MODE_HOST', null);
+        commit('SET_IS_CHATPANEL', false);
+        commit('SET_CLEARMESSAGES');
+        commit('SET_THEME', 'basic');
+        commit('SET_NICKNAME', null);
+        commit('RESET_TOTAL_DRINK');
+        commit('SET_ROOM_HOST', null);
+        commit('SET_IS_HOST', null);
+        commit('SET_NEXT_ROOM_HOST', null);
+        commit('roomInfo', null);
       }
 
       if (state.screenSession) {
@@ -631,13 +779,7 @@ const meetingStore = {
         commit('SET_SCREEN_OVTOKEN', null);
       }
 
-      commit('SET_CURRENT_MODE', null);
-      commit('SET_MODE_HOST', null);
-      commit('SET_GOT_WASTED', null);
-      commit('SET_IS_CHATPANEL', false);
-      commit('SET_CLEARMESSAGES');
-      commit('SET_THEME', 'basic');
-      commit('SET_NICKNAME', null);
+      
 		},
 		updateMainVideoStreamManager ({ state, commit }, stream) {
 			if (state.mainStreamManager === stream) return;
@@ -655,11 +797,10 @@ const meetingStore = {
 		 *   3) The token must be consumed in Session.connect() method
 		 */
 		getToken ({ dispatch }, mySessionId) {
-			return dispatch('createSession', mySessionId).then(sessionId => dispatch('createToken', sessionId));
+      return dispatch('createSession', mySessionId).then(sessionId => dispatch('createToken', sessionId));
 		},
 		// See https://docs.openvidu.io/en/stable/reference-docs/REST-API/#post-apisessions
-		createSession ({ state }, sessionId) {
-      console.log(state.mySessionId)
+		createSession (context, sessionId) {
 			return new Promise((resolve, reject) => {
 				axios
 					.post(`${SERVER.OPENVIDU_URL}/openvidu/api/sessions`, JSON.stringify({
@@ -677,7 +818,8 @@ const meetingStore = {
 					.then(data => resolve(data.id))
 					.catch(error => {
 						if (error.response.status === 409) {
-							resolve(sessionId);
+              resolve(sessionId);
+              return {};
 						} else {
 							console.warn(`No connection to OpenVidu Server. This may be a certificate error at ${SERVER.OPENVIDU_URL}`);
 							if (window.confirm(`No connection to OpenVidu Server. This may be a certificate error at ${SERVER.OPENVIDU_URL}\n\nClick OK to navigate and accept it. If no certificate warning is shown, then check that your OpenVidu Server is up and running at "${SERVER.OPENVIDU_URL}"`)) {
@@ -689,8 +831,7 @@ const meetingStore = {
 			});
 		},
 		// See https://docs.openvidu.io/en/stable/reference-docs/REST-API/#post-apitokens
-		createToken ({ state }, sessionId) {
-      console.log(state.mySessionId)
+		createToken (context, sessionId) {
 			return new Promise((resolve, reject) => {
 				axios
 					.post(`${SERVER.OPENVIDU_URL}/api/tokens`, JSON.stringify({
@@ -709,7 +850,13 @@ const meetingStore = {
 					})
 					.then(response => response.data)
 					.then(data => resolve(data.token))
-					.catch(error => reject(error.response));
+					.catch(error => {
+            Swal.fire({
+              title: "오류가 발생했습니다. 입장 정보를 다시 한 번 확인해주세요.",
+              icon: "error",
+            })
+            reject(error.response)
+          });
 			});
     },
     clickMuteVideo({ state }) {
@@ -726,54 +873,84 @@ const meetingStore = {
         state.publisher.publishAudio(true) 
       }
     },
+    setDrinkRecord({state, rootGetters, commit}, enterData){
+      commit('SET_CURRENT_DRINK', enterData.currentDrink);
+      let user = rootGetters.getUser;
+
+      //DB에 기록이 있는지 조회 후 없으면 0인 Record 생성
+      axios.get(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${enterData.roomId}`, rootGetters.config)
+              .then(res => {
+                let totalDrink = 0;
+                if(res.data.length !== 0){
+                  for(let i=0; i<res.data.length; i++){
+                    for(let j=0; j<user.drinks.length; j++){
+                      if(res.data[i].liquorName == user.drinks[j].liquorName){
+                        //이중포문 쓰기 싫은데... 방법이 생각이 안남
+                        user.drinks[j].liquorNum = res.data[i].liquorLimit;
+                        user.drinks[j].liquorId = res.data[i].id;
+                        totalDrink += res.data[i].liquorLimit;
+                      }
+                    }
+                  }
+                  commit('SET_TOTAL_DRINK', totalDrink);  //totalDrink갱신
+                  //신호보내기
+                  let data = {
+                    "userId": state.publisher.stream.connection.connectionId,
+                    "totalDrink" : state.totalDrink
+                  }
+                  state.session.signal({
+                    data: JSON.stringify(data),
+                    to: [],
+                    type: 'drink'
+                  })
+                }
+                else{
+                  for(let i=0; i<user.drinks.length; i++){
+                      let drinkData = {
+                        "liquorLimit": 0,
+                        "liquorName": user.drinks[i].liquorName,
+                        "liquorId": 0
+                      }
+                      axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
+                        .then(res => {
+                          user.drinks[i].liquorId = res.data;
+                          user.drinks[i].liquorNum = 0;
+                        })
+                  }//for
+                }
+              })
+          
+      commit('setUser', user, { root:true });
+    },
     enterSession({ state, rootGetters, commit, dispatch }, enterData) {
       if(enterData.roomName){ // 호스트 요청
         const createData = {
           "hostId" : rootGetters.getId,
           "hostNickName" : enterData.nickName,
-          "roomId" : state.roomId,
           "roomName" : enterData.roomName,
+          "isPublic" : enterData.isPublic,
+          "tags" : enterData.tags
         };
-        axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${state.mySessionId}/host`, createData, rootGetters.config,)
+        axios.post(`${SERVER.URL + SERVER.ROUTES.room}/${state.mySessionId}/host`, createData, rootGetters.config)
+        .then(res =>{
+          commit('SET_ROOMID', res.data.roomId);
+          commit('SET_ROOM_HOST', 'temp');
+          enterData.roomId = res.data.roomId;
+          dispatch('setDrinkRecord', enterData);
+          dispatch('findRoomInfo', res.data.roomId);
+        })
       }else{  //유저 요청
         const MemberData = {
           "nickName": enterData.nickName,
         }
         axios.put(`${SERVER.URL + SERVER.ROUTES.room}/${state.mySessionId}/with/${rootGetters.getId}`,MemberData,rootGetters.config)
+        .then(()=>{
+          enterData.roomId = state.roomId;
+          dispatch('setDrinkRecord', enterData);
+        })
       }
 
-      commit('SET_CURRENT_DRINK', enterData.currentDrink);
-      let user = rootGetters.getUser;
-      //다른 애들도 넣어주자
-      for(let i=0; i<user.drinks.length; i++){
-        if(!(user.drinks[i].liquorName==state.currentDrink)){
-          let drinkData = {
-            "liquorLimit": 0,
-            "liquorName": user.drinks[i].liquorName,
-            "recordId": 0
-          }
-          axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
-              .then(res => {
-                //alert(res.data);
-                user.drinks[i].liquorId = res.data;
-                user.drinks[i].liquorNum = 0;
-              })
-        }
-      }
-      const drinkData = {
-        "liquorLimit": 0,
-        "liquorName": enterData.currentDrink,
-        "recordId": 0
-      }
-      axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
-        .then(res => {
-          for(let i=0; i<user.drinks.length; i++){  //현재 DB ID 저장
-            if(user.drinks[i].liquorName==state.currentDrink){
-              user.drinks[i].liquorNum = 0;
-              user.drinks[i].liquorId = res.data;
-            }
-          }
-          commit('setUser', user, { root:true });
+      try{
           state.session.connect(state.ovToken, { clientData: enterData.nickName })
 					.then(() => {
             commit('SET_NICKNAME', enterData.nickName);
@@ -818,7 +995,21 @@ const meetingStore = {
                 selectedSong: state.selectedSong,
                 selectedGame: state.selectedGame,
                 isSongEnded: state.isSongEnded,
-                isSharingMode: state.isSharingMode
+                isSharingMode: state.isSharingMode,
+                totalDrink: state.totalDrink,
+                roomHost: state.roomHost
+              }
+              if (state.isHost) {
+                let nextRoomHost = Object()
+                if (state.subscribers.length) {
+                  nextRoomHost.name = state.subscribers[0].stream.connection.data.slice(15, -2);
+                  nextRoomHost.id = state.subscribers[0].stream.connection.connectionId;
+                  commit('SET_NEXT_ROOM_HOST', nextRoomHost);
+                } else {
+                  nextRoomHost.name = event.data.slice(15, -2);
+                  nextRoomHost.id = event.from.connectionId
+                  commit('SET_NEXT_ROOM_HOST', nextRoomHost);
+                }
               }
               state.session.signal({
                 type: 'status',
@@ -826,12 +1017,20 @@ const meetingStore = {
                 to: [event.stream.connection.connectionId],
               })
             })
+            state.session.on('signal:roomhost', (event) => {
+              if (event.data && event.data !== 'temp') {
+                commit('SET_ROOM_HOST', event.data);
+              }
+            });
 
             state.session.on('signal:status', (event) => {
               let status = JSON.parse(event.data);
               if (!state.currentMode && !state.modeHost) {
                 commit('SET_THEME', status.theme);
                 commit('SET_MODE_HOST', status.modeHost);
+                if (status.roomHost && status.roomHost !== 'temp') {
+                  commit('SET_ROOM_HOST', status.roomHost);
+                }
                 commit('SET_IS_SHARING_MODE', status.isSharingMode);
 
                 if (status.currentMode === 'anonymous') {
@@ -860,8 +1059,32 @@ const meetingStore = {
                   commit('SET_IS_SONG_ENDED', status.isSongEnded);
                 }
                 commit('SET_CURRENT_MODE', status.currentMode);
+
+                if (status.totalDrink) {
+                  state.subscribers.forEach(subscriber => {
+                    if (subscriber.stream.connection.connectionId === event.from.connectionId) {
+                      subscriber.totalDrink = status.totalDrink;
+                    }
+                  });
+                }
+                commit('SET_CHANGED_FLAG');
               }
-            })
+            });
+
+            state.session.on('signal:roomhostleave', (event) => {
+              let data = JSON.parse(event.data);
+              commit('SET_ROOM_HOST', data.id);
+              
+              if (state.publisher.stream.connection.connectionId === data.id) {
+                commit('SET_IS_HOST', data.id);
+                if (state.subscribers.length) {
+                  let nextRoomHost = Object()
+                  nextRoomHost.name = state.subscribers[0].stream.connection.data.slice(15, -2);
+                  nextRoomHost.id = state.subscribers[0].stream.connection.connectionId;
+                  commit('SET_NEXT_ROOM_HOST', nextRoomHost);
+                }
+              }
+            });
 
             state.session.on('signal:mode', (event) => {
               let mode = event.data
@@ -882,6 +1105,10 @@ const meetingStore = {
               }
 
               if (mode === 'anonymous') {
+                let TruthStartSound = new Audio(require('@/assets/sounds/truthStart.wav'));
+                TruthStartSound.volume = 0.2
+                TruthStartSound.play();
+
                 let pitchs = ['0.76', '0.77', '0.78', '0.79', '0.80', '1.3', '1.4', '1.5', '1.6', '1.7']
                 let pitch = pitchs[Math.floor(Math.random() * pitchs.length)]
                 state.publisher.stream.applyFilter("GStreamerFilter", {"command": `pitch pitch=${pitch}`});
@@ -892,9 +1119,19 @@ const meetingStore = {
                   text: '진실의 방 모드가 켜졌습니다!'
                 });
               } else if (mode === 'singing') {
+                //효과음
+                let modeChangeSound = new Audio(require('@/assets/sounds/modeChange.mp3'));
+                modeChangeSound.volume = 0.1
+                modeChangeSound.play();
+
                 commit('SET_IS_SONG_ENDED', false);
                 commit('SET_CURRENT_MODE', mode);
               } else if (mode === 'snapshot') {
+                //효과음
+                let modeChangeSound = new Audio(require('@/assets/sounds/modeChange.mp3'));
+                modeChangeSound.volume = 0.1
+                modeChangeSound.play();
+
                 if (state.currentMode === 'snapshot') {
                   commit('SET_CURRENT_MODE', null);
                   setTimeout(() => {
@@ -904,6 +1141,10 @@ const meetingStore = {
                   commit('SET_CURRENT_MODE', mode);
                 }
               } else {
+                 //효과음
+                 let modeChangeSound = new Audio(require('@/assets/sounds/modeChange.mp3'));
+                 modeChangeSound.volume = 0.1
+                 modeChangeSound.play();
                 commit('SET_CURRENT_MODE', mode);
               }
 
@@ -951,12 +1192,21 @@ const meetingStore = {
               if (event.data.participantPublicId){
                 if (state.publisher.stream.connection.connectionId === event.data.participantPublicId) {
                   commit('SET_CURRENT_PLAYER', state.publisher);
+                  commit('SET_CHANGED_FLAG');
                 } else {
                   state.subscribers.forEach(subscriber => {
                     if (subscriber.stream.connection.connectionId === event.data.participantPublicId) {
                       commit('SET_CURRENT_PLAYER', subscriber);
+                      commit('SET_CHANGED_FLAG');
                     }
                   });
+                }
+                if(event.data.gameStatus == 2){
+                  //게임 진행 중일 때만
+                  //효과음
+                  let turnSound = new Audio(require('@/assets/sounds/turnchange.mp3'));
+                  turnSound.volume = 0.1
+                  turnSound.play();
                 }
               }
 
@@ -975,6 +1225,10 @@ const meetingStore = {
                 commit('SET_SELECTED_GAME', event.data.gameId);
                 commit('SET_GAME_STATUS', event.data.gameStatus);
                 commit('SET_PENALTY', event.data.panelty)
+
+                let gameStartSound = new Audio(require('@/assets/sounds/gameStart.wav'));
+                gameStartSound.volume = 0.3
+                gameStartSound.play();
                 if(state.selectedGame == 1){  //업다운
                   commit('SET_GAME_UPDOWN_INDEX',event.data.index)
                   commit('SET_GAME_UPDOWN_NUMBER',event.data.number)
@@ -991,6 +1245,11 @@ const meetingStore = {
                 }
                 if(state.selectedGame == 2){  //초성게임
                   if(event.data.isCorrect == 2){
+                    //정답일때 효과음
+                    let rightAnswerSound = new Audio(require('@/assets/sounds/rightAnswer.wav'));
+                    rightAnswerSound.volume = 0.1
+                    rightAnswerSound.play();
+
                     if (state.publisher.stream.connection.connectionId === event.from.connectionId) {
                       let data = {
                         nickName : state.publisher.stream.connection.data.slice(15,-2),
@@ -1014,6 +1273,12 @@ const meetingStore = {
                   }
                   if(event.from.connectionId == state.publisher.stream.connection.connectionId){
                     commit('SET_GAME_WORDRESULT',event.data.result);
+                    if(event.data.isCorrect != 2){
+                      //정답이 아닐 때 효과음
+                      let wrongAnswerSound = new Audio(require('@/assets/sounds/wrongAnswer.mp3'));
+                      wrongAnswerSound.volume = 0.1
+                      wrongAnswerSound.play();
+                    }
                   }
                 }
                 if(state.selectedGame == 3){  //라이어게임
@@ -1022,6 +1287,16 @@ const meetingStore = {
                   commit('SET_GAME_LIAR', event.data.liarId);
                   if(event.data.turn==1){
                     commit('SET_GAME_THEME', event.data.theme);
+                    //효과음
+                    let turnSound = new Audio(require('@/assets/sounds/turnchange.mp3'));
+                    turnSound.volume = 0.1
+                    turnSound.play();
+                  }
+                  else if(event.data.turn==2){
+                    //효과음
+                    let turnSound = new Audio(require('@/assets/sounds/turnchange.mp3'));
+                    turnSound.volume = 0.1
+                    turnSound.play();
                   }
                 }
                 if(state.selectedGame == 4){  //웃으면 술이와요
@@ -1085,7 +1360,11 @@ const meetingStore = {
                     commit('SET_DRUNK', event.data.drunk);
 
                     if (event.data.drunk == 2) {
-                      commit('SET_GOT_WASTED', state.currentPlayer.stream.connection.connectionId);
+                      var drunkenPlayer = state.currentPlayer.stream.connection.connectionId;
+                      commit('SET_DRUNKEN_LIST', drunkenPlayer);
+                      setTimeout(() => {
+                        commit('REMOVE_DRUNKEN_LIST', drunkenPlayer)
+                      }, 120000);
                     }
                   }
                 }
@@ -1101,6 +1380,11 @@ const meetingStore = {
                       }
                     });
                   }
+                  
+                  let paneltySound = new Audio(require('@/assets/sounds/panelty2.mp3'));
+                  paneltySound.volume = 0.1
+                  paneltySound.play();
+
                 }
                 else{
                   if (state.publisher.stream.connection.connectionId === event.from.connectionId) {
@@ -1137,16 +1421,32 @@ const meetingStore = {
             });
 
             state.session.on('signal:attachImage', (event) => {
-              var image = document.createElement('img')  
-              image.src = `https://firebasestorage.googleapis.com/v0/b/homesuli.appspot.com/o/${state.mySessionId}%2Fsnapshot%2F${event.data}.jpg?alt=media&token=942e1b59-2774-4d79-b0e7-098d76168b49`
-              image.style.maxWidth="90%"
-              document.getElementById('preview').appendChild(image)
+              commit('SET_SPINNER', false)
+              setTimeout(() => {
+                var image = document.createElement('img')  
+                image.src = `https://firebasestorage.googleapis.com/v0/b/homesuli.appspot.com/o/${state.mySessionId}%2Fsnapshot%2F${event.data}.jpg?alt=media&token=942e1b59-2774-4d79-b0e7-098d76168b49`
+                image.style.maxWidth="90%"
+                document.getElementById('preview').appendChild(image)
+              }, 500);
             });
 
             state.session.on('streamDestroyed', (event) => {
               if (state.modeHost) {
                 if (state.modeHost.id === event.stream.connection.connectionId) {
                   commit('SET_MODE_HOST', null);
+                }
+              }
+
+              if (state.isHost && state.nextRoomHost) {
+                if (state.nextRoomHost.id === event.stream.connection.connectionId) {
+                  if (state.subscribers.length) {
+                    let nextRoomHost = Object();
+                    nextRoomHost.name = state.subscribers[0].stream.connection.data.slice(15, -2);
+                    nextRoomHost.id = state.subscribers[0].stream.connection.connectionId;
+                    commit('SET_NEXT_ROOM_HOST', nextRoomHost);
+                  } else {
+                    commit('SET_NEXT_ROOM_HOST', null);
+                  }
                 }
               }
             });
@@ -1158,6 +1458,7 @@ const meetingStore = {
                   subscriber.totalDrink = drinkData.totalDrink;
                 }
               });
+              commit('SET_CHANGED_FLAG');
             });
 
             return true;
@@ -1169,13 +1470,13 @@ const meetingStore = {
               icon: "error",
             })
 					});
-        })
-        .catch(() => {
+        }//try
+        catch{
           Swal.fire({
             title: "오류가 발생했습니다. 입장 정보를 다시 한 번 확인해주세요.",
             icon: "error",
           })
-        })
+        }
     },
     sendMessage({ state }, message) {
       var messageData = {
@@ -1372,9 +1673,6 @@ const meetingStore = {
       }
       fromMic();
     },
-    offGotWasted({ commit }) {
-      commit('SET_GOT_WASTED', null);
-    },
     updateUserDrinkRecord({ state, rootGetters , commit }, num) {
       let user = rootGetters.getUser;
       let currentDrinkNum = 0;
@@ -1403,7 +1701,7 @@ const meetingStore = {
       commit('setUser', user, { root:true });
 
       commit('SET_TOTAL_DRINK', num);
-      //send drink signal JSON.stringify(song),
+      //send drink signal
       let data = {
         "userId": state.publisher.stream.connection.connectionId,
         "totalDrink" : state.totalDrink
@@ -1418,7 +1716,7 @@ const meetingStore = {
       const drinkData = {
         "liquorLimit": currentDrinkNum,
         "liquorName": state.currentDrink,
-        "recordId": currentDrinkId,
+        "id": currentDrinkId,
       }
       axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
     },
@@ -1427,6 +1725,50 @@ const meetingStore = {
     },
     changeIsNewbie({ commit }) {
       commit('SET_IS_NEWBIE', false);
+    },
+    changeSpinner({ commit }, value) {
+      commit('SET_SPINNER', value)
+    },
+    setRoomHost({ state, commit }, id) {
+      commit('SET_ROOM_HOST', id);
+      commit('SET_IS_HOST', id);
+      state.session.signal({
+        type: 'roomhost',
+        data: id,
+        to: [],
+      });
+    },
+    fetchAllTags({ commit, rootGetters }) {
+      axios.get(SERVER.URL + SERVER.ROUTES.tags, rootGetters.config)
+        .then(res => {
+          commit('SET_ALL_TAGS', res.data);
+        })
+        .catch(err => {
+          console.log(err.response.data);
+        })
+    },
+    findRoomInfo({ commit, rootGetters }, roomId) {
+      axios.get(SERVER.URL + SERVER.ROUTES.info + `/${roomId}`, rootGetters.config)
+        .then(res => {
+          commit('SET_ROOM_INFO', res.data);
+        })
+        .catch(err => {
+          console.log(err.response.data);
+        })
+    },
+    updateRoomInfo({ state, commit, rootGetters }, updateData) {
+      updateData.roomId = state.roomId;
+      axios.put(SERVER.URL + SERVER.ROUTES.room, updateData, rootGetters.config)
+        .then(res => {
+          commit('SET_ROOM_INFO', res.data);
+          Swal.fire({
+            title: "미팅 정보가 수정되었습니다",
+            icon: "success",
+          })
+        })
+        .catch(err => {
+          console.log(err.response.data);
+        })
     }
   }
 }

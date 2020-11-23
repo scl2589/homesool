@@ -132,10 +132,19 @@ public class UserService {
 				.liquorName(record.getLiquorName())
 				.liquorLimit(record.getLiquorLimit())
 				.build();
-		if(record.getRecordId() != 0)
-			userRecord.setId(record.getRecordId());
+		if(record.getId() != 0)
+			userRecord.setId(record.getId());
 		return userRecordRepository.save(userRecord).getId();
 	}
+	
+	public List<UserDto.UserRecord> getRecordByUserIdAndRoomId(long userId, long roomId) {
+		List<UserDto.UserRecord> userRecord = null;
+		userRecord = UserMapper.INSTANCE.toRecordList(
+				userRecordRepository.findAllByUserIdAndRoomId(userId,roomId));
+		
+		return userRecord;
+	}
+	
 	
 	public UserDto.UserRecordDetail getRecord(long userId, long roomId) {
 		UserRecordDetail userRecordDetail = new UserRecordDetail();
