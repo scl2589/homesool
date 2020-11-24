@@ -51,6 +51,7 @@
       </div>
     </div>
     
+    <!-- 입장하기 모달 -->
     <v-row justify="center">
       <v-dialog
         v-model="meetingDialog"
