@@ -58,7 +58,7 @@
 - **🖼와이어프레임**
   - <a href="https://lab.ssafy.com/s03-final/s03p31a503/tree/master/Documentation/WireFrame">와이어프레임 확인하기</a>
 - **🎬프로젝트 시연영상**
-  - <a href="https://youtu.be/4IB_dOKe60E">시연영상</a>
+  - <a href="https://youtu.be/W_Vz41kadvQ">시연영상</a>
 <br>
 
 ## ✍ 프로젝트 소개
@@ -85,7 +85,7 @@
 - 또한 모두가 BGM을 공유하는 기능을 제공합니다.
 - 공개방
   - 홈술이는 새로운 사람들과의 소통을 즐길 수 있도록 공개방을 지원합니다. 
-    - ![공개방](../공개방.png)
+    - <img src="images/README/캡처.png" alt="image-20201123101859623" style="zoom:75%;" />
   - 방 생성 시 공개방으로 설정하면 모든 사람이 참여가 가능합니다. 
     - <img src="images/README/image-20201123101859623.png" alt="image-20201123101859623" style="zoom:50%;" />
 
@@ -122,7 +122,7 @@
 - 음주 내역을 기록할 수 있는 기능
   - <img src="images/README/check.gif" alt="check" style="zoom:50%;" />
   - 음주량이 기존에 설정해 둔 본인의 주량을 넘어선다면, 경고 메시지를 띄워 사용자의 지나친 음주를 예방합니다.
-  - <img src="images/README/calendar.JPG" alt="calendar" style="zoom:50%;" />
+  - ![image-20201124092412733](images/README/image-20201124092412733.png)
   - 음주 달력을 통해 술자리의 정보를 확인 할 수 있습니다.
   - <img src="images/README/statistics.png" alt="statistics" style="zoom:50%;" />
   - 음주 분석을 통해 음주 습관을 점검 할 수 있습니다.
