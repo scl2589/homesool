@@ -12,7 +12,6 @@ import com.ssafy.homesool.entity.Room;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long> {
 
-	
 	Room findOneByCode(String code);
 	Room findOneByRoomId(long roomId);
 	

@@ -1,6 +1,5 @@
 package com.ssafy.homesool.entity;
 
-
 import java.util.List;
 
 import javax.persistence.CascadeType;

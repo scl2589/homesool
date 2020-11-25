@@ -1,10 +1,5 @@
 package com.ssafy.homesool.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.ssafy.homesool.entity.UserDrink;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;

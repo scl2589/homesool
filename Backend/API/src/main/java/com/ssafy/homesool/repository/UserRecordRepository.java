@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.ssafy.homesool.dto.UserDto;
 import com.ssafy.homesool.entity.UserRecord;
 
 @Repository
