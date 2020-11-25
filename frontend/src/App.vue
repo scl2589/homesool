@@ -1,7 +1,10 @@
 <template>
   <div>
       <v-app id="app">
-      <div id="nav" v-if="!meetingpages.includes($route.name)">
+      <div
+        id="nav"
+        v-if="!meetingpages.includes($route.name)"
+      >
         <img 
           class="pointer"
           id="logo" 
@@ -9,14 +12,37 @@
           alt="술이술이홈술이 로고"
           @click="clickLogo"
         >
-        <span id="login" v-if="!token">
-          <button id="kakao_login" @click="login()">
-            <img id="kakao_img" src="@/assets/images/kakao_login_large.png"/>
+        <span
+          id="login"
+          v-if="!token"
+        >
+          <button
+            id="kakao_login"
+            @click="login"
+          >
+            <img
+              id="kakao_img"
+              src="@/assets/images/kakao_login_large.png"
+            />
           </button>
         </span>
-        <span class="d-flex justify-content-between align-items-center h-100" v-else id="afterlogin">
-          <p class="color-white mr-3 mb-0 pointer" @click="clickMyPage" >마이페이지</p>
-          <p class="color-white mr-2 mb-0 pointer" @click="clickLogout" >로그아웃</p>
+        <span
+          class="d-flex justify-content-between align-items-center h-100"
+          id="afterlogin"
+          v-else
+        >
+          <p
+            class="color-white mr-3 mb-0 pointer"
+            @click="clickMyPage"
+          >
+            마이페이지
+          </p>
+          <p
+            class="color-white mr-2 mb-0 pointer"
+            @click="clickLogout"
+          >
+            로그아웃
+          </p>
         </span>
       </div>
       <router-view/>
@@ -80,7 +106,7 @@ export default {
     }
   },
   methods : {
-    ...mapActions(['getMyInfo']),
+    ...mapActions(['getMyInfo', 'kakaoLogin', 'kakaoLogout']),
     clickLogo() {
       this.$router.push('/')
     },
@@ -90,7 +116,7 @@ export default {
       });
     },
     kakaoLoginStore(authObj) {
-      this.$store.dispatch('kakaoLogin', {
+      this.kakaoLogin({
         access_token: authObj.access_token,
       });
     },
@@ -107,12 +133,10 @@ export default {
       })
       .then((result) => {
         if (result.value) {
-          this.$store.dispatch('kakaoLogout');
+          this.kakaoLogout();
         }
       });
     },
-    clickResize() {
-    }
   },
   mounted() {
     if (this.token) {

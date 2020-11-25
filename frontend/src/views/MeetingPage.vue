@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div class="row no-gutters theme-background" style="height:91vh;">
+    <div
+      class="row no-gutters theme-background"
+      style="height:91vh;"
+    >
       <!-- LeftPanel -->
       <div 
         id="capture"
@@ -31,144 +34,13 @@
     </div>
 
     <!-- dialog -->
-    <v-row justify="center">
-      <v-dialog
-        v-model="settingDialog"
-        persistent
-        max-width="600px"
-      >
-        <div class="">
-          <v-card>
-            <v-card-title>
-              <h3 class="m-0 enter-title">미팅 정보</h3>
-            </v-card-title>
-            <v-form v-model="valid" :lazy-validation="lazy">  
-              <v-container>
-                <v-row>
-                  <v-col
-                    class="d-flex justify-content-between align-items-center enter-code"
-                    cols="12"
-                  >
-                    <h5 class="my-0">입장 코드</h5>
-                    <v-text-field
-                      class="ml-3 mr-5"
-                      id="copySessionId"
-                      :value="mySessionId"
-                      readonly
-                      append-icon="far fa-clone"
-                      @click:append="clickCopyURL"
-                      color="#84669a"
-                    ></v-text-field>
-                    <div class="mb-2 pointer" @click="clickKakaoShare">
-                      <img
-                        width="32vw"
-                        src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png"
-                      />
-                    </div>
-                  </v-col>
-                  
-                  <v-col
-                    cols="6"
-                  >
-                    <v-text-field
-                      v-model="roomName"
-                      label="방 제목"
-                      hint="방 제목을 입력해주세요"
-                      persistent-hint
-                      required
-                      :rules="[v => !!v || '필수항목입니다.']"
-                      color="#84669a"
-                    ></v-text-field>
-                  </v-col>
-
-                  <v-col
-                    cols="6"
-                  >
-                    <v-select
-                      v-model="isPublic"
-                      :items="publicItems"
-                      item-text="title"
-                      item-value="value"
-                      label="공개 여부"
-                      hint="미팅의 공개 여부를 입력해주세요"
-                      persistent-hint
-                      required
-                      color="#84669a"
-                    >
-                    </v-select>
-                  </v-col>
-
-                  <v-col
-                    cols="12"
-                  >
-                    <v-combobox
-                      v-model="tags"
-                      :items="allTags"
-                      :search-input.sync="searchTag"
-                      hide-selected
-                      counter="5"
-                      :rules="[
-                        v => (v.length < 6) || '최대 5개의 태그를 고를 수 있습니다.'
-                      ]"
-                      color="blue-grey lighten-2"
-                      label="태그"
-                      multiple
-                      item-text="tagName"
-                      item-value="tagName"
-                      :return-object="false"
-                      persistent-hint
-                      small-chips
-                      hint="미팅을 설명하는 태그를 작성해주세요"
-                    >
-                      <template v-slot:selection="data">
-                        <v-chip
-                          v-bind="data.attrs"
-                          close
-                          @click:close="remove(tags, data.item)"
-                        >
-                          {{ data.item }}
-                        </v-chip>
-                      </template>
-                      <template v-slot:no-data>
-                        <v-list-item>
-                          <v-list-item-content>
-                            <v-list-item-title>
-                              "<strong>{{ searchTag }}</strong>"를 찾을 수 없습니다. <kbd>enter</kbd>를 눌러 새로운 태그를 만들어보세요. 
-                            </v-list-item-title>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </template>
-                    </v-combobox>
-                  </v-col>
-
-                </v-row>
-              </v-container>
-            </v-form>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn
-                color="indigo"
-                text
-                @click="clickClose"
-              >
-                취소
-              </v-btn>
-              <v-btn
-                color="indigo"
-                text
-                :disabled="!valid"
-                @click="clickUpdate"
-              >
-                수정
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </div>
-      </v-dialog>
-    </v-row>
+    <MeetingInfo />
 
     <!-- Footer -->
-    <div class="footer d-flex justify-content-between align-items-center w-100 px-2" style="height:9vh;">
+    <div
+      class="footer d-flex justify-content-between align-items-center w-100 px-2"
+      style="height:9vh;"
+    >
       <!-- Theme BGM -->
       <div class="d-flex align-items-center">
         <button
@@ -408,6 +280,7 @@ import Swal from 'sweetalert2'
 import MultiPanel from '@/components/meetingpage/multipanel/MultiPanel'
 import ChatPanel from '@/components/meetingpage/ChatPanel'
 import LeftPanel from '@/components/meetingpage/LeftPanel'
+import MeetingInfo from '@/components/meetingpage/MeetingInfo'
 
 export default {
   name: 'MeetingPage',
@@ -415,29 +288,20 @@ export default {
   components: {
     MultiPanel,
     ChatPanel,
-    LeftPanel
+    LeftPanel,
+    MeetingInfo
   },
 
   data() {
     return {
       isPlaying: false,
-      settingDialog: false,
-      valid: true,
-      lazy:false,
-      roomName : null,
-      publicItems: [{ title: '공개', value: 1}, { title: '비공개', value: 0}],
-      isPublic: 1,
-      tags: [],
-      searchTag: null
     }
   },
 
   computed: {
-    ...mapState(['user']),
     ...mapState('meetingStore', [
       'isChatPanel',
       'theme',
-      'mySessionId',
       'publisher',
       'screenPublisher',
       'currentMode',
@@ -446,8 +310,7 @@ export default {
       'roomHost',
       'isHost',
       'nextRoomHost',
-      'allTags',
-      'roomInfo'
+      'mySessionId'
     ]),
     isMultiPanel() {
       if (this.currentMode) {
@@ -505,17 +368,6 @@ export default {
         }, 700);
       }
     },
-    roomInfo(value) {
-      if (value.tags) {
-        this.roomName = value.roomName;
-        let tagNames = [];
-        value.tags.forEach(tag => {
-          tagNames.push(tag.tagName);
-        });
-        this.tags = tagNames;
-        this.isPublic = value.isPublic;
-      }
-    }
   },
 
   methods: {
@@ -530,14 +382,9 @@ export default {
       'changeMode',
       'changeIsNewbie',
       'setRoomHost',
-      'fetchAllTags',
-      'findRoomInfo',
-      'updateRoomInfo'
+      'toggleMeetingInfo',
+      'clickCopyURL'
     ]),
-    remove (data, item) {
-      const index = data.indexOf(item)
-      if (index >= 0) data.splice(index, 1)
-    },
     toggleBGM() {
       if (currentBGM.paused) {
         currentBGM.play()
@@ -558,9 +405,6 @@ export default {
         inputOptions: {
           basic: '기본',
           spring: '봄',
-          // summer: '여름',
-          // fall: '가을',
-          // winter: '겨울',
           christmas: '크리스마스',
           birthday: '생일'
         },
@@ -583,36 +427,10 @@ export default {
       })
     },
     clickChangeSetting() {
-      this.settingDialog = true;
+      this.toggleMeetingInfo();
     },
     leaveRoom() {
       this.$router.push({ name: 'HomePage' });
-    },
-    clickCopyURL() {
-      const copyText = document.createElement("input");
-      copyText.value = `https://homesuli.com/meet/${this.mySessionId}`
-      document.body.appendChild(copyText)
-      copyText.select();
-      document.execCommand("copy");
-      document.body.removeChild(copyText)
-      Swal.fire({
-          icon: 'success',
-          html: `<p>https://homesuli.com/meet/${this.mySessionId}</p><h5>주소가 복사되었습니다</h5>`
-        })
-    },
-    clickKakaoShare() {
-      window.Kakao.Link.sendDefault({
-        objectType: 'feed',
-        content: {
-          title: `${this.user.name}님이 술자리 미팅을 초대하셨습니다!`,
-          description: '링크로 들어와 술자리 미팅에 참여해주세요 :)',
-          imageUrl: 'https://user-images.githubusercontent.com/57381062/97659870-6c195600-1ab3-11eb-9084-05a7a2e01c96.png',
-          link: {
-            mobileWebUrl: `https://homesuli.com/meet/${this.mySessionId}`,
-            webUrl: `https://homesuli.com/meet/${this.mySessionId}`,
-          },
-        }
-      })
     },
     toggleShareScreen() {
       if (this.screenPublisher) {
@@ -642,17 +460,6 @@ export default {
           }
         });
       }
-    },
-    clickClose() {
-      this.settingDialog = false;
-    },
-    clickUpdate() {
-      var updateData = Object();
-      updateData.isPublic = this.isPublic;
-      updateData.roomName = this.roomName;
-      updateData.tags = this.tags;
-      this.updateRoomInfo(updateData);
-      this.settingDialog = false;
     }
   },
 
@@ -664,7 +471,6 @@ export default {
     setTimeout(() => {
       this.changeIsNewbie();
     }, 3000);
-    this.fetchAllTags();
   },
 
   beforeRouteLeave (to, from, next) {
