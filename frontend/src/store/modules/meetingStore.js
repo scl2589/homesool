@@ -47,6 +47,7 @@ const meetingStore = {
     nextRoomHost: null,
     allTags: null,
     roomInfo: null,
+    meetingInfoDialog: false,
 
     // openvidu
     OV: undefined,
@@ -204,6 +205,9 @@ const meetingStore = {
     },
     SET_ROOM_INFO(state, value) {
       state.roomInfo = value;
+    },
+    SET_MEETING_INFO_DIALOG(state, value) {
+      state.meetingInfoDialog = value;
     },
 
 
@@ -512,6 +516,9 @@ const meetingStore = {
         .catch(err => {
           console.log(err.response.data);
         })
+    },
+    toggleMeetingInfo({ state, commit }) {
+      commit('SET_MEETING_INFO_DIALOG', !state.meetingInfoDialog)
     },
     
     // openvidu
@@ -1355,6 +1362,10 @@ const meetingStore = {
 
     // mode
     changeMode({ state, getters, dispatch }, mode) {
+      if (state.currentMode && state.currentMode === mode) {
+        mode = null;
+      }
+
       let isPermitted = true;
       if (getters.notModeHost) {
         // modeHost가 아닌 경우
@@ -1783,6 +1794,18 @@ const meetingStore = {
     // etc
     changeIsNewbie({ commit }) {
       commit('SET_IS_NEWBIE', false);
+    },
+    clickCopyURL({ state }) {
+      const copyText = document.createElement("input");
+      copyText.value = `https://homesuli.com/meet/${state.mySessionId}`
+      document.body.appendChild(copyText)
+      copyText.select();
+      document.execCommand("copy");
+      document.body.removeChild(copyText)
+      Swal.fire({
+          icon: 'success',
+          html: `<p>https://homesuli.com/meet/${state.mySessionId}</p><h5>주소가 복사되었습니다</h5>`
+        })
     },
   }
 }
