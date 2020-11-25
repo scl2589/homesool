@@ -219,6 +219,7 @@ const meetingStore = {
       state.roomInfo = value;
     },
 
+
     // Openvidu
     SET_OV(state, OV) {
       state.OV = OV;
