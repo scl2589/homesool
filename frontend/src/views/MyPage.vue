@@ -1,19 +1,34 @@
 <template>
   <div class="container mx-auto">
     <div class="d-flex mx-auto profile">
-      <img src="@/assets/images/host.png" alt="프로필" />
+      <img 
+        src="@/assets/images/host.png" 
+        alt="프로필" 
+      />
     </div>
     <p class="mb-0 mx-auto text-white">{{ user.name }}</p>
     <div class="d-flex justify-content-between">
-      <div :class="{ 'box-selected': ($route.name === 'Calendar'), 'box': ($route.name !== 'Calendar')}" @click="clickCalendar">
+      <div 
+        :class="{ 'box-selected': ($route.name === 'Calendar'), 'box': ($route.name !== 'Calendar')}" 
+        @click="clickCalendar"
+      >
         <h3 class="mb-0">음주 달력</h3>
       </div>
-      <div class="name d-flex justify-content-center" v-if="user">
-        <button class="btn px-2 edit-profile" @click="clickEditProfile">
+      <div 
+        class="name d-flex justify-content-center" 
+        v-if="user"
+      >
+        <button 
+          class="btn px-2 edit-profile" 
+          @click="clickEditProfile"
+        >
           프로필 수정
         </button>
       </div>
-      <div :class="{ 'box-selected': ($route.name === 'Analysis'), 'box': ($route.name !== 'Analysis')}" @click="clickAnalysis">
+      <div 
+        :class="{ 'box-selected': ($route.name === 'Analysis'), 'box': ($route.name !== 'Analysis')}" 
+        @click="clickAnalysis"
+      >
         <h3 class="mb-0">음주 분석</h3>
       </div>
     </div>
@@ -97,7 +112,6 @@ img {
 }
 
 .edit-profile {
-  /* background-color: #b7e3a4; */
   border: 1px solid white;
   color: white;
 }
