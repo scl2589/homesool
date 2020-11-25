@@ -1679,9 +1679,9 @@ const meetingStore = {
     },
 
     // 주량 체크
-    setDrinkRecord({state, rootGetters, commit}, enterData){
+    setDrinkRecord({state, rootState, rootGetters, commit}, enterData){
       commit('SET_CURRENT_DRINK', enterData.currentDrink);
-      let user = rootGetters.getUser;
+      let user = rootState.user;
 
       //DB에 기록이 있는지 조회 후 없으면 0인 Record 생성
       axios.get(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${enterData.roomId}`, rootGetters.config)
@@ -1726,10 +1726,10 @@ const meetingStore = {
                 }
               })
           
-      commit('setUser', user, { root:true });
+      commit('SET_USER', user, { root:true });
     },
-    updateUserDrinkRecord({ state, rootGetters , commit }, num) {
-      let user = rootGetters.getUser;
+    updateUserDrinkRecord({ state, rootState, rootGetters , commit }, num) {
+      let user = rootState.user;
       let currentDrinkNum = 0;
       let currentDrinkId = 0;   //DB상 ID
       for(let i=0; i<user.drinks.length; i++){
@@ -1753,7 +1753,7 @@ const meetingStore = {
           }
         }
       }
-      commit('setUser', user, { root:true });
+      commit('SET_USER', user, { root:true });
 
       commit('SET_TOTAL_DRINK', num);
       //send drink signal

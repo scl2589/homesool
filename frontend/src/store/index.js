@@ -1,19 +1,17 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
+import SERVER from '@/api/api';
 import jwt_decode from 'jwt-decode';
-// import http from '../utils/http-common.js';
 import axios from 'axios';
 import router from '@/router';
 import cookies from 'vue-cookies';
 
-import SERVER from '@/api/api';
+import Swal from "sweetalert2";
+
 import meetingStore from '@/store/modules/meetingStore';
 import mypageStore from '@/store/modules/mypageStore';
 import openroomStore from '@/store/modules/openroomStore'
-
-import Swal from "sweetalert2";
-
 
 Vue.use(Vuex);
 
@@ -22,19 +20,9 @@ export default new Vuex.Store({
     isNew: null,
     token: cookies.get('auth-token'),
     user: null,
-    id: null,
     invitedSessionId: null
   },
   getters: {
-    getToken: function(state) {
-      return state.token;
-    },
-    getIsNew: function(state) {
-      return state.isNew;
-    },
-    getUser: function(state) {
-      return state.user;
-    },
     getId: function(state) {
       if (state.token) {
         return jwt_decode(state.token).sub;
@@ -45,17 +33,14 @@ export default new Vuex.Store({
     config: (state) => ({ headers: { 'X-AUTH-TOKEN': state.token } }),
   },
   mutations: {
-    setToken(state, payload) {
+    SET_TOKEN(state, payload) {
       state.token = payload;
     },
-    setIsNew(state, payload) {
+    SET_IS_NEW(state, payload) {
       state.isNew = payload;
     },
-    setUser(state, payload) {
+    SET_USER(state, payload) {
       state.user = payload;
-    },
-    setId(state, payload) {
-      state.id = payload;
     },
     SET_INVITED_SESSIONID(state, sessionId) {
       state.invitedSessionId = sessionId;
@@ -65,8 +50,8 @@ export default new Vuex.Store({
     kakaoLogin({ state, commit, dispatch }, { access_token }) {
       axios.post(SERVER.URL + SERVER.ROUTES.login, { accessToken: access_token })
         .then(({ data }) => {
-          commit('setIsNew', data.new);
-          commit('setToken', data.token);
+          commit('SET_IS_NEW', data.new);
+          commit('SET_TOKEN', data.token);
           dispatch('getMyInfo');
           if (data.new === true) {
             cookies.set('auth-token', data.token)
@@ -104,20 +89,17 @@ export default new Vuex.Store({
     getMyInfo({ commit, getters, dispatch }) {
       axios.get(SERVER.URL + SERVER.ROUTES.user + '/' + getters.getId, getters.config)
         .then((res) => {
-          commit('setUser', res.data);
+          commit('SET_USER', res.data);
         })
         .catch((err) => {
           dispatch('kakaoLogout');
           console.error(err.response.data);
         })
     },
-    kakaoLogout(context) {
-      localStorage.clear();
-      cookies.set('auth-token', null);
-      context.commit('setIsNew', null);
-      context.commit('setToken', null);
-      context.commit('setUser', null);
-      context.commit('setId', null);
+    kakaoLogout({ commit }) {
+      commit('SET_IS_NEW', null);
+      commit('SET_TOKEN', null);
+      commit('SET_USER', null);
       cookies.remove('auth-token');
       const Toast = Swal.mixin({
         toast: true,
