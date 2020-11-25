@@ -1,24 +1,57 @@
 <template>
   <div>
     <home-banner />
-    <div class="row">
-      <div id="wrapper" class="d-flex justify-content-center">
-        <div id="host" class="p-1 bd-highlight">
-          <img src="@/assets/images/host.png" alt="호스트" />
+    <div class="row no-gutters">
+      <div 
+        id="wrapper" 
+        class="d-flex justify-content-center"
+      >
+        <!-- 주최하기 버튼 -->
+        <div 
+          class="p-1 bd-highlight"
+          id="host"
+        >
+          <img 
+            src="@/assets/images/host.png" 
+            alt="host" 
+          />
           <button @click="hostbtn">주최하기</button>
         </div>
-        <div id="guest" class="p-1 bd-highlight">
-          <img src="@/assets/images/meeting.png" alt="게스트" />
-          <input placeholder="입장 코드를 입력하세요" v-model="inputSessionId" />
-          <button v-show="inputSessionId" @click="guestbtn">입장하기</button>
+        <!-- 입장 코드 입력란 -->
+        <div
+          class="p-1 bd-highlight" 
+          id="guest"
+        >
+          <img 
+            src="@/assets/images/meeting.png" 
+            alt="guest" 
+          />
+          <input 
+            placeholder="입장 코드를 입력하세요" 
+            v-model="inputSessionId" 
+          />
+          <button 
+            v-show="inputSessionId" 
+            @click="guestbtn"
+          >
+            입장하기
+          </button>
         </div>
-        <div id="entrance" class="p-1 bd-highlight">
-          <img src="@/assets/images/guest.png" alt="호스트" />
+        <!-- 공개방 보기 버튼 -->
+        <div 
+          class="p-1 bd-highlight"
+          id="entrance"
+        >
+          <img 
+            src="@/assets/images/guest.png" 
+            alt="호스트" 
+          />
           <button @click="openbtn">공개방 보기</button>
         </div>
       </div>
     </div>
     
+    <!-- 입장하기 모달 -->
     <v-row justify="center">
       <v-dialog
         v-model="meetingDialog"
@@ -26,199 +59,224 @@
         max-width="600px"
         v-if="user && publisher"
       >
-      <div class="scroll-sect">
-        <v-card v-if="user.drinks.length">
-          <v-card-title>
-            <h3 class="m-0 enter-title">입장하기</h3>
-          </v-card-title>
-          <v-form v-model="valid" :lazy-validation="lazy">  
-            <v-container>
-              <v-row>
-                <v-col
-                  class="d-flex justify-content-between align-items-center enter-code"
-                  cols="12"
-                >
-                  <h5 class="my-0">입장 코드</h5>
-                  <v-text-field
-                    class="ml-3 mr-5"
-                    id="copySessionId"
-                    :value="mySessionId"
-                    readonly
-                    append-icon="far fa-clone"
-                    @click:append="clickCopyURL"
-                    color="#84669a"
-                  ></v-text-field>
-                  <div class="mb-2 pointer" @click="clickKakaoShare">
-                    <img
-                      width="32vw"
-                      src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png"
-                    />
-                  </div>
-                </v-col>
-                
-                <v-col
-                  cols="6"
-                  v-if="ishost"
-                >
-                  <v-text-field
-                    v-model="roomName"
-                    label="방 제목"
-                    hint="방 제목을 입력해주세요"
-                    persistent-hint
-                    required
-                    :rules="[v => !!v || '필수항목입니다.']"
-                    color="#84669a"
-                  ></v-text-field>
-                </v-col>
-
-                <v-col
-                  cols="6"
-                >
-                  <v-text-field
-                    v-model="nickName"
-                    label="닉네임"
-                    hint="미팅에서 사용할 닉네임을 입력해주세요"
-                    persistent-hint
-                    required
-                    :rules="[v => !!v || '필수항목입니다.']"
-                    color="#84669a"
-                  ></v-text-field>
-                </v-col>
-
-                <v-col
-                  cols="6"
-                >
-                  <v-select
-                    v-model="currentDrink"
-                    :items="user.drinks"
-                    item-text="liquorName"
-                    item-value="liquorName"
-                    label="오늘의 술"
-                    hint="미팅에서 마실 술 종류를 입력해주세요"
-                    persistent-hint
-                    required
-                    :rules="[v => !!v || '필수항목입니다.']"
-                    color="#84669a"
+        <div class="scroll-sect">
+          <v-card v-if="user.drinks.length">
+            <v-card-title>
+              <h3 class="m-0 enter-title">입장하기</h3>
+            </v-card-title>
+            <v-form 
+              v-model="valid" 
+              :lazy-validation="lazy"
+            >  
+              <v-container>
+                <v-row>
+                  <v-col
+                    class="d-flex justify-content-between align-items-center enter-code"
+                    cols="12"
                   >
-                  </v-select>
-                </v-col>
-
-                <v-col
-                  cols="6"
-                  v-if="ishost"
-                >
-                  <v-select
-                    v-model="isPublic"
-                    :items="publicItems"
-                    item-text="title"
-                    item-value="value"
-                    label="공개 여부"
-                    hint="미팅의 공개 여부를 입력해주세요"
-                    persistent-hint
-                    required
-                    color="#84669a"
+                    <h5 class="my-0">입장 코드</h5>
+                    <v-text-field
+                      class="ml-3 mr-5"
+                      id="copySessionId"
+                      :value="mySessionId"
+                      readonly
+                      append-icon="far fa-clone"
+                      @click:append="clickCopyURL"
+                      color="#84669a"
+                    ></v-text-field>
+                    <div 
+                      class="mb-2 pointer" 
+                      @click="clickKakaoShare"
+                    >
+                      <img
+                        width="32vw"
+                        src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png"
+                        alt="kakao"
+                      />
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="6"
+                    v-if="ishost"
                   >
-                  </v-select>
-                </v-col>
-
-                <v-col
-                  cols="12"
-                  v-if="ishost"
-                >
-                  <v-combobox
-                    v-model="tags"
-                    :items="allTags"
-                    :search-input.sync="searchTag"
-                    hide-selected
-                    counter="5"
-                    :rules="[
-                      v => (v.length < 6) || '최대 5개의 태그를 고를 수 있습니다.'
-                    ]"
-                    color="blue-grey lighten-2"
-                    label="태그"
-                    multiple
-                    item-text="tagName"
-                    item-value="tagName"
-                    :return-object="false"
-                    persistent-hint
-                    small-chips
-                    hint="미팅을 설명하는 태그를 작성해주세요"
+                    <v-text-field
+                      v-model="roomName"
+                      label="방 제목"
+                      hint="방 제목을 입력해주세요"
+                      persistent-hint
+                      required
+                      :rules="[v => !!v || '필수항목입니다.']"
+                      color="#84669a"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="6"
                   >
-                    <template v-slot:selection="data">
-                      <v-chip
-                        v-bind="data.attrs"
-                        close
-                        @click:close="remove(tags, data.item)"
+                    <v-text-field
+                      v-model="nickName"
+                      label="닉네임"
+                      hint="미팅에서 사용할 닉네임을 입력해주세요"
+                      persistent-hint
+                      required
+                      :rules="[v => !!v || '필수항목입니다.']"
+                      color="#84669a"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="6"
+                  >
+                    <v-select
+                      v-model="currentDrink"
+                      :items="user.drinks"
+                      item-text="liquorName"
+                      item-value="liquorName"
+                      label="오늘의 술"
+                      hint="미팅에서 마실 술 종류를 입력해주세요"
+                      persistent-hint
+                      required
+                      :rules="[v => !!v || '필수항목입니다.']"
+                      color="#84669a"
+                    >
+                    </v-select>
+                  </v-col>
+                  <v-col
+                    cols="6"
+                    v-if="ishost"
+                  >
+                    <v-select
+                      v-model="isPublic"
+                      :items="publicItems"
+                      item-text="title"
+                      item-value="value"
+                      label="공개 여부"
+                      hint="미팅의 공개 여부를 입력해주세요"
+                      persistent-hint
+                      required
+                      color="#84669a"
+                    >
+                    </v-select>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    v-if="ishost"
+                  >
+                    <v-combobox
+                      v-model="tags"
+                      :items="allTags"
+                      :search-input.sync="searchTag"
+                      hide-selected
+                      counter="5"
+                      :rules="[
+                        v => (v.length < 6) || '최대 5개의 태그를 고를 수 있습니다.'
+                      ]"
+                      color="blue-grey lighten-2"
+                      label="태그"
+                      multiple
+                      item-text="tagName"
+                      item-value="tagName"
+                      :return-object="false"
+                      persistent-hint
+                      small-chips
+                      hint="미팅을 설명하는 태그를 작성해주세요"
+                    >
+                      <template v-slot:selection="data">
+                        <v-chip
+                          v-bind="data.attrs"
+                          close
+                          @click:close="remove(tags, data.item)"
+                        >
+                          {{ data.item }}
+                        </v-chip>
+                      </template>
+                      <template v-slot:no-data>
+                        <v-list-item>
+                          <v-list-item-content>
+                            <v-list-item-title>
+                              "<strong>{{ searchTag }}</strong>"를 찾을 수 없습니다. <kbd>enter</kbd>를 눌러 새로운 태그를 만들어보세요. 
+                            </v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </template>
+                    </v-combobox>
+                  </v-col>
+
+                  <v-col
+                    cols="6"
+                  >
+                    <div id="video-container">
+                      <user-video :stream-manager="publisher" />
+                    </div>
+                  </v-col>
+                  <v-col 
+                    class="d-flex justify-content-around align-items-center"
+                    cols="6" 
+                  >
+                    <div 
+                      class="btn" 
+                      @click="clickMuteVideo"
+                    >
+                      <img 
+                        src="@/assets/images/webcam.png" 
+                        alt="webcam" 
+                        v-if="publisher.stream.videoActive"
                       >
-                        {{ data.item }}
-                      </v-chip>
-                    </template>
-                    <template v-slot:no-data>
-                      <v-list-item>
-                        <v-list-item-content>
-                          <v-list-item-title>
-                            "<strong>{{ searchTag }}</strong>"를 찾을 수 없습니다. <kbd>enter</kbd>를 눌러 새로운 태그를 만들어보세요. 
-                          </v-list-item-title>
-                        </v-list-item-content>
-                      </v-list-item>
-                    </template>
-                  </v-combobox>
-                </v-col>
-
-                <v-col
-                  cols="6"
-                >
-                  <div id="video-container">
-                    <user-video :stream-manager="publisher" />
-                  </div>
-                </v-col>
-                <v-col cols="6" class="d-flex justify-content-around align-items-center">
-                  <div class="btn" @click="clickMuteVideo">
-                    <img src="@/assets/images/webcam.png" alt="webcam" v-if="publisher.stream.videoActive">
-                    <img src="@/assets/images/webcam_off.png" alt="webcam_off" v-else>
-                  </div>
-                  <div class="btn" @click="clickMuteAudio">
-                    <img src="@/assets/images/voice.png" alt="voice" v-if="publisher.stream.audioActive">
-                    <img src="@/assets/images/voice_off.png" alt="voice_off" v-else>
-                  </div>
-                </v-col>
-
-              </v-row>
-            </v-container>
-          </v-form>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn
-              color="indigo"
-              text
-              @click="clickClose"
-            >
-              Close
-            </v-btn>
-            <v-btn
-              color="indigo"
-              text
-              :disabled="!valid"
-              @click="clickEnter"
-            >
-              Enter
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-        <v-card v-else>
-          <div class="d-flex flex-column justify-content-center align-items-center">
-            <p>마이페이지에서 주량을 등록해주세요!</p>
-            
-            <v-btn
-              color="blue darken-1"
-              text
-              @click="clickClose(publisher)"
-            >
-              Close
-            </v-btn>
-          </div>
-        </v-card>
-      </div>
+                      <img 
+                        src="@/assets/images/webcam_off.png" 
+                        alt="webcam_off" 
+                        v-else
+                      >
+                    </div>
+                    <div 
+                      class="btn" 
+                      @click="clickMuteAudio"
+                    >
+                      <img 
+                        src="@/assets/images/voice.png" 
+                        alt="voice" 
+                        v-if="publisher.stream.audioActive"
+                      >
+                      <img 
+                        src="@/assets/images/voice_off.png" 
+                        alt="voice_off" 
+                        v-else
+                      >
+                    </div>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-form>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="indigo"
+                text
+                @click="clickClose"
+              >
+                Close
+              </v-btn>
+              <v-btn
+                color="indigo"
+                text
+                :disabled="!valid"
+                @click="clickEnter"
+              >
+                Enter
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+          <v-card v-else>
+            <div class="d-flex flex-column justify-content-center align-items-center">
+              <p>마이페이지에서 주량을 등록해주세요!</p>
+              <v-btn
+                color="blue darken-1"
+                text
+                @click="clickClose(publisher)"
+              >
+                Close
+              </v-btn>
+            </div>
+          </v-card>
+        </div>
       </v-dialog>
     </v-row>
   </div>
@@ -380,7 +438,6 @@ $buttonheight: 50px;
   width: 100%;
   height: 60vh;
   position: relative;
-  // background-color: red;
   div {
     color: white;
     img {
