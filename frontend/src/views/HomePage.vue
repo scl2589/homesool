@@ -169,7 +169,7 @@
                   cols="6"
                 >
                   <div id="video-container">
-                    <user-video :stream-manager="publisher" @click.native="updateMainVideoStreamManager(publisher)"/>
+                    <user-video :stream-manager="publisher" />
                   </div>
                 </v-col>
                 <v-col cols="6" class="d-flex justify-content-around align-items-center">
@@ -269,7 +269,6 @@ export default {
     ...mapActions('meetingStore', [
       'createSessionId',
       'checkSessionId',
-      'updateMainVideoStreamManager',
       'leaveSession',
       'clickMuteVideo',
       'clickMuteAudio',
