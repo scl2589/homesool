@@ -1,6 +1,10 @@
 <template>
   <div id="wrapregister">
-    <info :username="user.name" :useremail="user.email" :userdrinks="user.drinks" />
+    <info 
+      :username="user.name"
+      :useremail="user.email"
+      :userdrinks="user.drinks"
+    />
   </div>
 </template>
 
