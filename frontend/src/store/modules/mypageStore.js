@@ -7,7 +7,8 @@ const mypageStore = {
   namespaced: true,
   state: {
     recentData: null,
-    alcoholTypeData: null
+    alcoholTypeData: null,
+    meetingLogDialog: false,
   },
   getters: {
 
@@ -18,7 +19,10 @@ const mypageStore = {
     },
     SET_ALCOHOL_TYPE_DATA(state, value) {
       state.alcoholTypeData = value
-    }
+    },
+    SET_MEETINGLOG_DIALOG(state, value) {
+      state.meetingLogDialog = value;
+    },
   },
   actions: {
     fetchAnalysisData({ commit, rootState, rootGetters }) {
@@ -112,7 +116,10 @@ const mypageStore = {
             commit('SET_RECENT_DATA', recentData)
           })
       }
-    }
+    },
+    changeMeetingLogDialog({ commit }, value) {
+      commit('SET_MEETINGLOG_DIALOG', value);
+    },
   }
 }
 
