@@ -71,9 +71,6 @@ export default {
   },
   computed: {
     ...mapState(['token']),
-    getToken() {
-      return this.$store.getters.getToken;
-    },
   },
   watch: {
     token(value) {

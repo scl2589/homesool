@@ -127,10 +127,10 @@ export default {
   },
   computed: {
     ...mapGetters(['getId']),
-    ...mapState('meetingStore',['meetingLogDialog'])
+    ...mapState('mypageStore',['meetingLogDialog'])
   },
   methods: {
-    ...mapActions('meetingStore',['changeMeetingLogDialog']),
+    ...mapActions('mypageStore',['changeMeetingLogDialog']),
     showDetail(roomId){
       this.changeMeetingLogDialog(true);
       axios.get(SERVER.URL + SERVER.ROUTES.user + '/' + this.getId + '/room/' + roomId,

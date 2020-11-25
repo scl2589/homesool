@@ -19,7 +19,6 @@
             :stream-manager="publisher" 
             :isPublisher="isPublisher"
             :isLeftPanel="true"
-            @click.native="updateMainVideoStreamManager(publisher)"
           />
           <user-video 
             class="my-2 px-2" 
@@ -28,7 +27,6 @@
             :key="sub.stream.connection.connectionId" 
             :stream-manager="sub"
             :isLeftPanel="true"
-            @click.native="updateMainVideoStreamManager(sub)"
           />
         </div>
         <canvas id="canvas" hidden></canvas>
@@ -42,26 +40,22 @@
             class="my-2 px-2 publisher-width" 
             v-show="screenPublisher"
             :stream-manager="screenPublisher" 
-            @click.native="updateMainVideoStreamManager(screenPublisher)"
           />
           <user-video
             class="my-2 px-2 publisher-width"
             v-show="!screenPublisher"
             :stream-manager="sharer"
-            @click.native="updateMainVideoStreamManager(sharer)"
           />
           <div class="row no-gutters">
             <user-video 
               class="my-2 px-2 sub-video"
               :stream-manager="publisher" 
-              @click.native="updateMainVideoStreamManager(publisher)"
             />
             <user-video 
               class="my-2 px-2 sub-video" 
               v-for="sub in participants" 
               :key="sub.stream.connection.connectionId" 
               :stream-manager="sub" 
-              @click.native="updateMainVideoStreamManager(sub)"
             />
           </div>  
         </div>
@@ -108,7 +102,7 @@ export default {
     ),
   },
   methods: {
-    ...mapActions('meetingStore', ['leaveSession', 'updateMainVideoStreamManager']),
+    ...mapActions('meetingStore', ['leaveSession']),
     findParticipants() {
       let participants = []
       for (let i = 0, len = this.subscribers.length; i < len; i++ ) {

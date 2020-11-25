@@ -116,7 +116,6 @@ export default {
     ...mapActions("meetingStore", [
       "sendGameRequest",
       "checkIsSmile",
-      "updateMainVideoStreamManager",
     ]),
     clickSendTheme(theme) {
       Swal.fire({
