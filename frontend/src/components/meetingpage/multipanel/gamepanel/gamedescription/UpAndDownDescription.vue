@@ -1,16 +1,19 @@
 <template>
-  <div class="upanddown" data-app>
+  <div 
+    class="upanddown" 
+    data-app
+  >
     <h5 class="pt-3">Up&Down🔺🔻 </h5>
     <div 
-      id="carouselExampleControls" 
       class="carousel slide m-1 p-1" 
+      id="carouselExampleControls" 
       data-ride="carousel"
     >
       <div class="carousel-inner">
         <div class="carousel-item active">
           <img 
-            :src="require('@/assets/images/updown1.png')" 
             class="d-block w-50 mx-auto" 
+            :src="require('@/assets/images/updown1.png')" 
             alt="sample image"
           >
           <p class="description">
@@ -19,8 +22,8 @@
         </div>
         <div class="carousel-item">
           <img 
-            :src="require('@/assets/images/updown2.png')" 
             class="d-block w-50 mx-auto" 
+            :src="require('@/assets/images/updown2.png')" 
             alt="sample image"
           >
           <p class="description">
@@ -29,8 +32,8 @@
         </div>
         <div class="carousel-item">
           <img 
-            :src="require('@/assets/images/updown3.png')" 
             class="d-block w-50 mx-auto" 
+            :src="require('@/assets/images/updown3.png')" 
             alt="sample image"
           >
           <p class="description">
@@ -38,12 +41,27 @@
           </p>
         </div>
       </div>
-      <button class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <button 
+        class="carousel-control-prev" 
+        href="#carouselExampleControls" 
+        role="button" 
+        data-slide="prev"
+      >
+        <span 
+          class="carousel-control-prev-icon" 
+          aria-hidden="true"
+        ></span>
         <span class="sr-only">Previous</span>
       </button>
-      <button class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <button 
+        class="carousel-control-next" 
+        href="#carouselExampleControls" 
+        role="button" data-slide="next"
+      >
+        <span 
+          class="carousel-control-next-icon" 
+          aria-hidden="true"
+        ></span>
         <span class="sr-only">Next</span>
       </button>
     </div>
@@ -77,6 +95,7 @@ p, h1, h2, h3, h4, h5, h6, button {
 .penalty {
   width: 70%;
 }
+
 .v-input__slot {
   padding: 0 !important;
   margin: 0 !important;
