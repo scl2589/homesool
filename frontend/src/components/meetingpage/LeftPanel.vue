@@ -23,7 +23,7 @@
         id="session" 
         v-if="session"
       >
-        <div class="d-flex row no-gutters">
+        <div class="d-flex row no-gutters align-items-center">
           <user-video 
             class="my-2 px-2" 
             :class="{ 'col-12': one, 'col-6' : two, 'col-4' : three, 'col-3' : eight, 'col-2' : twelve }" 

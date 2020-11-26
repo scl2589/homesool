@@ -2,7 +2,7 @@
     <div class="panel">
       <div 
         class="selectgame h-100" 
-        v-if="gameStatus===1"
+        v-if="gameStatus==='1'"
       >
         <div 
           class="h-100 d-flex align-items-center justify-content-center" 
