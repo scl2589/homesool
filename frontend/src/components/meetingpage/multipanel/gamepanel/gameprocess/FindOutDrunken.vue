@@ -1,7 +1,13 @@
 <template>
   <div class="panel drunken">
-    <div class="h-100 d-flex justify-content-center align-items-center flex-column selectgame" v-if="gameStatus == 1">
-      <div class="h-100 d-flex justify-content-center align-items-center" v-if="notModeHost">
+    <div 
+      class="h-100 d-flex justify-content-center align-items-center flex-column selectgame" 
+      v-if="gameStatus===1"
+    >
+      <div 
+        class="h-100 d-flex justify-content-center align-items-center" 
+        v-if="notModeHost"
+      >
         <p class="select-participant">
           <span class="color-yellow">{{ notModeHost.name }}</span>님이 참가자를 고르는 중입니다.
         </p>
@@ -28,16 +34,22 @@
           </div>
       </div>
     </div>
-    <div class="h-100" v-if="gameStatus == 2">
+    <div class="h-100" v-if="gameStatus===2">
       <div class="p-3 h-100 d-flex justify-content-between flex-column">
-        <div class="panel-title" v-if="notCurrentPlayer">
+        <div 
+          class="panel-title" 
+          v-if="notCurrentPlayer"
+        >
           <user-video
             class="w-50 video"
             :stream-manager="notCurrentPlayer"
           />
           <p class="read-sentence"><span class="color-yellow">{{ notCurrentPlayer.stream.connection.data.slice(15,-2) }}</span>님이 문장을 읽는 중입니다.</p>
         </div>
-        <div v-else class="panel-title">
+        <div 
+          class="panel-title"
+          v-else 
+        >
           <p class="read-sentence"><span class="color-yellow">{{ publisher.stream.connection.data.slice(15,-2) }}</span>님 문장을 바로 읽어주세요.</p>
         </div>
         <div>
@@ -48,9 +60,10 @@
         </div>
       </div>
     </div>
-
-    <loser-panel class="w-100 d-flex justify-content-center align-items-center" v-if="gameStatus == 3"/>
-
+    <loser-panel 
+      class="w-100 d-flex justify-content-center align-items-center" 
+      v-if="gameStatus===3"
+    />
   </div>
 </template>
 
@@ -76,11 +89,6 @@ export default {
     ]),
     ...mapGetters("meetingStore", ["notModeHost", "notCurrentPlayer"]),
   },
-  data() {
-    return {
-      picked: null,
-    };
-  },
   watch: {
     drunkenText: function (val) {
       if (val) {
@@ -105,7 +113,7 @@ export default {
       request.sentence = this.drunkenText;
       request.participantPublicId = this.publisher.stream.connection.connectionId;
       var jsonRequest = JSON.stringify(request);
-      this.sendGameRequest(jsonRequest)
+      this.sendGameRequest(jsonRequest);
     }
   },
 };
@@ -126,19 +134,26 @@ export default {
   height: 100%;
   max-height: 46vh;
 }
+
 .panel-title {
   font-size: 2rem;
   color: yellow;
 }
 
-p, h1, h2, h3, h4, h5, h6, button {
+p, 
+h1, 
+h2, 
+h3, 
+h4, 
+h5, 
+h6, 
+button {
   color: white;
 }
 
 .select-participant {
   font-size: 2.2rem;
 }
-
 
 .btn-yellow {
   margin-bottom: 10px;
@@ -159,7 +174,6 @@ p, h1, h2, h3, h4, h5, h6, button {
   margin-left: auto;
   margin-right: auto;
 }
-
 
 button {
   font-family: 'Nanum Gothic', sans-serif;
