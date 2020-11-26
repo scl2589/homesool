@@ -15,6 +15,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.homesool.dto.LoginDto;
+import com.ssafy.homesool.dto.RoomDto;
+import com.ssafy.homesool.dto.UserDto;
+import com.ssafy.homesool.service.RoomService;
+import com.ssafy.homesool.service.UserService;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -22,13 +28,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-
-import com.ssafy.homesool.dto.LoginDto;
-import com.ssafy.homesool.dto.RoomDto;
-import com.ssafy.homesool.dto.UserDto;
-import com.ssafy.homesool.dto.UserDto.UserRecord;
-import com.ssafy.homesool.service.RoomService;
-import com.ssafy.homesool.service.UserService;
 
 @RequiredArgsConstructor
 @RestController

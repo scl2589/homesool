@@ -114,8 +114,7 @@ public class LiarGameRunnable implements Runnable {
 						ProtocolElements.PARTICIPANTSENDMESSAGE_METHOD, params);
 			}
 
-			// 게임 시간 2분 진행
-			System.out.println(participants.size());
+			// 게임 시간 20*인원수 초
 			Thread.sleep(1000*20*participants.size());
 			data.addProperty("turn", 2);
 			params.add("data", data);

@@ -1,6 +1,5 @@
 package com.ssafy.homesool.service;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -8,18 +7,17 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
-
 import com.ssafy.homesool.dto.RoomDto;
 import com.ssafy.homesool.entity.Member;
 import com.ssafy.homesool.entity.Room;
 import com.ssafy.homesool.entity.Tag;
-import com.ssafy.homesool.entity.UserDrink;
 import com.ssafy.homesool.exception.RoomNotFoundException;
 import com.ssafy.homesool.mapper.RoomMapper;
 import com.ssafy.homesool.repository.MemberRepository;
 import com.ssafy.homesool.repository.RoomRepository;
 import com.ssafy.homesool.repository.TagRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
@@ -28,7 +26,6 @@ public class RoomService {
 	private final MemberRepository memberRepository;
 	private final TagRepository tagRepository;
 
-	
 	public RoomDto.RoomResponse addBycode(String code, RoomDto.InsertHostInfo insertHostInfo) {
 		Room room = Room.builder()
 				.hostId(insertHostInfo.getHostId())
