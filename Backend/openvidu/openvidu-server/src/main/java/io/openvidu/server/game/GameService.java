@@ -244,20 +244,20 @@ public class GameService {
 				String initialWord = initialGameUtil.Direct(word.charAt(0));
 				initialWord += initialGameUtil.Direct(word.charAt(1));
 				if (initialWord.equals(ansInitWord)) {
-					// 중복 검증
-					if (!initialAnswerMap.get(sessionId).contains(word)) {
-						// 사전 검증
-						if (initialGameUtil.searchWord(word)) {
+					// 사전 검증
+					if (initialGameUtil.searchWord(word)) {
+						// 중복 검증
+						if (!initialAnswerMap.get(sessionId).contains(word)) {
 							isCorrect = 2;
 							initialAnswerMap.get(sessionId).add(word);
 							initialAnswerUserMap.get(sessionId).remove(participant);
 						}
 						else {
-							result = "사전에 없는 단어입니다";
+							result = "중복된 단어입니다";
 						}
 					}
 					else {
-						result = "중복된 단어입니다";
+						result = "사전에 없는 단어입니다";
 					}
 				}
 				else {
