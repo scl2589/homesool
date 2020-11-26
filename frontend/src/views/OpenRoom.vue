@@ -180,11 +180,14 @@ export default {
   },
   methods: {
     ...mapActions('openroomStore', ['fetchRooms', 'findRoomCount', 'searchRoom']),
+    ...mapActions('meetingStore', ['checkSessionId', 'changeMeetingDialog']),
     anonyMousImg(index) {
       return this.anonymousImages[index % 50]
     },
     clickRoom(code) {
-      this.$router.push({ name: 'MeetingPage', params: { sessionId: code } })
+      this.checkSessionId(code);
+      this.changeMeetingDialog(true);
+      this.$router.push({ name: 'HomePage' });
     },
     clickPage(num) {
       this.pageNum = num
