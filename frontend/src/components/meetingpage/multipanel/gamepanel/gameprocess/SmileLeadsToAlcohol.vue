@@ -2,7 +2,7 @@
   <div class="panel">
     <div 
       class="selectgame h-100" 
-      v-if="gameStatus == 1"
+      v-if="gameStatus==='1'"
     >
       <div 
         class="d-flex align-items-center justify-content-center h-100"
@@ -58,7 +58,7 @@
     </div>
     <div 
       class="startgame h-100 d-flex flex-column justify-content-center" 
-      v-if="gameStatus == 2"
+      v-if="gameStatus===2"
     >
       <div v-if="notCurrentPlayer">
         <user-video 
@@ -90,7 +90,7 @@
     </div>
     <loser-panel
       class="w-100 d-flex justify-space-around align-items-center"
-      v-if="gameStatus == 3"
+      v-if="gameStatus===3"
     />
   </div>
 </template>

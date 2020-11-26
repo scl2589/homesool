@@ -69,7 +69,6 @@
             <div v-if="selectedGameId == 5">
               <FindOutDrunkenDescription />
             </div>
-
             <div
               class="d-flex justify-content-between align-items-center mx-2 mt-auto mb-2"
               v-if="selectedGameId"
@@ -101,7 +100,6 @@
         </transition>
       </div>
     </div>
-
   </div>
 </template>
 

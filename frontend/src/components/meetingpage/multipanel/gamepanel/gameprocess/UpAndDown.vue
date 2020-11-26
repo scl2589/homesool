@@ -2,7 +2,7 @@
   <div class="panel">
     <div 
       class="startgame h-100 d-flex flex-column justify-content-between" 
-      v-if="gameStatus===1 || gameStatus===2"
+      v-if="gameStatus==='1' || gameStatus==='2'"
     >
       <div class="showWord h-100 d-flex flex-column justify-content-between">
         <p class="text-white description-title">숫자를 맞춰 주세요</p>
@@ -10,7 +10,7 @@
           <p class="previous color-gray"> 이전 번호 : {{this.gameUpDownNumber}}</p>
         </div>
         <!-- up인지 down인지에 따라 이미지 변경 -->
-        <div v-if="gameStatus===2">
+        <div v-if="gameStatus==='2'">
           <p v-if="gameUpDownResult==='up'">
             <img src="@/assets/images/positivevote.png"><br>
             <span class="result color-gray">{{gameUpDownResult}}</span>

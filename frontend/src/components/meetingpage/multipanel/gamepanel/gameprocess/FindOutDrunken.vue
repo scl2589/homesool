@@ -2,7 +2,7 @@
   <div class="panel drunken">
     <div 
       class="h-100 d-flex justify-content-center align-items-center flex-column selectgame" 
-      v-if="gameStatus===1"
+      v-if="gameStatus==='1'"
     >
       <div 
         class="h-100 d-flex justify-content-center align-items-center" 
@@ -34,7 +34,7 @@
           </div>
       </div>
     </div>
-    <div class="h-100" v-if="gameStatus===2">
+    <div class="h-100" v-if="gameStatus==='2'">
       <div class="p-3 h-100 d-flex justify-content-between flex-column">
         <div 
           class="panel-title" 

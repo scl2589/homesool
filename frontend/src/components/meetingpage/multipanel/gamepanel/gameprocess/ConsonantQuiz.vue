@@ -2,7 +2,7 @@
     <div class="panel">
       <div 
         class="startgame h-100 d-flex flex-column justify-content-between" 
-        v-if="gameStatus===1 || gameStatus===2"
+        v-if="gameStatus===1||gameStatus===2"
       >
         <div class="showWord">
           <p class="color-gray">{{this.gameInitialWord}}</p>
@@ -58,7 +58,7 @@
       </div>
       <loser-panel 
         class="w-100 d-flex justify-content-center align-items-center" 
-        v-if="gameStatus==3"
+        v-if="gameStatus===3"
       />
     </div>
 
