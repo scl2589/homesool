@@ -49,10 +49,14 @@ export default {
       this.$router.push({ name: 'ProfilePage'})
     },
     clickCalendar() {
-      this.$router.push({ name: 'Calendar'})
+      if (this.$route.name !== 'Calendar') {
+        this.$router.push({ name: 'Calendar'})
+      }
     },
     clickAnalysis() {
-      this.$router.push({ name: 'Analysis'})
+      if (this.$route.name !== 'Analysis') {
+        this.$router.push({ name: 'Analysis'})
+      }
     }
   },
   created() {
