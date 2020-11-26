@@ -188,7 +188,7 @@
             class="d-flex flex-column justify-content-center align-items-center"
           >
             <p>마이페이지에서 주량을 등록해주세요!</p>
-            <v-btn color="blue darken-1" text @click="clickClose(publisher)">
+            <v-btn color="blue darken-1" text @click="clickClose">
               Close
             </v-btn>
           </div>

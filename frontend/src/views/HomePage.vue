@@ -28,7 +28,8 @@
           />
           <input 
             placeholder="입장 코드를 입력하세요" 
-            v-model="inputSessionId" 
+            v-model="inputSessionId"
+            @keyup.enter="guestbtn"
           />
           <button 
             v-show="inputSessionId" 

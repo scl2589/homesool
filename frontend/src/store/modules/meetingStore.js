@@ -610,23 +610,25 @@ const meetingStore = {
 		},
 		leaveSession ({ state, commit }) {
 			if (state.session) {
-        if (!state.subscribers.length) {
-          var requestData = {
-            roomId: state.roomId,
-            JWT: cookies.get('auth-token')
-          }
-          state.session.signal({
-            data: JSON.stringify(requestData),
-            to: [],
-            type: 'leave'
-          })
-        } else {
-          if (state.nextRoomHost) {
+        if (state.nickName) {
+          if (!state.subscribers.length) {
+            var requestData = {
+              roomId: state.roomId,
+              JWT: cookies.get('auth-token')
+            }
             state.session.signal({
-              data: JSON.stringify(state.nextRoomHost),
+              data: JSON.stringify(requestData),
               to: [],
-              type: 'roomhostleave'
+              type: 'leave'
             })
+          } else {
+            if (state.nextRoomHost) {
+              state.session.signal({
+                data: JSON.stringify(state.nextRoomHost),
+                to: [],
+                type: 'roomhostleave'
+              })
+            }
           }
         }
         state.publisher.stream.disposeWebRtcPeer();
@@ -1376,7 +1378,7 @@ const meetingStore = {
         // modeHost가 아닌 경우
         if (state.currentMode && state.modeHost) {          
           // 현재 진행 중인 mode와 modeHost가 있는 경우
-          if (state.selectedSong || state.selectedGame || state.currentMode === 'snapshot') {
+          if (state.selectedSong || (state.selectedGame && state.gameStatus !== 3) || state.currentMode === 'snapshot') {
             // 현재 멈추면 안되는 상황인 경우
             Swal.fire({
               title: "지금은 다른 모드로 전환할 수 없습니다.",
