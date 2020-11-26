@@ -46,10 +46,10 @@
                 >
                   <v-text-field
                     v-model="roomName"
-                    label="방 제목"
-                    hint="방 제목을 입력해주세요"
                     persistent-hint
                     required
+                    label="방 제목"
+                    hint="방 제목을 입력해주세요"
                     color="#84669a"
                     :rules="[v => !!v || '필수항목입니다.']"
                   ></v-text-field>
@@ -61,12 +61,12 @@
                   <v-select
                     v-model="isPublic"
                     :items="publicItems"
+                    persistent-hint
+                    required
                     item-text="title"
                     item-value="value"
                     label="공개 여부"
                     hint="미팅의 공개 여부를 입력해주세요"
-                    persistent-hint
-                    required
                     color="#84669a"
                   >
                   </v-select>
@@ -79,20 +79,20 @@
                     v-model="tags"
                     :items="allTags"
                     :search-input.sync="searchTag"
+                    hide-selected
+                    multiple
+                    persistent-hint
+                    small-chips
                     counter="5"
-                    :rules="[
-                      v => (v.length < 6) || '최대 5개의 태그를 고를 수 있습니다.'
-                    ]"
                     color="blue-grey lighten-2"
                     label="태그"
                     item-text="tagName"
                     item-value="tagName"
                     :return-object="false"
                     hint="미팅을 설명하는 태그를 작성해주세요"
-                    hide-selected
-                    multiple
-                    persistent-hint
-                    small-chips
+                    :rules="[
+                      v => (v.length < 6) || '최대 5개의 태그를 고를 수 있습니다.'
+                    ]"
                   >
                     <template v-slot:selection="data">
                       <v-chip

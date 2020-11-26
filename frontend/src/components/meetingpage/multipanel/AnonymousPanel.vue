@@ -25,7 +25,10 @@ export default {
   name: 'AnonymousPanel',
   
   methods: {
-    ...mapActions('meetingStore', ['changeMode', 'endAnonymousMode']),
+    ...mapActions('meetingStore', [
+      'changeMode',
+      'endAnonymousMode'
+    ]),
     clickEndAnonymousMode() {
       this.changeMode(null);
     }
