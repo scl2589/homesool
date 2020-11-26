@@ -1265,7 +1265,7 @@ const meetingStore = {
             state.session.on('signal:drink', (event) => {
               let drinkData = JSON.parse(event.data);
               state.subscribers.forEach(subscriber => {
-                if (subscriber.stream.connection.connectionId === drinkData.userId) {
+                if (subscriber.stream.connection.connectionId === event.from.connectionId) {
                   subscriber.totalDrink = drinkData.totalDrink;
                 }
               });
@@ -1704,46 +1704,45 @@ const meetingStore = {
 
       //DB에 기록이 있는지 조회 후 없으면 0인 Record 생성
       axios.get(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${enterData.roomId}`, rootGetters.config)
-              .then(res => {
-                let totalDrink = 0;
-                if(res.data.length !== 0){
-                  for(let i=0; i<res.data.length; i++){
-                    for(let j=0; j<user.drinks.length; j++){
-                      if(res.data[i].liquorName == user.drinks[j].liquorName){
-                        //이중포문 쓰기 싫은데... 방법이 생각이 안남
-                        user.drinks[j].liquorNum = res.data[i].liquorLimit;
-                        user.drinks[j].liquorId = res.data[i].id;
-                        totalDrink += res.data[i].liquorLimit;
-                      }
-                    }
-                  }
-                  commit('SET_TOTAL_DRINK', totalDrink);  //totalDrink갱신
-                  //신호보내기
-                  let data = {
-                    "userId": state.publisher.stream.connection.connectionId,
-                    "totalDrink" : state.totalDrink
-                  }
-                  state.session.signal({
-                    data: JSON.stringify(data),
-                    to: [],
-                    type: 'drink'
+        .then(res => {
+          let totalDrink = 0;
+          if(res.data.length !== 0){
+            for(let i=0; i<res.data.length; i++){
+              for(let j=0; j<user.drinks.length; j++){
+                if(res.data[i].liquorName == user.drinks[j].liquorName){
+                  //이중포문 쓰기 싫은데... 방법이 생각이 안남
+                  user.drinks[j].liquorNum = res.data[i].liquorLimit;
+                  user.drinks[j].liquorId = res.data[i].id;
+                  totalDrink += res.data[i].liquorLimit;
+                }
+              }
+            }
+            commit('SET_TOTAL_DRINK', totalDrink);  //totalDrink갱신
+            //신호보내기
+            let data = {
+              "totalDrink" : state.totalDrink
+            }
+            state.session.signal({
+              data: JSON.stringify(data),
+              to: [],
+              type: 'drink'
+            })
+          }
+          else{
+            for(let i=0; i<user.drinks.length; i++){
+                let drinkData = {
+                  "liquorLimit": 0,
+                  "liquorName": user.drinks[i].liquorName,
+                  "liquorId": 0
+                }
+                axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
+                  .then(res => {
+                    user.drinks[i].liquorId = res.data;
+                    user.drinks[i].liquorNum = 0;
                   })
-                }
-                else{
-                  for(let i=0; i<user.drinks.length; i++){
-                      let drinkData = {
-                        "liquorLimit": 0,
-                        "liquorName": user.drinks[i].liquorName,
-                        "liquorId": 0
-                      }
-                      axios.put(`${SERVER.URL + SERVER.ROUTES.user}/${rootGetters.getId}/record/${state.roomId}`, drinkData, rootGetters.config)
-                        .then(res => {
-                          user.drinks[i].liquorId = res.data;
-                          user.drinks[i].liquorNum = 0;
-                        })
-                  }
-                }
-              })
+            }
+          }
+        })
           
       commit('SET_USER', user, { root:true });
     },
