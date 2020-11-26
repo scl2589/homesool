@@ -11,7 +11,7 @@
       <div class="search-icon"></div>
     </div>
 
-    <div class="h-90" v-if="flag">
+    <div class="h-90" v-if="flag&&rooms">
       <div 
         class="d-flex justify-content-between align-items-center row no-gutters cards p-5"
         v-if="rooms.length>=1">
@@ -19,11 +19,9 @@
           class="card2 mb-3 rounded mx-2" 
           v-for="(room, i) in rooms" 
           :key="i"
+          @click="clickRoom(room.roominfo.code)"
         >
-          <div 
-            class="card-top mt-5"
-            @click="clickRoom(room.roominfo.code)"
-          >
+          <div class="card-top mt-5">
             <p class="text-right text-muted">주최자 {{ room.host }}</p>
             <hr>
             <img 
@@ -55,22 +53,20 @@
       </div>
     </div>
     <div
-      class="h-100"
-      v-if="!flag"
+      class="h-90"
+      v-if="!flag&&searchedRooms"
     >
       <div
         class="d-flex justify-content-between align-items-center row no-gutters cards p-5"
         v-if="searchedRooms.length >= 1"
       >
         <div 
-          class="card2 mb-3 rounded mx-2" 
+          class="card2 mb-3 rounded mx-2"
           v-for="(room, i) in searchedRooms" 
           :key="i"
+          @click="clickRoom(room.roominfo.code)"
         >
-          <div 
-            class="card-top mt-5"
-            @click="clickRoom(room.roominfo.code)"
-          >
+          <div class="card-top mt-5">
             <p class="text-right text-muted">주최자 {{ room.host }}</p>
             <hr>
             <img 
@@ -103,7 +99,8 @@
 
     </div>
     <div class="d-flex justify-content-center">
-      <div 
+      <div
+        class="page-number"
         @click="clickPage(num)"
         v-for="num in roomCount"
         :key="num"
@@ -326,9 +323,11 @@ p, h3{
       border: 1px solid white;
       width: 20vw;
       min-height: 23vh;
+      cursor:pointer;
 
       &:hover {
-        background-color: rgb(1, 1, 1, 0.3)
+        border: 1px solid yellow;
+        transition: 1s;
       }
 
       .card-top {
@@ -353,5 +352,10 @@ p, h3{
       }
     }
   }
+}
+
+.page-number span:hover {
+  color: yellow;
+  transition: 0.5s;
 }
 </style>
