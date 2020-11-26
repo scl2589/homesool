@@ -88,7 +88,10 @@
             :size="150"
           ></circular-count-down-timer>
         </div>
-        <div class="voteForLiar  h-100" v-if="gameTurn===2">
+        <div 
+          class="voteForLiar h-100" 
+          v-if="gameTurn===2"
+        >
           <div 
             class="voteComplete h-100 d-flex justify-content-center align-items-center" 
             v-if="DidVote"

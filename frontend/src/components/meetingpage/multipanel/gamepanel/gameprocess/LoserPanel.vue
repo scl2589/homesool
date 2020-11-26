@@ -161,7 +161,7 @@ export default {
       this.sendGameRequest(jsonRequest);
     },
     findWidth() {
-      if ( this.gameAnswerWords) {
+      if ( this.gameAnswerWords ) {
         if ( this.gameAnswerWords.length <= 3 ) {
           this.six = false
           this.nine = false
