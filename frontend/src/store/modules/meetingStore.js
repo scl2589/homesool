@@ -4,8 +4,11 @@ import axios from 'axios';
 import cookies from 'vue-cookies';
 import { OpenVidu } from 'openvidu-browser';
 import moment from 'moment';
-import Swal from 'sweetalert2'
-import firebase from 'firebase'
+import Swal from 'sweetalert2';
+// Firebase
+import firebase from 'firebase/app';
+import 'firebase/database';
+import 'firebase/storage';
 
 const ToastEnter = Swal.mixin({
   toast: true,
