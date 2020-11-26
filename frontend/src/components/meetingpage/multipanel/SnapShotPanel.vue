@@ -2,26 +2,20 @@
   <div class="d-flex flex-column justify-content-between p-2 w-100">
     <section class="countdown">
       <div 
-        v-show="!expired" 
         class="timer"
+        v-show="!expired" 
       >
         <h3>Snapshot</h3>
         <div class="box">
           <div class="spacer"></div>
-          <p class="value">
-            {{ remain }}
-          </p>
-          <p class="label">
-            초 후
-          </p>
+          <p class="value">{{ remain }}</p>
+          <p class="label">초 후</p>
         </div>
-        <p class="text">
-          사진찍어요~
-        </p>
+        <p class="text">사진찍어요~</p>
       </div>
       <div 
-        v-show="expired"
         class="expired-timer timer"
+        v-show="expired"
       >
         <div 
           class="spinner-border" 
@@ -70,7 +64,6 @@ import { mapState, mapGetters, mapActions } from 'vuex'
 import html2canvas from 'html2canvas'
 import firebase from 'firebase'
 import moment from 'moment';
-// import { image } from 'html2canvas/dist/types/css/types/image'
 
 export default {
   name: 'SnapShotPanel',
@@ -82,7 +75,11 @@ export default {
     }
   },
   computed: {
-    ...mapState('meetingStore', ['isSnapshotMode', 'mySessionId', 'roomId', 'spinner']),
+    ...mapState('meetingStore', [
+      'mySessionId',
+      'roomId',
+      'spinner'
+    ]),
     ...mapGetters('meetingStore', ['notModeHost'])
   },
   watch: {
@@ -207,7 +204,13 @@ export default {
     }
   },
   methods: {
-    ...mapActions('meetingStore', ['changeMode', 'attachImage', 'saveScreenshot', 'saveScreenshotInfo', 'changeSpinner']),
+    ...mapActions('meetingStore', [
+      'changeMode',
+      'attachImage',
+      'saveScreenshot',
+      'saveScreenshotInfo',
+      'changeSpinner'
+    ]),
     savePhoto() {
       // 파일로 저장하는 로직 
       var a = document.createElement('a');

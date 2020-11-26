@@ -59,9 +59,9 @@
         <div class="song-select" v-else>
           <v-text-field
             v-model="songKeyword"
+            dark
             label="노래를 검색하세요 :)"
             color="#BDBDBD"
-            dark
             @keyup.enter="enterSong(songKeyword)"
           ></v-text-field>
           <div class="row">
@@ -96,7 +96,6 @@ export default {
     return {
       songKeyword: null,
       ytPlayer: null,
-      timerId: null,
       checksync: null,
       flag: true
     }
@@ -108,7 +107,6 @@ export default {
       'songs',
       'currentSongTime',
       'isSongEnded',
-      'publisher'
     ]),
     ...mapGetters('meetingStore', ['notModeHost'])
   },

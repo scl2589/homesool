@@ -78,12 +78,12 @@
                 <v-select
                   v-model="penalty"
                   :items="penalties"
-                  label="벌칙"
-                  width="10px"
                   hide-details
                   dense
-                  append-icon=""
                   solo
+                  label="벌칙"
+                  width="10px"
+                  append-icon=""
                   @input="checkInput"
                 ></v-select>
                 

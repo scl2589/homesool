@@ -54,7 +54,6 @@ export default {
   },
   computed: {
     ...mapState('meetingStore', [
-      'isGameStart',
       'currentMode'
     ]),
   },

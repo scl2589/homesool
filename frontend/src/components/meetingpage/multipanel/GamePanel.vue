@@ -1,14 +1,7 @@
 <template>
   <div>
-    <GameSelectionPanel
-      v-if="!selectedGame"
-    >
-    </GameSelectionPanel>
-    
-    <GameProcessPanel
-      v-else
-    >
-    </GameProcessPanel>  
+    <GameSelectionPanel v-if="!selectedGame" />
+    <GameProcessPanel v-else />
   </div>
 </template>
 
