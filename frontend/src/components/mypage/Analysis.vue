@@ -4,13 +4,19 @@
       <div class="col-5">
         <h3 class="analysis-title">최근 음주 통계</h3>
         <div v-if="recentData">
-          <recent class="analysis" :data="recentData"></recent>
+          <recent
+            class="analysis"
+            :data="recentData"
+          />
         </div>
       </div>
       <div class="col-5 offset-2">
         <h3 class="analysis-title">주종 통계</h3>
         <div v-if="alcoholTypeData">
-          <alcohol-type class="analysis" :data="alcoholTypeData"></alcohol-type>
+          <alcohol-type
+            class="analysis"
+            :data="alcoholTypeData"
+          />
         </div>
       </div>
     </div>

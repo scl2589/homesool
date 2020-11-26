@@ -136,7 +136,7 @@ export default {
   props: {
     username: String,
     useremail: String,
-    userdrinks: Object
+    userdrinks: Array
   },
   computed: {
     ...mapGetters(['getId'])

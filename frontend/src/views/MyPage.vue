@@ -1,5 +1,8 @@
 <template>
-  <div class="container mx-auto">
+  <div
+    class="container mx-auto"
+    v-if="user"
+  >
     <div class="d-flex mx-auto profile">
       <img 
         src="@/assets/images/host.png" 
@@ -14,10 +17,7 @@
       >
         <h3 class="mb-0">음주 달력</h3>
       </div>
-      <div 
-        class="name d-flex justify-content-center" 
-        v-if="user"
-      >
+      <div class="name d-flex justify-content-center">
         <button 
           class="btn px-2 edit-profile" 
           @click="clickEditProfile"
@@ -59,7 +59,9 @@ export default {
     this.getMyInfo();
   },
   mounted() {
-    this.$router.push({ name: 'Calendar'})
+    if (this.$route.name !== 'Calendar') {
+      this.$router.push({ name: 'Calendar'});
+    }
   }
 }
 </script>
