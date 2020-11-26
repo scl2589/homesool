@@ -39,7 +39,7 @@
           </button>
           <button
             class="btn btn-yellow"
-            @click="changeMode('singing')"
+            @click="sendModeSignal('singing')"
           >
             노래 고르기
           </button>
@@ -159,7 +159,8 @@ export default {
       'selectSong',
       'checkSongSync',
       'changeMode',
-      'endSingingMode'
+      'endSingingMode',
+      'sendModeSignal'
     ]),
     isGumyoung(song) {
       if (song.snippet.channelTitle === '금영 노래방 공식 유튜브 채널') {
