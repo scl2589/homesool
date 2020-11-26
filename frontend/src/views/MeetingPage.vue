@@ -148,19 +148,19 @@
           </button>
           <div class="dropdown-menu text-center">
             <li
-              class="dropdown-item"
+              class="dropdown-item pointer"
               @click="changeMode('game')"
             >
               술게임 모드
             </li>
             <li
-              class="dropdown-item"
+              class="dropdown-item pointer"
               @click="changeMode('singing')"
             >
               노래방 모드
             </li>
             <li
-              class="dropdown-item"
+              class="dropdown-item pointer"
               @click="changeMode('anonymous')"
             >
               진실의 방 모드

@@ -89,7 +89,7 @@ export default {
       "sendMessage",
     ]),
     clickSendMessage() {
-      if (this.message) {
+      if (this.message.trim()) {
         this.sendMessage(this.message)
         this.message = ""
       }
