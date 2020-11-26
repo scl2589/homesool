@@ -69,7 +69,6 @@
             <div v-if="selectedGameId == 5">
               <FindOutDrunkenDescription />
             </div>
-
             <div
               class="d-flex justify-content-between align-items-center mx-2 mt-auto mb-2"
               v-if="selectedGameId"
@@ -78,12 +77,12 @@
                 <v-select
                   v-model="penalty"
                   :items="penalties"
-                  label="벌칙"
-                  width="10px"
                   hide-details
                   dense
-                  append-icon=""
                   solo
+                  label="벌칙"
+                  width="10px"
+                  append-icon=""
                   @input="checkInput"
                 ></v-select>
                 
@@ -101,7 +100,6 @@
         </transition>
       </div>
     </div>
-
   </div>
 </template>
 

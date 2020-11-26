@@ -1,15 +1,10 @@
 <template>
   <div class="panel">
-    <UpAndDown v-if="selectedGame==1">
-    </UpAndDown>
-    <ConsonantQuiz v-if="selectedGame==2">
-    </ConsonantQuiz>
-    <LiarGame v-if="selectedGame==3">
-    </LiarGame>
-    <SmileLeadsToAlcohol v-if="selectedGame==4">
-    </SmileLeadsToAlcohol>
-    <FindOutDrunken v-if="selectedGame==5">
-    </FindOutDrunken>
+    <UpAndDown v-if="selectedGame==1" />
+    <ConsonantQuiz v-if="selectedGame==2" />
+    <LiarGame v-if="selectedGame==3" />
+    <SmileLeadsToAlcohol v-if="selectedGame==4" />
+    <FindOutDrunken v-if="selectedGame==5" />
   </div>
 </template>
 
@@ -23,11 +18,6 @@ import UpAndDown from '@/components/meetingpage/multipanel/gamepanel/gameprocess
 
 export default {
   name: 'GameProcessPanel',
-  data() {
-    return {
-
-    }
-  },
 
   components:{
     SmileLeadsToAlcohol,

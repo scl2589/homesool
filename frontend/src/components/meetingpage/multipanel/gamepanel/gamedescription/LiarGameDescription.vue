@@ -1,5 +1,8 @@
 <template>
-  <div class="liar" data-app>
+  <div 
+    class="liar" 
+    data-app
+  >
     <h5 class="pt-3">라이어 게임🙄 </h5>
     <div 
       id="carouselExampleControls" 
@@ -9,8 +12,8 @@
       <div class="carousel-inner">
         <div class="carousel-item active">
           <img 
-            :src="require('@/assets/images/liar1.png')" 
             class="d-block w-50  mx-auto" 
+            :src="require('@/assets/images/liar1.png')" 
             alt="sample image"
           >
           <p class="description">
@@ -19,8 +22,8 @@
         </div>
         <div class="carousel-item">
           <img 
-            :src="require('@/assets/images/liar2.png')" 
             class="d-block w-50 mx-auto" 
+            :src="require('@/assets/images/liar2.png')" 
             alt="sample image"
           >
           <p class="description">
@@ -29,8 +32,8 @@
         </div>
         <div class="carousel-item">
           <img 
-            :src="require('@/assets/images/liar3.png')" 
             class="d-block w-50 mx-auto" 
+            :src="require('@/assets/images/liar3.png')" 
             alt="sample image"
           >
           <p class="description">
@@ -39,8 +42,8 @@
         </div>
         <div class="carousel-item">
           <img 
-            :src="require('@/assets/images/liar5.png')" 
             class="d-block w-50 mx-auto" 
+            :src="require('@/assets/images/liar5.png')" 
             alt="sample image"
           >
           <p class="description">
@@ -49,8 +52,8 @@
         </div>
         <div class="carousel-item">
           <img 
-            :src="require('@/assets/images/liar4.png')" 
             class="d-block w-50 mx-auto" 
+            :src="require('@/assets/images/liar4.png')" 
             alt="sample image"
           >
           <p class="description">
@@ -68,12 +71,28 @@
           </p>
         </div>
       </div>
-      <button class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <button 
+        class="carousel-control-prev" 
+        href="#carouselExampleControls" 
+        role="button" 
+        data-slide="prev"
+      >
+        <span 
+          class="carousel-control-prev-icon" 
+          aria-hidden="true"
+        ></span>
         <span class="sr-only">Previous</span>
       </button>
-      <button class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <button 
+        class="carousel-control-next" 
+        href="#carouselExampleControls" 
+        role="button" 
+        data-slide="next"
+      >
+        <span 
+          class="carousel-control-next-icon" 
+          aria-hidden="true"
+        ></span>
         <span class="sr-only">Next</span>
       </button>
     </div>
@@ -108,6 +127,7 @@ p, h1, h2, h3, h4, h5, h6, button {
 .penalty {
   width: 70%;
 }
+
 .v-input__slot {
   padding: 0 !important;
   margin: 0 !important;

@@ -5,12 +5,18 @@
         <span class="title">
           채팅
         </span>
-        <button class="btn close-btn" @click="toggleChatPanel">
+        <button
+          class="btn close-btn"
+          @click="toggleChatPanel"
+        >
           <i class="fas fa-times"></i>
         </button>
       </div>
       <!-- 채팅 내역 -->
-      <div id="chat-area" :height="chatHeight">
+      <div
+        id="chat-area"
+        :height="chatHeight"
+      >
         <div 
           class="mt-2 text-left message" 
           v-for="(message, i) of messages" 
@@ -28,9 +34,9 @@
       <div class="footer d-flex mt-auto">
         <div class="col-10 px-1 py-0">
           <input 
-            @keyup.enter="clickSendMessage"
             class="text-box"
             v-model="message"
+            @keyup.enter="clickSendMessage"
           >
         </div>
         <div class="col-2 p-0">
@@ -83,7 +89,7 @@ export default {
       "sendMessage",
     ]),
     clickSendMessage() {
-      if (this.message) {
+      if (this.message.trim()) {
         this.sendMessage(this.message)
         this.message = ""
       }

@@ -35,11 +35,9 @@ Vue.use(VCalendar, {
 window.Kakao.init(secrets['KAKAO']['CLIENT_ID']);
 
 // Firebase
-
-// const firebase = require("firebase");
-// // Required for side-effects
-// require("firebase/firestore");
-import firebase from 'firebase'
+import firebase from 'firebase/app';
+import 'firebase/database';
+import 'firebase/storage'; 
 var firebaseConfig = {
   apiKey: secrets['FIREBASE']['SECRET_KEY'],
   authDomain: "homesuli.firebaseapp.com",
@@ -52,7 +50,6 @@ var firebaseConfig = {
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-firebase.analytics();
 
 Vue.config.productionTip = false
 

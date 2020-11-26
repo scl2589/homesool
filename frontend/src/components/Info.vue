@@ -1,7 +1,17 @@
 <template>
   <div id="myinfo">
-    <h1 id="title" v-if="$route.name === 'RegisterPage'">회원가입</h1>
-    <h1 id="title" v-if="$route.name === 'ProfilePage'">프로필</h1>
+    <h1 
+      id="title" 
+      v-if="$route.name === 'RegisterPage'"
+    >
+      회원가입
+    </h1>
+    <h1 
+      id="title" 
+      v-if="$route.name === 'ProfilePage'"
+    >
+      프로필
+    </h1>
     <div class="d-flex flex-column form">
       <div class="row no-gutters">
         <div class="col-sm-4 infotitle">
@@ -31,7 +41,10 @@
         <div class="col-sm-4 infotitle">
           <p>주량</p>
         </div>
-        <div class="col-sm-8 infosub" id="juryang">
+        <div 
+          class="col-sm-8 infosub" 
+          id="juryang"
+        >
           <div 
             class="row no-gutters"
             v-for="(drink, i) in signupData.drinks"
@@ -98,7 +111,6 @@
         </button>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -124,7 +136,7 @@ export default {
   props: {
     username: String,
     useremail: String,
-    userdrinks: Object
+    userdrinks: Array
   },
   computed: {
     ...mapGetters(['getId'])
@@ -158,7 +170,7 @@ export default {
       } else {
         var swal = Swal.mixin({
           customClass: {
-            confirmButton: 'btn btn-danger btn-lg',
+            confirmButton: 'btn btn-lg',
           },
           buttonsStyling: false
         })
@@ -202,7 +214,7 @@ export default {
 };
 </script>
 
-<style  lang="scss">
+<style lang="scss" scoped>
 #myinfo {
   text-align: left;
   padding: 40px 60px;
@@ -242,6 +254,7 @@ export default {
   padding: 0 10%;
   border-radius: 10%;
 }
+
 .add-col {
   background-color: rgba(255, 255, 255, 0.1);
   padding: 0 10%;

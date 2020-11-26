@@ -13,7 +13,11 @@
           justify="center"
         >
           <div class="text-container">
-            <img src="@/assets/images/party2.png" alt="배너2" class="banner">
+            <img
+              class="banner"
+              src="@/assets/images/party2.png"
+              alt="배너2"
+            >
           </div>
         </v-row>
       </v-sheet>
@@ -26,7 +30,11 @@
           justify="center"
         >
           <div class="text-container">
-            <img src="@/assets/images/party5.png" alt="배너5" class="banner">
+            <img
+              class="banner"
+              src="@/assets/images/party5.png"
+              alt="배너5"
+            >
           </div>
         </v-row>
       </v-sheet>
@@ -39,7 +47,11 @@
           justify="center"
         >
           <div class="text-container">
-            <img src="@/assets/images/party6.png" alt="배너6" class="banner">
+            <img
+              class="banner"
+              src="@/assets/images/party6.png"
+              alt="배너6"
+            >
           </div>
         </v-row>
       </v-sheet>
@@ -52,7 +64,11 @@
           justify="center"
         >
           <div class="text-container">
-            <img src="@/assets/images/party7.png" alt="배너7" class="banner">
+            <img
+              class="banner"
+              src="@/assets/images/party7.png"
+              alt="배너7"
+            >
           </div>
         </v-row>
       </v-sheet>

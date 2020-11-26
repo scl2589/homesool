@@ -1,6 +1,13 @@
 <template>
-  <div id="wrapregister">
-    <info :username="user.name" :useremail="user.email" :userdrinks="user.drinks" />
+  <div
+    id="wrapregister"
+    v-if="user"
+  >
+    <info 
+      :username="user.name"
+      :useremail="user.email"
+      :userdrinks="user.drinks"
+    />
   </div>
 </template>
 
