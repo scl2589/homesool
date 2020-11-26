@@ -62,8 +62,11 @@
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
 import html2canvas from 'html2canvas'
-import firebase from 'firebase'
 import moment from 'moment';
+// Firebase
+import firebase from 'firebase/app';
+import 'firebase/database';
+import 'firebase/storage';
 
 export default {
   name: 'SnapShotPanel',
