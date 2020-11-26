@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-
 import com.ssafy.homesool.entity.Tag;
-import com.ssafy.homesool.entity.UserDrink;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

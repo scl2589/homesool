@@ -27,7 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -58,24 +57,21 @@ public class GameService {
 
 	static RpcNotificationService rpcNotificationService;
 	static InitialGameUtil initialGameUtil = new InitialGameUtil();
+	
 	// Thread는 ConcurrentHashMap으로 관리
 	protected ConcurrentHashMap<String, Thread> wordThread = new ConcurrentHashMap<>();
-
 	// < sessionId , <userId,count> >
 	protected ConcurrentHashMap<String, Map<String, Integer>> liarCountMap = new ConcurrentHashMap<>();
-
 	// < sessionId , number >
 	protected ConcurrentHashMap<String, Integer> upDownNumberMap = new ConcurrentHashMap<>();
 	// < sessionId, participantsList >
 	protected ConcurrentHashMap<String, ArrayList<Participant>> upDownListMap = new ConcurrentHashMap<>();
-
 	// < sessionId, initialWord >
 	protected ConcurrentHashMap<String, String> initialWordMap = new ConcurrentHashMap<>();
 	// < sessionId, String >
 	protected ConcurrentHashMap<String, HashSet<String>> initialAnswerMap = new ConcurrentHashMap<>();
 	// < sessionId, Set<Participant> >
 	protected ConcurrentHashMap<String, HashSet<Participant>> initialAnswerUserMap = new ConcurrentHashMap<>();
-
 	// < sessionId, sentence >
 	protected ConcurrentHashMap<String, String> drunkTestMap = new ConcurrentHashMap<>();
 
@@ -215,7 +211,6 @@ public class GameService {
 			if (data.has("number")) {
 				int number = data.get("number").getAsInt();
 				int answer = upDownNumberMap.get(sessionId);
-				System.out.println("number:" + number + " answer:" + answer + "index : " + index);
 				if (number > answer) {
 					data.addProperty("updown", "down");
 				} else if (number < answer) {
@@ -224,8 +219,6 @@ public class GameService {
 					if (index >= size) {
 						index -= size;
 					}
-					/*data.addProperty("participantPublicId",
-							upDownListMap.get(sessionId).get(index).getParticipantPublicId());*/
 					data.addProperty("gameStatus", 3);
 
 					upDownNumberMap.remove(sessionId);
@@ -251,20 +244,20 @@ public class GameService {
 				String initialWord = initialGameUtil.Direct(word.charAt(0));
 				initialWord += initialGameUtil.Direct(word.charAt(1));
 				if (initialWord.equals(ansInitWord)) {
-					// 중복 검증
-					if (!initialAnswerMap.get(sessionId).contains(word)) {
-						// 사전 검증
-						if (initialGameUtil.searchWord(word)) {
+					// 사전 검증
+					if (initialGameUtil.searchWord(word)) {
+						// 중복 검증
+						if (!initialAnswerMap.get(sessionId).contains(word)) {
 							isCorrect = 2;
 							initialAnswerMap.get(sessionId).add(word);
 							initialAnswerUserMap.get(sessionId).remove(participant);
 						}
 						else {
-							result = "사전에 없는 단어입니다";
+							result = "중복된 단어입니다";
 						}
 					}
 					else {
-						result = "중복된 단어입니다";
+						result = "사전에 없는 단어입니다";
 					}
 				}
 				else {
@@ -417,11 +410,8 @@ public class GameService {
 	            }
 	        });
 	        
-	        System.out.println(list.get(0).getKey() + " & " + list.get(0).getValue());
-	        
 			// 최다 투표자
 			String electId = list.get(0).getKey();
-			System.out.println("electId :" + electId);
 			// 벌칙자 정하기 ( 투표자 == 라이어 )
 			String participantPublicId = electId;
 

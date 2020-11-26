@@ -1,6 +1,5 @@
 package com.ssafy.homesool.entity;
 
-
 import java.io.Serializable;
 
 import javax.persistence.Column;
