@@ -647,7 +647,7 @@ const meetingStore = {
         commit('SET_ROOM_HOST', null);
         commit('SET_IS_HOST', null);
         commit('SET_NEXT_ROOM_HOST', null);
-        commit('roomInfo', null);
+        commit('SET_ROOM_INFO', null);
       }
 
       if (state.screenSession) {
