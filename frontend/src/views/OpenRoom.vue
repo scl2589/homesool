@@ -11,7 +11,7 @@
       <div class="search-icon"></div>
     </div>
 
-    <div class="h-90" v-if="flag">
+    <div class="h-90" v-if="flag&&rooms">
       <div 
         class="d-flex justify-content-between align-items-center row no-gutters cards p-5"
         v-if="rooms.length>=1">
@@ -19,15 +19,14 @@
           class="card2 mb-3 rounded mx-2" 
           v-for="(room, i) in rooms" 
           :key="i"
+          @click="clickRoom(room.roominfo.code)"
         >
-          <div 
-            class="card-top mt-5"
-            @click="clickRoom(room.roominfo.code)"
-          >
+          <div class="card-top mt-5">
             <p class="text-right text-muted">주최자 {{ room.host }}</p>
             <hr>
-            <img width="50px"
-            :src="require(`@/assets/images/${anonyMousImg(i)}.png`)"
+            <img 
+              width="50px"
+              :src="require(`@/assets/images/${anonyMousImg(i)}.png`)"
             >
           </div>
           <div class="d-flex justify-content-start align-items-start flex-column pl-4">
@@ -54,26 +53,25 @@
       </div>
     </div>
     <div
-      class="h-100"
-      v-if="!flag"
+      class="h-90"
+      v-if="!flag&&searchedRooms"
     >
       <div
         class="d-flex justify-content-between align-items-center row no-gutters cards p-5"
         v-if="searchedRooms.length >= 1"
       >
         <div 
-          class="card2 mb-3 rounded mx-2" 
+          class="card2 mb-3 rounded mx-2"
           v-for="(room, i) in searchedRooms" 
           :key="i"
+          @click="clickRoom(room.roominfo.code)"
         >
-          <div 
-            class="card-top mt-5"
-            @click="clickRoom(room.roominfo.code)"
-          >
+          <div class="card-top mt-5">
             <p class="text-right text-muted">주최자 {{ room.host }}</p>
             <hr>
-            <img width="50px"
-            :src="require(`@/assets/images/${anonyMousImg(i)}.png`)"
+            <img 
+              width="50px"
+              :src="require(`@/assets/images/${anonyMousImg(i)}.png`)"
             >
           </div>
           <div class="d-flex justify-content-start align-items-start flex-column pl-4">
@@ -101,7 +99,8 @@
 
     </div>
     <div class="d-flex justify-content-center">
-      <div 
+      <div
+        class="page-number"
         @click="clickPage(num)"
         v-for="num in roomCount"
         :key="num"
@@ -174,19 +173,21 @@ export default {
       search: null,
       pageNum: 1,
       flag: true,
-      // live: new Array()
     }
   },
   computed: {
-    ...mapState('openroomStore', ['rooms', 'roomCount', 'searchedRooms', 'liveMembers']),
+    ...mapState('openroomStore', ['rooms', 'roomCount', 'searchedRooms']),
   },
   methods: {
-    ...mapActions('openroomStore', ['fetchRooms', 'findRoomCount', 'searchRoom', 'findLiveMembers']),
+    ...mapActions('openroomStore', ['fetchRooms', 'findRoomCount', 'searchRoom']),
+    ...mapActions('meetingStore', ['checkSessionId', 'changeMeetingDialog']),
     anonyMousImg(index) {
       return this.anonymousImages[index % 50]
     },
     clickRoom(code) {
-      this.$router.push({ name: 'MeetingPage', params: { sessionId: code } })
+      this.checkSessionId(code);
+      this.changeMeetingDialog(true);
+      this.$router.push({ name: 'HomePage' });
     },
     clickPage(num) {
       this.pageNum = num
@@ -205,7 +206,6 @@ export default {
         data.pageNum = this.pageNum
         this.searchRoom(data)
         this.flag = false
-        // this.live = []
       }
     }
   },
@@ -216,61 +216,17 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+$size: 20px;
+
 p, h3{
   color: white;
   margin: 0 10px 0 0;
 }
 
-.cards {
-  margin-top: 3vh;
-  margin-left: 3vw;
-  margin-right: 3vw;
-  min-height: 80vh;
-}
-
-hr {
-  background-color: #979797;
-  margin: 5px 0;
-}
-
-.card-top {
-  position: relative;
-  height: 10vh;
-}
-
-img {
-  position: absolute;
-  left: 20px;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  background-color: white;
-  border-radius: 50%;
-  border: 1px solid white;
-}
-
-.card2 {
-  border: 1px solid white;
-  width: 20vw;
-  min-height: 23vh;
-}
-
-.card2:hover {
-  background-color: rgb(1, 1, 1, 0.3)
-}
-
 .pointer {
   cursor: pointer;
 }
-
-.h-90 {
-  height: 90%!important;
-}
-</style>
-
-<style scoped lang="scss">
-$size: 20px;
 
 .search-bar {
   height: auto;
@@ -333,8 +289,6 @@ $size: 20px;
   }
 }
 
-
-
 .search-icon {
   display: inline-block;
   height: $size;
@@ -357,5 +311,54 @@ $size: 20px;
     background-color: #FFF;
     border-radius: 10px;
   }
+}
+
+.h-90 {
+  height: 90%!important;
+
+  .cards {
+    margin-top: 3vh;
+    margin-left: 3vw;
+    margin-right: 3vw;
+    min-height: 80vh;
+
+    .card2 {
+      border: 1px solid white;
+      width: 20vw;
+      min-height: 23vh;
+      cursor:pointer;
+
+      &:hover {
+        border: 1px solid yellow;
+        transition: 1s;
+      }
+
+      .card-top {
+        position: relative;
+        height: 10vh;
+
+        hr {
+          background-color: #979797;
+          margin: 5px 0;
+        }
+
+        img {
+          position: absolute;
+          left: 20px;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          background-color: white;
+          border-radius: 50%;
+          border: 1px solid white;
+        }
+      }
+    }
+  }
+}
+
+.page-number span:hover {
+  color: yellow;
+  transition: 0.5s;
 }
 </style>

@@ -2,12 +2,16 @@ import SERVER from '@/api/api';
 import axios from 'axios';
 
 const drinkColors = ['#CB997E', '#02323A', '#988148', '#8D9365', '#f194ff', '#BF5B04'];
+const calendarColor = ["red","blue","indigo","teal","pink","orange"];
 
 const mypageStore = {
   namespaced: true,
   state: {
     recentData: null,
-    alcoholTypeData: null
+    alcoholTypeData: null,
+    meetingLogDialog: false,
+    calendarLogs: [],
+    calendarDetail: null
   },
   getters: {
 
@@ -18,6 +22,18 @@ const mypageStore = {
     },
     SET_ALCOHOL_TYPE_DATA(state, value) {
       state.alcoholTypeData = value
+    },
+    SET_MEETINGLOG_DIALOG(state, value) {
+      state.meetingLogDialog = value;
+    },
+    SET_CALENDAR_LOGS(state, value) {
+      state.calendarLogs.push(value);
+    },
+    CLEAR_CALENDAR_LOGS(state) {
+      state.calendarLogs = [];
+    },
+    SET_CALENDAR_DETAIL(state, value) {
+      state.calendarDetail = value
     }
   },
   actions: {
@@ -112,6 +128,35 @@ const mypageStore = {
             commit('SET_RECENT_DATA', recentData)
           })
       }
+    },
+    fetchRoomLogs({ commit, rootGetters }) {
+      axios.get(SERVER.URL + SERVER.ROUTES.user + '/' + rootGetters.getId + '/rooms', rootGetters.config)
+        .then((res) => {
+          for(var i=0 ; i < res.data.length; i++){
+            let log = new Object()
+            log.key = res.data[i].roomId
+            log.customData = {
+              title: res.data[i].roomName,
+              class: calendarColor[Math.floor(Math.random()*6)]+' lighten-3 text-white',
+            }
+            log.dates = new Date(res.data[i].startTime)
+            commit('SET_CALENDAR_LOGS', log);
+          }
+        })
+    },
+    clearRoomLogs({ commit }) {
+      commit('CLEAR_CALENDAR_LOGS');
+    },
+    showCalendarDetail({ commit, rootGetters }, roomId) {
+      commit('SET_MEETINGLOG_DIALOG', true);
+      axios.get(SERVER.URL + SERVER.ROUTES.user + '/' + rootGetters.getId + '/room/' + roomId, rootGetters.config)
+        .then((res) => {
+          commit('SET_CALENDAR_DETAIL', res.data);
+        })
+    },
+    closeCalendarDetail({ commit }) {
+      commit('SET_MEETINGLOG_DIALOG', false);
+      commit('SET_CALENDAR_DETAIL', null);
     }
   }
 }

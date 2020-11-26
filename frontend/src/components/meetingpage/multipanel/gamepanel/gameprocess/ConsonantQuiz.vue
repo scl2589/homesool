@@ -1,13 +1,16 @@
 <template>
     <div class="panel">
-      <div class="startgame h-100 d-flex flex-column justify-content-between" v-if="gameStatus==1 || gameStatus==2">
+      <div 
+        class="startgame h-100 d-flex flex-column justify-content-between" 
+        v-if="gameStatus==='1'||gameStatus===2"
+      >
         <div class="showWord">
           <p class="color-gray">{{this.gameInitialWord}}</p>
         </div>
         <div class="answerList">
           <p 
-            v-if="gameAnswerWords.length"
             class="other-user"
+            v-if="gameAnswerWords.length"
           >
             ⭐다른 유저의 정답⭐
           </p>
@@ -17,11 +20,14 @@
               v-for="word in gameAnswerWords" 
               :key="word.word"
             >
-              <span class="color-gray">{{word.nickName}}</span> <span class="color-gray">:</span> {{word.word}}
+              <span class="color-gray">{{word.nickName}} :</span> {{word.word}}
             </p>
           </div>
         </div>
-        <div class="p-2 d-flex flex-column"  v-if="gameIsCorrect == 1"> 
+        <div 
+          class="p-2 d-flex flex-column" 
+          v-if="gameIsCorrect===1"
+        > 
           <div>
             <!-- If it is repeated word or is not in a dictionary -->
             <div>
@@ -30,8 +36,8 @@
             <div class="footer d-flex mt-auto">
               <div class="col-10 px-1 py-0">
                 <input 
-                  @keyup.enter="clickSendWord(word)"
                   class="text-box"
+                  @keyup.enter="clickSendWord(word)"
                   v-model="word"
                 >
               </div>
@@ -49,21 +55,22 @@
         <div v-else>
           <p class="color-yellow pass">통과</p>
         </div> 
-
       </div>
-      <loser-panel class="w-100 d-flex justify-content-center align-items-center" v-if="gameStatus == 3"/>
+      <loser-panel 
+        class="w-100 d-flex justify-content-center align-items-center" 
+        v-if="gameStatus===3"
+      />
     </div>
 
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import LoserPanel from '@/components/meetingpage/multipanel/gamepanel/gameprocess/LoserPanel';
 export default {
  name: "GamePanel",
   computed: {
-    ...mapState('meetingStore', ['gameStatus', 'selectedGame','gameInitialWord','gameIsCorrect','subscribers','publisher','gameAnswerWords','gameWordResult']),
-    ...mapGetters('meetingStore', ['notModeHost'])
+    ...mapState('meetingStore', ['gameStatus', 'selectedGame', 'gameInitialWord', 'gameIsCorrect', 'gameAnswerWords', 'gameWordResult']),
   },
   data(){
     return{
@@ -79,9 +86,9 @@ export default {
     ]),
     clickSendWord(word){
       var request = new Object();
-      request.gameId=this.selectedGame;
-      request.word=word;
-      request.gameStatus=2;
+      request.gameId = this.selectedGame;
+      request.word = word;
+      request.gameStatus = 2;
       this.word = "";
       var jsonRequest = JSON.stringify(request);
       this.sendGameRequest(jsonRequest);

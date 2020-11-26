@@ -2,16 +2,28 @@
   <div>
     <div v-if="!isSharingMode">
       <div class="d-flex justify-content-center align-items-center pt-3">
-        <img class="theme-deco" :src="require(`@/assets/images/${theme}_deco.png`)" alt="theme-deco">
-        <img class="theme-title" :src="require(`@/assets/images/${theme}_title.png`)" alt="theme-title">
-        <img class="theme-deco" :src="require(`@/assets/images/${theme}_deco.png`)" alt="theme-deco">
+        <img
+          class="theme-deco"
+          :src="require(`@/assets/images/${theme}_deco.png`)"
+          alt="theme-deco"
+        >
+        <img
+          class="theme-title"
+          :src="require(`@/assets/images/${theme}_title.png`)"
+          alt="theme-title"
+        >
+        <img
+          class="theme-deco"
+          :src="require(`@/assets/images/${theme}_deco.png`)"
+          alt="theme-deco"
+        >
       </div>
       <div
         class="d-flex flex-column align-items-center justify-content-center height-75" 
         id="session" 
         v-if="session"
       >
-        <div class="d-flex row no-gutters">
+        <div class="d-flex row no-gutters align-items-center">
           <user-video 
             class="my-2 px-2" 
             :class="{ 'col-12': one, 'col-6' : two, 'col-4' : three, 'col-3' : eight, 'col-2' : twelve }" 
@@ -19,7 +31,6 @@
             :stream-manager="publisher" 
             :isPublisher="isPublisher"
             :isLeftPanel="true"
-            @click.native="updateMainVideoStreamManager(publisher)"
           />
           <user-video 
             class="my-2 px-2" 
@@ -28,40 +39,44 @@
             :key="sub.stream.connection.connectionId" 
             :stream-manager="sub"
             :isLeftPanel="true"
-            @click.native="updateMainVideoStreamManager(sub)"
           />
         </div>
-        <canvas id="canvas" hidden></canvas>
+        <canvas
+          id="canvas"
+          hidden
+        />
       </div>
     </div>
     <div v-else>
-      <div class="d-flex justify-content-center" v-if="session">
+      <div
+        class="d-flex justify-content-center"
+        v-if="session"
+      >
         <!-- 화면공유 -->
-        <div id="session" v-if="session">
+        <div
+          id="session"
+          v-if="session"
+        >
           <user-video 
             class="my-2 px-2 publisher-width" 
             v-show="screenPublisher"
             :stream-manager="screenPublisher" 
-            @click.native="updateMainVideoStreamManager(screenPublisher)"
           />
           <user-video
             class="my-2 px-2 publisher-width"
             v-show="!screenPublisher"
             :stream-manager="sharer"
-            @click.native="updateMainVideoStreamManager(sharer)"
           />
           <div class="row no-gutters">
             <user-video 
               class="my-2 px-2 sub-video"
               :stream-manager="publisher" 
-              @click.native="updateMainVideoStreamManager(publisher)"
             />
             <user-video 
               class="my-2 px-2 sub-video" 
               v-for="sub in participants" 
               :key="sub.stream.connection.connectionId" 
               :stream-manager="sub" 
-              @click.native="updateMainVideoStreamManager(sub)"
             />
           </div>  
         </div>
@@ -73,7 +88,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapState } from 'vuex';
 import UserVideo from './UserVideo';
 
 export default {
@@ -91,15 +106,12 @@ export default {
       participants: null,
       sharer: null,
       isPublisher : true,
-      //userName : this.publisher.stream.connection.data.slice(15,-2),
     }
   },
   computed: {
     ...mapState('meetingStore',[ 
       'theme', 
       'session', 
-      'mySessionId', 
-      'mainStreamManager', 
       'publisher', 
       'screenPublisher',
       'subscribers', 
@@ -108,7 +120,6 @@ export default {
     ),
   },
   methods: {
-    ...mapActions('meetingStore', ['leaveSession', 'updateMainVideoStreamManager']),
     findParticipants() {
       let participants = []
       for (let i = 0, len = this.subscribers.length; i < len; i++ ) {
