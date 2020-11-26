@@ -1,6 +1,9 @@
 <template>
   <div class="panel">
-    <div class="selectgame h-100" v-if="gameStatus == 1">
+    <div 
+      class="selectgame h-100" 
+      v-if="gameStatus == 1"
+    >
       <div 
         class="d-flex align-items-center justify-content-center h-100"
         v-if="notModeHost"
@@ -20,42 +23,64 @@
           >
             열대과일
           </button>
-          <button class="btn-yellow rounded" @click="clickSendTheme('야채')">
+          <button 
+            class="btn-yellow rounded" 
+            @click="clickSendTheme('야채')"
+          >
             야채
           </button>
-          <button class="btn-yellow rounded" @click="clickSendTheme('동물')">
+          <button 
+            class="btn-yellow rounded" 
+            @click="clickSendTheme('동물')"
+          >
             동물
           </button>
-          <button class="btn-yellow rounded" @click="clickSendTheme('나라')">
+          <button 
+            class="btn-yellow rounded" 
+            @click="clickSendTheme('나라')"
+          >
             나라
           </button>
-          <button class="btn-yellow rounded" @click="clickSendTheme('음식')">
+          <button 
+            class="btn-yellow rounded" 
+            @click="clickSendTheme('음식')"
+          >
             음식
           </button>
-          <button class="btn-yellow rounded" @click="clickSendTheme('영화')">
+          <button 
+            class="btn-yellow rounded" 
+            @click="clickSendTheme('영화')"
+          >
             영화
           </button>
         </div>
       </div>
     </div>
-    <div class="startgame h-100 d-flex flex-column justify-content-center" v-if="gameStatus == 2">
-      <div 
-        v-if="notCurrentPlayer">
-        <user-video class="w-50 mt-3 video" :stream-manager="currentPlayer" :is-smile-game="true" />
+    <div 
+      class="startgame h-100 d-flex flex-column justify-content-center" 
+      v-if="gameStatus == 2"
+    >
+      <div v-if="notCurrentPlayer">
+        <user-video 
+          class="w-50 mt-3 video" 
+          :stream-manager="currentPlayer" 
+          :is-smile-game="true" 
+        />
         <p class="turn">
-          <span class="color-yellow">{{ notCurrentPlayer.stream.connection.data.slice(15, -2) }}</span>님의
-          차례입니다.
+          <span class="color-yellow">{{ notCurrentPlayer.stream.connection.data.slice(15, -2) }}</span>님의 차례입니다.
         </p>
         <p class="given-word">
           주어진 단어: <span class="color-yellow">{{ gameWord }}</span>
         </p>
       </div>
       <div v-else>
-        <user-video class="w-50 mt-3 video" :stream-manager="currentPlayer" :is-smile-game="true" />
+        <user-video 
+          class="w-50 mt-3 video" 
+          :stream-manager="currentPlayer" 
+          :is-smile-game="true" 
+        />
         <p class="read-word">
-          <span class="color-yellow">
-            <strong>{{ gameWord }}</strong>
-          </span>를 읽어주세요!
+          <span class="color-yellow"><strong>{{ gameWord }}</strong></span>를 읽어주세요!
         </p>
       </div>
       <p class="no-smile color-gray">
@@ -100,13 +125,17 @@ export default {
   watch: {
     gameStatus(value) {
       if (value == 2) {
+        // 3초에 한 번씩 미소를 체크한다.
         this.checkSmile = setInterval(() => {
           if (!this.selectedGame) {
+            // 게임 진행이 끝났다는 것이 감지되면 setInterval을 clear한다.
             clearInterval(this.checkSmile);
           } else {
+            // 게임 진행 중이면 미소를 체크한다. (사진 찍어서 AI 서버에 보내는 작업)
             this.checkIsSmile();
           }
         }, 3000);
+      // 게임이 끝났을 때 (벌칙자가 나왔을 때)
       } else if (value == 3) {
         clearInterval(this.checkSmile);
       }
@@ -139,6 +168,7 @@ export default {
   },
 
   beforeDestroy() {
+    // 컴포넌트에서 나가도 interval이 걸려있는 경우를 생각해서 clearInterval을 건다.
     clearInterval(this.checkSmile);
     var request = new Object();
     request.gameStatus = 3;
@@ -157,6 +187,7 @@ export default {
   height: 100%;
   max-height: 46vh;
 }
+
 .panel-title {
   padding: 30px;
 }

@@ -1,52 +1,60 @@
 <template>
-    <div class="panel">
-      <div class="startgame h-100 d-flex flex-column justify-content-between" v-if="gameStatus==1 || gameStatus==2">
-        <div class="showWord h-100 d-flex flex-column justify-content-between">
-          <p class="text-white description-title">숫자를 맞춰 주세요</p>
-
-          <div v-if="gameUpDownNumber >= 0">
-            <p class="previous color-gray"> 이전 번호 : {{this.gameUpDownNumber}}</p>
+  <div class="panel">
+    <div 
+      class="startgame h-100 d-flex flex-column justify-content-between" 
+      v-if="gameStatus===1 || gameStatus===2"
+    >
+      <div class="showWord h-100 d-flex flex-column justify-content-between">
+        <p class="text-white description-title">숫자를 맞춰 주세요</p>
+        <div v-if="gameUpDownNumber>=0">
+          <p class="previous color-gray"> 이전 번호 : {{this.gameUpDownNumber}}</p>
+        </div>
+        <!-- up인지 down인지에 따라 이미지 변경 -->
+        <div v-if="gameStatus===2">
+          <p v-if="gameUpDownResult==='up'">
+            <img src="@/assets/images/positivevote.png"><br>
+            <span class="result color-gray">{{gameUpDownResult}}</span>
+          </p>
+          <p v-else>
+            <img src="@/assets/images/negativevote.png"><br>
+            <span class="result color-gray">{{gameUpDownResult}}</span>
+          </p>
+        </div>
+        <div v-if="notCurrentPlayer">
+          <p class="turn">
+            <span class="color-yellow">{{ notCurrentPlayer.stream.connection.data.slice(15,-2) }}</span>의 차례입니다
+          </p>
+        </div>
+      </div>
+      <div 
+        class="chat-box p-2 d-flex flex-column h-50" 
+        v-if="!notCurrentPlayer"
+      >      
+        <div class="footer d-flex mt-auto">
+          <div class="col-10 px-1 py-0">
+            <input 
+              class="text-box"
+              @keyup.enter="clickSendNum()"
+              v-model="number"
+              autofocus
+            >
           </div>
-          <!-- up인지 down인지에 따라 이미지 변경 -->
-          <div v-if="gameStatus==2">
-            <p v-if="gameUpDownResult==='up'">
-              <img src="@/assets/images/positivevote.png">
-              <br><span class="result color-gray">{{gameUpDownResult}}</span>
-            </p>
-            <p v-else>
-              <img src="@/assets/images/negativevote.png">
-              <br><span class="result color-gray">{{gameUpDownResult}}</span>
-            </p>
-          </div>
-          <div v-if="notCurrentPlayer">
-            <p class="turn">
-              <span class="color-yellow">{{ notCurrentPlayer.stream.connection.data.slice(15,-2) }}</span>의 차례입니다
-            </p>
+          <div class="col-2 p-0">
+            <button
+              class="send-btn"
+              @click="clickSendNum()"
+            >
+              <i class="fas fa-paper-plane"></i>
+            </button>
           </div>
         </div>
-          <div class="chat-box p-2 d-flex flex-column h-50" v-if="!notCurrentPlayer">      
-            <div class="footer d-flex mt-auto">
-              <div class="col-10 px-1 py-0">
-                <input 
-                  class="text-box"
-                  @keyup.enter="clickSendNum()"
-                  v-model="number"
-                  autofocus
-                >
-              </div>
-              <div class="col-2 p-0">
-                <button
-                  class="send-btn"
-                  @click="clickSendNum()"
-                >
-                  <i class="fas fa-paper-plane"></i>
-                </button>
-              </div>
-            </div>
-          </div> 
-      </div>
-      <loser-panel class="w-100" v-if="gameStatus == 3"/>
+      </div> 
     </div>
+    <loser-panel 
+      class="w-100" 
+      v-if="gameStatus == 3"
+    />
+  </div>
 </template>
 
 <script>
@@ -57,7 +65,7 @@ import LoserPanel from '@/components/meetingpage/multipanel/gamepanel/gameproces
 export default {
  name: "GamePanel",
  components:{
-     LoserPanel
+  LoserPanel
  },
   computed: {
     ...mapState('meetingStore', [
@@ -83,10 +91,10 @@ export default {
     clickSendNum(){
       if (this.number >= 1 && this.number <= 100) {
         var request = new Object();
-        request.gameId=this.selectedGame;
-        request.number=this.number;
-        request.gameStatus=2;
-        request.index=this.gameUpDownIndex;
+        request.gameId = this.selectedGame;
+        request.number = this.number;
+        request.gameStatus = 2;
+        request.index = this.gameUpDownIndex;
         this.number = '';
         var jsonRequest = JSON.stringify(request);
         this.sendGameRequest(jsonRequest);
@@ -100,8 +108,8 @@ export default {
     },
      clickFinishgame(){
       var request = new Object();
-      request.gameId=this.selectedGame;
-      request.gameStatus=4;
+      request.gameId = this.selectedGame;
+      request.gameStatus = 4;
       var jsonRequest = JSON.stringify(request);
       this.sendGameRequest(jsonRequest);
     },
